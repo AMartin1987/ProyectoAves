@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<title>Nuevo usuario</title>
+{% endblock %}  
+
+{% block content %}
+<div class="container-fluid d-flex" style="margin:none;">
+  <div class="bg-image" 
+    style="background-image: url('static/aves-1.jpg');
+    height: 100vh; background-size: cover; width: 100%; position:absolute">
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+      <h2>Registra una cuenta nueva</h2>
+        <div class="mb-3">
+          {{ form.name }}<br>
+          {% for error in form.name.errors %}
+          <span style="color: red;">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="mb-3">
+          {{ form.email }}<br>
+          {% for error in form.email.errors %}
+          <span style="color: red;">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="mb-3">
+          {{ form.password }}<br>
+          {% for error in form.password.errors %}
+          <span style="color: red;">{{ error }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {{ form.submit() }}
+    </form>
+    </div>                        
+    </div>    
+  </div>          
+</div>     
+{% endblock %}  

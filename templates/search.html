@@ -1,0 +1,185 @@
+{% extends "layout.html" %}
+
+{% block head %}
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+  <script
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqoKvZMX0sWGNCDPWKYyBvLNkkPrV6KvE&region=AR&language=es&callback=initMap&v=weekly"
+  async
+  ></script>
+  <!--<script type="text/javascript" src="static\map.js"></script>--> 
+  <title>Aves y lugares de tránsito</title>
+ 
+{% endblock %}  
+       
+{% block content %}
+<div class="container-fluid d-flex main ">
+  <div class="row inside-main  align-items-center">
+    <div class="col-3 main-left">
+      <div class="card h-100">
+        <h5 class="card-header">Visualizar en el mapa...</h5>
+        <div class="card-body">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+            <label class="form-check-label" for="flexCheckChecked">
+              Hogares o lugares de tránsito ofrecidos
+            </label>
+          </div>
+          <p class="card-text">Aves que esperan un hogar o tránsito:</p>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+            <label class="form-check-label" for="flexCheckChecked">
+              Palomas (torcazas, urbanas, etc.)
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+            <label class="form-check-label" for="flexCheckChecked">
+              Pequeñas aves silvestres (gorriones, horneros, etc.)
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+            <label class="form-check-label" for="flexCheckChecked">
+              Aves silvestres de mayor tamaño (loros, búhos, chimangos, etc.) 
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+            <label class="form-check-label" for="flexCheckChecked">
+              Aves domésticas (gallinas, patos, gansos, etc.) 
+            </label>
+          </div>
+          <a href="#" class="btn btn-primary align-items-center">Mostrar</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-9 main-right">
+      <div id="map" class="w-auto"></div>
+      
+      <div id="ubicaciones" hidden>{{ubicaciones}}</div>
+      <div id="id_ubicaciones" hidden>{{id_ubicaciones}}</div>
+      <div id="lat" hidden>{{lat}}</div>
+      <div id="lng" hidden>{{lng}}</div>
+
+      <div id="aves" hidden>{{aves}}</div>
+      <div id="id_aves" hidden>{{id_aves}}</div>
+      <div id="especie" hidden>{{especie}}</div>
+      <div id="edad" hidden>{{edad}}</div>
+      <div id="foto" hidden>{{foto}}</div>
+      <div id="id_ub_aves" hidden>{{id_ub_aves}}</div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+
+  // List all Elements
+  ubicaciones = document.getElementById("ubicaciones").innerHTML;
+  id_ubicaciones = document.getElementById("id_ubicaciones").innerHTML;
+  id_ubicaciones = id_ubicaciones.replace(/'/g,'"');
+  id_ubicaciones = JSON.parse(id_ubicaciones);
+  lat = document.getElementById("lat").innerHTML;
+  lat = lat.replace(/'/g,'"');
+  lat = JSON.parse(lat);
+  lng = document.getElementById("lng").innerHTML;
+  lng = lng.replace(/'/g,'"');
+  lng = JSON.parse(lng);
+  
+  aves = document.getElementById("aves").innerHTML;
+  aves = aves.replace(/'/g,'"');
+
+  aves = aves.split ("), ");
+  for (let i = 0; i <= aves.length; i++) {
+    aves[i] = aves[i].replace('(','');
+    aves[i] = aves[i].replace(')','');
+  }
+  console.log(aves[0])
+  //[(1, "Paloma torcaza", "1 mes", "WhatsApp_Image_2022-02-01_at_8.04.17_PM.jpeg", 3), (2, "Gorrión", "Pichón", "WhatsApp_Image_2022-01-14_at_10.14.28_AM.jpeg", 4)]
+  
+  id_aves = document.getElementById("id_aves").innerHTML;
+  id_aves = id_aves.replace(/'/g,'"');
+  id_aves = JSON.parse(id_aves);
+  especie = document.getElementById("especie").innerHTML;
+  especie = especie.replace(/'/g,'"');
+  especie = JSON.parse(especie);
+  edad = document.getElementById("edad").innerHTML;
+  edad = edad.replace(/'/g,'"');
+  edad = JSON.parse(edad);
+  foto = document.getElementById("foto").innerHTML;
+  foto = foto.replace(/'/g,'"');
+  foto = JSON.parse(foto);
+  id_ub_aves = document.getElementById("id_ub_aves").innerHTML;
+  id_ub_aves = id_ub_aves.replace(/'/g,'"');
+  id_ub_aves = JSON.parse(id_ub_aves);
+  
+  //['Paloma torcaza', 'Gorrión']
+  //[(1, 'Paloma torcaza', '1 mes', 'WhatsApp_Image_2022-02-01_at_8.04.17_PM.jpeg', 3), (2, 'Gorrión', 'Pichón', 'WhatsApp_Image_2022-01-14_at_10.14.28_AM.jpeg', 4)]
+  //Crear mapa
+  let map, infoWindow;
+
+  function initMap() {
+  map = new google.maps.Map(document.getElementById("map"), {
+    center: { lat: -38.718258, lng: -62.261487 }, //Bahía Blanca
+    zoom: 12,
+    });
+    infoWindow = new google.maps.InfoWindow();
+
+    //Markers de la DB
+    for (let i = 0; i < id_ubicaciones.length; i++) {
+      lati = parseFloat(lat[i]);
+      long = parseFloat(lng[i]);
+      myLocation = new google.maps.LatLng(lati, long);
+      new google.maps.Marker({
+        position: myLocation,
+        map,
+        title: "Hello World!",
+        id: id_ubicaciones[i],
+        });
+      }
+   
+    // Geolocalización
+    const locationButton = document.createElement("button");
+
+    locationButton.textContent = "Ir a mi ubicación";
+    locationButton.classList.add("custom-map-control-button");
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
+    locationButton.addEventListener("click", () => {
+      // Try HTML5 geolocation.
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
+
+            infoWindow.setPosition(pos);
+            infoWindow.setContent("Estás aquí.");
+            infoWindow.open(map);
+            map.setCenter(pos);
+          },
+          () => {
+            handleLocationError(true, infoWindow, map.getCenter());
+          }
+        );
+      } else {
+        // Browser doesn't support Geolocation
+        handleLocationError(false, infoWindow, map.getCenter());
+      }
+    });
+  }
+
+  function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+    infoWindow.setPosition(pos);
+    infoWindow.setContent(
+      browserHasGeolocation
+        ? "Error: El servicio de geolocalización falló."
+        : "Error: Tu navegador no soporta la geolocalización."
+    );
+    infoWindow.open(map);
+  }
+</script>
+
+{% endblock %}
+
