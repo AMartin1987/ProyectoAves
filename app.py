@@ -26,7 +26,17 @@ configure_uploads(app, photos)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000 
 
 # connect SQLite3
-db = sqlite3.connect('proyecto.db', check_same_thread=False)
+    def get_db():
+        db = getattr(g, '_database', None)
+        if db is None:
+            db = g._database = sqlite3.connect('proyecto.db', check_same_thread=False)
+        return db
+
+    @app.teardown_appcontext
+    def close_connection(exception):
+        db = getattr(g, '_database', None)
+        if db is not None:
+            db.close()
 
 #secret key
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -89,23 +99,6 @@ def search():
     ubicaciones = cur.execute("SELECT Id, Latitud, Longitud FROM UBICACIONES").fetchall()
     aves = cur.execute("SELECT Id, Especie, Edad, Foto, Id_UBICACIONES FROM AVES").fetchall()
     
-    def get_db():
-        db = getattr(g, '_database', None)
-        if db is None:
-            db = g._database = sqlite3.connect('proyecto.db')
-        return db
-    @app.teardown_appcontext
-    def close_connection(exception):
-        db = getattr(g, '_database', None)
-        if db is not None:
-            db.close()
-
-    def make_dicts(cursor, row):
-        return dict((cursor.description[idx][0], value)
-            for idx, value in enumerate(row))
-
-    db.row_factory = make_dicts
-        
     db.commit()
 
     for i in range(len(ubicaciones)):
