@@ -26,17 +26,18 @@ configure_uploads(app, photos)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000 
 
 # connect SQLite3
-    def get_db():
-        db = getattr(g, '_database', None)
-        if db is None:
-            db = g._database = sqlite3.connect('proyecto.db', check_same_thread=False)
-        return db
+db = 'proyecto.db'
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect('proyecto.db', check_same_thread=False)
+    return db
 
-    @app.teardown_appcontext
-    def close_connection(exception):
-        db = getattr(g, '_database', None)
-        if db is not None:
-            db.close()
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
 
 #secret key
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -48,8 +49,8 @@ login_manager.login_message = u"Por favor inicie sesión para acceder a esta pá
 
 @login_manager.user_loader
 def load_user(user_id):
-   db = sqlite3.connect('proyecto.db', check_same_thread=False)
-   cur = db.cursor()
+   
+   cur = get_db().cursor()
    cur.execute("SELECT * from USUARIOS where id = (?)",[user_id])
    lu = cur.fetchone()
    if lu is None:
@@ -81,7 +82,7 @@ def index():
         return render_template('index.html', nombre=nombre)
     return render_template('index.html')
  
-@app.route('/search', methods=['GET', 'POST'])
+@app.route('/search', methods=['GET'])
 def search():
     id_ubicaciones = []
     lat = []
@@ -95,11 +96,11 @@ def search():
     foto = []
     id_ub_aves = []
 
-    cur = db.cursor()
+    cur = get_db().cursor()
     ubicaciones = cur.execute("SELECT Id, Latitud, Longitud FROM UBICACIONES").fetchall()
     aves = cur.execute("SELECT Id, Especie, Edad, Foto, Id_UBICACIONES FROM AVES").fetchall()
     
-    db.commit()
+    get_db().commit()
 
     for i in range(len(ubicaciones)):
         id_ubicaciones.append (str(ubicaciones[i][0]))
@@ -160,7 +161,7 @@ def addbird():
         lugar = form.lugar.data
 
         #Registering in database
-        cur = db.cursor()
+        cur = get_db().cursor()
 
         lista1 = cur.execute("SELECT Categoria FROM ESPECIES").fetchall()
         idEspecies = 'none'
@@ -206,7 +207,7 @@ def addbird():
         cur.execute(
             "INSERT INTO AVES (Especie, Edad, EstSalud, Requer, Foto, Id_USUARIOS, Id_ESPECIES, Id_TELEFONOS, Id_TIPOREFUGIO, Id_UBICACIONES) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (
             espEsp, edad, salud, requer, file, user_id, idEspecies[0], idTelefonos[0], idTipoRefug[0], idUbicaciones[0]))
-        db.commit()
+        get_db().commit()
         flash('¡Registraste un ave caida!')
         return redirect(url_for('index'))
     return render_template('addbird.html', form=form, nombre=nombre)
@@ -229,7 +230,7 @@ def addplace():
         lugar = form.lugar.data
 
         #Registering in database
-        cur = db.cursor()
+        cur = get_db().cursor()
 
         lista1 = cur.execute("SELECT Direccion FROM UBICACIONES").fetchall()
         idUbicaciones = 'none'
@@ -293,7 +294,7 @@ def addplace():
         cur.execute(
             "INSERT INTO REFUGIOS (Id_USUARIOS, Id_UBICACIONES, Id_ESPECIES1, Id_ESPECIES2, Id_ESPECIES3, Id_ESPECIES4, Id_TELEFONOS, Id_TIPOREFUGIO1, Id_TIPOREFUGIO2) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (
             user_id, idUbicaciones[0], especie1, especie2, especie3, especie4, idTelefonos[0], tipoRef1, tipoRef2))
-        db.commit()
+        get_db().commit()
         flash('¡Registraste un nuevo refugio!')
         return render_template('index.html', nombre=nombre, form=form)
     return render_template('addplace.html', form=form)    
@@ -313,10 +314,10 @@ def register():
         #    return apology("must provide username and password", 403)
 
         #registrar datos en tabla USUARIOS
-        cur = db.cursor()
+        cur = get_db().cursor()
         cur.execute("INSERT INTO USUARIOS (Nombre, Email, Hashed_password) VALUES(?, ?, ?)", (name, email, hash)
                     )
-        db.commit()
+        get_db().commit()
                     
         flash('Registraste tu cuenta!')
         return redirect(url_for('index'))
@@ -330,8 +331,8 @@ def login():
      return redirect(url_for('index'))
   form = LoginForm()
   if form.validate_on_submit():
-     db = sqlite3.connect('proyecto.db')
-     cur = db.cursor()
+
+     cur = get_db().cursor()
      cur.execute("SELECT * FROM USUARIOS where Email = (?)", [form.email.data])
      user = list(cur.fetchone())
      Us = load_user(user[0])
@@ -352,8 +353,6 @@ def logout():
     next = request.args.get('next')
     return redirect(get_safe_redirect(next) or url_for('index'))  
 
-#cerrar base de datos
-db.close
 
 if __name__ == "__main__":
     app.run(ssl_context='adhoc')

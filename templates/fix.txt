@@ -4,5 +4,3 @@ seguridad (e.g., validación del redireccionamiento, para "sanearla")
 
 "recordarme"
 
-
-https://prod.liveshare.vsengsaas.visualstudio.com/join?05629AF8F9A3BA895296B60C274C204C84EE
