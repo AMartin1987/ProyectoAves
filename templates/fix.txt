@@ -4,3 +4,25 @@ seguridad (e.g., validación del redireccionamiento, para "sanearla")
 
 "recordarme"
 
+    // Generar infowindow para cada marker de refugio
+    for (let k = 0; k < refug_len; k++) {
+      if (ubic_dict[i].Id == refug_dict[k].Id_UBICACIONES) {
+        especie.push(aves_dict[j].Especie);
+        edad.push(aves_dict[j].Edad);
+        img = String(aves_dict[j].Foto.replace(/"/g,''));
+        foto.push(img);
+        const info = new google.maps.InfoWindow({
+          content: '<h5 style="font-weight: bold; text-align: left">' +
+          especie[j] +
+          '</h5><h6 class="edad"><span style="text-decoration: underline;">Edad:</span> ' +
+          edad[j] + '</h6><img src="static/upload/' + foto[j] + '"><h6><a href="">Contacto y más info</a>'
+        });
+                
+        // Añadir infowindow a cada marker, abrirlo onclick, cerrar infowindow anterior
+        marker.addListener('click', function () { 
+          closeOtherInfo();
+          info.open(marker.get('map'), marker);
+          InforObj[0] = info;
+        });
+      }
+    };

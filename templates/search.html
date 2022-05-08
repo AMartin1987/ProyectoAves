@@ -6,8 +6,7 @@
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqoKvZMX0sWGNCDPWKYyBvLNkkPrV6KvE&region=AR&language=es&callback=initMap&v=weekly"
   async
   ></script>
-  <!--<script type="text/javascript" src="static\map.js"></script>--> 
-  <title>Aves y lugares de tránsito</title>
+  <title>Aves y refugios</title>
  
 {% endblock %}  
        
@@ -19,32 +18,32 @@
         <h5 class="card-header">Visualizar en el mapa...</h5>
         <div class="card-body">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+            <input class="form-check-input" type="checkbox" value="" id="idRefugios" checked>
             <label class="form-check-label" for="flexCheckChecked">
               Hogares o lugares de tránsito ofrecidos
             </label>
           </div>
           <p class="card-text">Aves que esperan un hogar o tránsito:</p>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+            <input class="form-check-input" type="checkbox" value="" id="idPalomas" checked>
             <label class="form-check-label" for="flexCheckChecked">
               Palomas (torcazas, urbanas, etc.)
             </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+            <input class="form-check-input" type="checkbox" value="" id="idPeqsil" checked>
             <label class="form-check-label" for="flexCheckChecked">
               Pequeñas aves silvestres (gorriones, horneros, etc.)
             </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+            <input class="form-check-input" type="checkbox" value="" id="idMedsil" checked>
             <label class="form-check-label" for="flexCheckChecked">
               Aves silvestres de mayor tamaño (loros, búhos, chimangos, etc.) 
             </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+            <input class="form-check-input" type="checkbox" value="" id="idCorral" checked>
             <label class="form-check-label" for="flexCheckChecked">
               Aves domésticas (gallinas, patos, gansos, etc.) 
             </label>
@@ -55,131 +54,194 @@
     </div>
     <div class="col-9 main-right">
       <div id="map" class="w-auto"></div>
-      
-      <div id="ubicaciones" hidden>{{ubicaciones}}</div>
-      <div id="id_ubicaciones" hidden>{{id_ubicaciones}}</div>
-      <div id="lat" hidden>{{lat}}</div>
-      <div id="lng" hidden>{{lng}}</div>
-
-      <div id="aves" hidden>{{aves}}</div>
-      <div id="id_aves" hidden>{{id_aves}}</div>
-      <div id="especie" hidden>{{especie}}</div>
-      <div id="edad" hidden>{{edad}}</div>
-      <div id="foto" hidden>{{foto}}</div>
-      <div id="id_ub_aves" hidden>{{id_ub_aves}}</div>
-
+      <div id="ubic_dict" hidden > {{ ubic_dict }}</div>
+      <div id="aves_dict" hidden > {{ aves_dict }}</div>
+      <div id="refug_dict" hidden > {{ refug_dict }}</div>
+      <div id="telef_dict" hidden > {{ telef_dict }}</div>
     </div>
   </div>
 </div>
 
 <script>
 
-  // List all Elements
-  ubicaciones = document.getElementById("ubicaciones").innerHTML;
-  id_ubicaciones = document.getElementById("id_ubicaciones").innerHTML;
-  id_ubicaciones = id_ubicaciones.replace(/'/g,'"');
-  id_ubicaciones = JSON.parse(id_ubicaciones);
-  lat = document.getElementById("lat").innerHTML;
-  lat = lat.replace(/'/g,'"');
-  lat = JSON.parse(lat);
-  lng = document.getElementById("lng").innerHTML;
-  lng = lng.replace(/'/g,'"');
-  lng = JSON.parse(lng);
-  
-  aves = document.getElementById("aves").innerHTML;
-  aves = aves.replace(/'/g,'"');
+  // Datos que importo de la DB como JSON
+  var ubic_dict = document.getElementById("ubic_dict").innerHTML.replace(/'/gi,"\"");
+  ubic_dict = JSON.parse(ubic_dict);
+  const ubic_len = Object.keys(ubic_dict).length; 
+  var aves_dict = document.getElementById("aves_dict").innerHTML.replace(/'/gi,"\"");
+  aves_dict = JSON.parse(aves_dict);
+  const aves_len = Object.keys(aves_dict).length;
+  var refug_dict = document.getElementById("refug_dict").innerHTML.replace(/'/gi,"\"");
+  refug_dict = JSON.parse(refug_dict);
+  const refug_len = Object.keys(refug_dict).length;
 
-  aves = aves.split ("), ");
-  for (let i = 0; i <= aves.length; i++) {
-    aves[i] = aves[i].replace('(','');
-    aves[i] = aves[i].replace(')','');
-  }
-  console.log(aves[0])
-  //[(1, "Paloma torcaza", "1 mes", "WhatsApp_Image_2022-02-01_at_8.04.17_PM.jpeg", 3), (2, "Gorrión", "Pichón", "WhatsApp_Image_2022-01-14_at_10.14.28_AM.jpeg", 4)]
-  
-  id_aves = document.getElementById("id_aves").innerHTML;
-  id_aves = id_aves.replace(/'/g,'"');
-  id_aves = JSON.parse(id_aves);
-  especie = document.getElementById("especie").innerHTML;
-  especie = especie.replace(/'/g,'"');
-  especie = JSON.parse(especie);
-  edad = document.getElementById("edad").innerHTML;
-  edad = edad.replace(/'/g,'"');
-  edad = JSON.parse(edad);
-  foto = document.getElementById("foto").innerHTML;
-  foto = foto.replace(/'/g,'"');
-  foto = JSON.parse(foto);
-  id_ub_aves = document.getElementById("id_ub_aves").innerHTML;
-  id_ub_aves = id_ub_aves.replace(/'/g,'"');
-  id_ub_aves = JSON.parse(id_ub_aves);
-  
-  //['Paloma torcaza', 'Gorrión']
-  //[(1, 'Paloma torcaza', '1 mes', 'WhatsApp_Image_2022-02-01_at_8.04.17_PM.jpeg', 3), (2, 'Gorrión', 'Pichón', 'WhatsApp_Image_2022-01-14_at_10.14.28_AM.jpeg', 4)]
-  //Crear mapa
+  // Declarar variables para usar después
   let map, infoWindow;
-
+  var especie = [];
+  var edad = [];
+  var foto = [];
+  var direccion, tiporef1, tiporef2;
+  var especies = [];
+  var InforObj = [];
+  // Crear mapa
   function initMap() {
-  map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: -38.718258, lng: -62.261487 }, //Bahía Blanca
-    zoom: 12,
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: { lat: -38.718258, lng: -62.261487 }, // Bahía Blanca
+      zoom: 13,
     });
-    infoWindow = new google.maps.InfoWindow();
+    
+  // Generar markers
+  for (let i = 0; i < ubic_len; i++) {
+    let lat = ubic_dict[i].Latitud;
+    let lng = ubic_dict[i].Longitud;
+    let Id = ubic_dict[i].Id;
 
-    //Markers de la DB
-    for (let i = 0; i < id_ubicaciones.length; i++) {
-      lati = parseFloat(lat[i]);
-      long = parseFloat(lng[i]);
-      myLocation = new google.maps.LatLng(lati, long);
-      new google.maps.Marker({
-        position: myLocation,
-        map,
-        title: "Hello World!",
-        id: id_ubicaciones[i],
+    myLocation = new google.maps.LatLng(lat, lng);
+      const marker = new google.maps.Marker({
+      position: myLocation,
+      map,
+      id: Id,
+      icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png'
+    });
+    
+    // Generar infowindow para cada marker de ave
+    for (let j = 0; j < aves_len; j++) {
+      if (ubic_dict[i].Id == aves_dict[j].Id_UBICACIONES) {
+        especie.push(aves_dict[j].Especie);
+        edad.push(aves_dict[j].Edad);
+        img = String(aves_dict[j].Foto.replace(/"/g,''));
+        foto.push(img);
+        direccion = ubic_dict[i].Direccion.split(',');
+        direccion = direccion[0];
+        const info = new google.maps.InfoWindow({
+          content: '<div style=line-height:2;text-align: left><span style="font-size:1.2em;font-weight: bold;">' +
+          especie[j] +
+          '</span><br><class="edad"><span style="text-decoration: underline;">Edad:</span> ' +
+          edad[j] + '<img src="static/upload/' + foto[j] + '"><span style="text-decoration:underline;">Dirección:</span> ' + direccion + '<br><a href="">Contacto y más información</a></div>',
+          maxWidth: 200,
+        });
+                
+        // Añadir infowindow a cada marker, abrirlo onclick, cerrar infowindow anterior
+        marker.addListener('click', function () { 
+          closeOtherInfo();
+          info.open(marker.get('map'), marker);
+          InforObj[0] = info;
         });
       }
-   
-    // Geolocalización
-    const locationButton = document.createElement("button");
+    };
 
-    locationButton.textContent = "Ir a mi ubicación";
-    locationButton.classList.add("custom-map-control-button");
-    map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
-    locationButton.addEventListener("click", () => {
-      // Try HTML5 geolocation.
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const pos = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            };
-
-            infoWindow.setPosition(pos);
-            infoWindow.setContent("Estás aquí.");
-            infoWindow.open(map);
-            map.setCenter(pos);
-          },
-          () => {
-            handleLocationError(true, infoWindow, map.getCenter());
-          }
-        );
-      } else {
-        // Browser doesn't support Geolocation
-        handleLocationError(false, infoWindow, map.getCenter());
+    // Generar infowindow para cada marker de refugio
+    for (let k = 0; k < refug_len; k++) {
+      if (ubic_dict[i].Id == refug_dict[k].Id_UBICACIONES) {
+        if (refug_dict[k].Id_TIPOREFUGIO1 == '1') {
+          tiporef1 = 'Hogar (permanente)';
+        }
+        else if (refug_dict[k].Id_TIPOREFUGIO1 == '2') {
+          tiporef1 = 'Tránsito (temporal)';
+        }
+        if (refug_dict[k].Id_TIPOREFUGIO2 == '1') {
+          tiporef2 = '<br> Hogar (permanente)';
+        }
+        else if (refug_dict[k].Id_TIPOREFUGIO2 == '2') {
+          tiporef2 = '<br> Tránsito (temporal)';
+        }
+        else if (refug_dict[k].Id_TIPOREFUGIO2 == 'NULL') {
+          tiporef2 = '';
+        }
+        direccion = ubic_dict[i].Direccion.split(',');
+        direccion = direccion[0];
+        especies.push(refug_dict[k].Id_ESPECIES1);
+        if (refug_dict[k].Id_ESPECIES2 !== 'NULL'){
+          especies.push(refug_dict[k].Id_ESPECIES2);
+        }       
+        if (refug_dict[k].Id_ESPECIES3 =! 'NULL'){
+          especies.push(refug_dict[k].Id_ESPECIES3);
+        }
+        if (refug_dict[k].Id_ESPECIES4 =! 'NULL'){
+          especies.push(refug_dict[k].Id_ESPECIES4);
+        }
+        for (var n = 0; n < especies.length; n++) {
+          especies[n] = especies[n].replace("paloma","palomas");
+          especies[n] = especies[n].replace("peqsil"," pequeñas aves silvestres");
+          especies[n] = especies[n].replace("medsil"," aves silvestres de tamaño mediano");
+          especies[n] = especies[n].replace("corral"," aves de corral");
+        }  
+       
+        console.log(especies);         
+        const info2 = new google.maps.InfoWindow({
+          content: '<div style=line-height:2;text-align: left><span style="font-size:1.2em;font-weight: bold;">Refugio para: </span><br>' +
+            tiporef1 + tiporef2 + '<br><span style="text-decoration:underline;">Se reciben:</span> ' + especies +
+            '<br><span style="text-decoration:underline;">Dirección:</span> ' +
+            direccion + '<br><a href="">Contacto y más información</a></div>'
+        });
+        especies = [];
+                
+        // Añadir infowindow a cada marker, abrirlo onclick, cerrar infowindow anterior
+        marker.addListener('click', function () { 
+          closeOtherInfo();
+          info2.open(marker.get('map'), marker);
+          InforObj[0] = info2;
+        });
       }
-    });
+    };
+
   }
+  //Función para cerrar infowindow anterior
+  function closeOtherInfo() { 
+              if (InforObj.length > 0) {
+                  InforObj[0].set("marker", null);
+                  InforObj[0].close();
+                  InforObj.length = 0;
+              }
+   }
+
+// Geolocalización
+  infoWindow = new google.maps.InfoWindow(); 
+  const locationButton = document.createElement("button");
+
+  locationButton.textContent = "Ir a mi ubicación";
+  locationButton.classList.add("custom-map-control-button");
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
+  locationButton.addEventListener("click", () => {
+    // Try HTML5 geolocation.
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+
+          infoWindow.setPosition(pos);
+          infoWindow.setContent("Estás aquí.");
+          infoWindow.open(map);
+          map.setCenter(pos);
+        },
+        () => {
+          handleLocationError(true, infoWindow, map.getCenter());
+        }
+      );
+    } else {
+      // Mensajes de error de geolocalización
+      handleLocationError(false, infoWindow, map.getCenter());
+    }
+  });
 
   function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-    infoWindow.setPosition(pos);
-    infoWindow.setContent(
-      browserHasGeolocation
-        ? "Error: El servicio de geolocalización falló."
-        : "Error: Tu navegador no soporta la geolocalización."
-    );
-    infoWindow.open(map);
+  infoWindow.setPosition(pos);
+  infoWindow.setContent(
+    browserHasGeolocation
+      ? "Error: El servicio de geolocalización falló."
+      : "Error: Tu navegador no soporta la geolocalización."
+  );
+  infoWindow.open(map);
   }
+  
+  } //Cierra initMap
+
+  // Carga el mapa en window
+  window.initMap = initMap;
+  
 </script>
 
 {% endblock %}
-

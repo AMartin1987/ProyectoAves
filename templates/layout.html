@@ -30,7 +30,6 @@
         </ul>
 
         <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
-            <input type="search" class="form-control form-control-dark" placeholder="Buscar..." aria-label="Search">
         </form>
 
         <div class="dropdown">
@@ -41,15 +40,17 @@
                 Mi cuenta
               {% endif %}    
             </a>
-          
-        <ul class="dropdown-menu text-end" aria-labelledby="dropdownMenuLink">
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             {% if current_user.is_authenticated: %}
-                <li><a class="dropdown-item" href="{{ url_for('logout') }}">Cerrar sesión</a></li>
+            <a class="dropdown-item" href="{{ url_for('logout') }}">Cerrar sesión</a>
             {% else %}
-                <li><a class="dropdown-item" href="{{ url_for('login') }}">Iniciar sesión</a></li>
-                <li><a class="dropdown-item" href="{{ url_for('register') }}">Registrarse</a></li>
+            <a class="dropdown-item" href="{{ url_for('login') }}">Iniciar sesión</a>
+            <a class="dropdown-item" href="{{ url_for('register') }}">Registrarse</a>
             {% endif %}
-        </ul>
+        </div>
+        </div>
+            
+
           </div>
         </div>
     </div>
