@@ -26,3 +26,45 @@ seguridad (e.g., validación del redireccionamiento, para "sanearla")
         });
       }
     };
+
+    -------------------
+            for (let k = 0; k < refug_len; k++) {
+              if (ubic_dict[i].Id == refug_dict[k].Id_UBICACIONES) {
+                if (refug_dict[k].Id_TIPOREFUGIO1 == '1') {
+                  tiporef1 = 'Hogar (permanente)';
+                }
+                else if (refug_dict[k].Id_TIPOREFUGIO1 == '2') {
+                  tiporef1 = 'Tránsito (temporal)';
+                }
+                if (refug_dict[k].Id_TIPOREFUGIO2 == '1') {
+                  tiporef2 = '<br> Hogar (permanente)';
+                }
+                else if (refug_dict[k].Id_TIPOREFUGIO2 == '2') {
+                  tiporef2 = '<br> Tránsito (temporal)';
+                }
+                else if (refug_dict[k].Id_TIPOREFUGIO2 == 'NULL') {
+                  tiporef2 = '';
+                }
+              }
+                document.getElementById('tiporef1').innerHTML = tiporef1;
+                document.getElementById('tiporef2').innerHTML = tiporef2;
+
+                especies.push(refug_dict[k].Id_ESPECIES1);
+                if (refug_dict[k].Id_ESPECIES2 !== 'NULL'){
+                  especies.push(refug_dict[k].Id_ESPECIES2);
+                }       
+                if (refug_dict[k].Id_ESPECIES3 =! 'NULL'){
+                  especies.push(refug_dict[k].Id_ESPECIES3);
+                }
+                if (refug_dict[k].Id_ESPECIES4 =! 'NULL'){
+                  especies.push(refug_dict[k].Id_ESPECIES4);
+                };
+              
+                for (var n = 0; n < especies.length; n++) {
+                  especies[n] = especies[n].replace("paloma","palomas");
+                  especies[n] = especies[n].replace("peqsil"," pequeñas aves silvestres");
+                  especies[n] = especies[n].replace("medsil"," aves silvestres de tamaño mediano");
+                  especies[n] = especies[n].replace("corral"," aves de corral");
+                };
+                document.getElementById('especies').innerHTML = especies;                
+            };        

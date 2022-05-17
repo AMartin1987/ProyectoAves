@@ -5,7 +5,6 @@ from werkzeug.exceptions import BadRequest
 import sqlite3, os, flask_login
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 from models import User
-from markers import Marker
 from forms import LoginForm, SignupForm, BirdForm, PlaceForm
 from urllib.parse import urlparse, urljoin
 from flask_uploads import configure_uploads, IMAGES, UploadSet
@@ -20,7 +19,7 @@ API_KEY = 'AIzaSyAqoKvZMX0sWGNCDPWKYyBvLNkkPrV6KvE'
 
 #uploading images configuration
 app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.jpeg', '.png', '.gif']
-app.config["UPLOADED_PHOTOS_DEST"] = 'upload'
+app.config["UPLOADED_PHOTOS_DEST"] = 'static/upload'
 photos = UploadSet("photos", IMAGES)
 configure_uploads(app, photos)
 
@@ -103,6 +102,8 @@ def search():
     aves = cur.execute("SELECT Id, Especie, Edad, Foto, EstSalud, Requer, Id_ESPECIES, Id_TELEFONOS, Id_TIPOREFUGIO, Id_UBICACIONES FROM AVES").fetchall()
     refugios = cur.execute("SELECT Id, Id_ESPECIES1, Id_ESPECIES2, Id_ESPECIES3, Id_ESPECIES4, Id_UBICACIONES, Id_TELEFONOS, Id_TIPOREFUGIO1, Id_TIPOREFUGIO2 FROM REFUGIOS").fetchall()
     telefonos = cur.execute("SELECT Id, Telefono FROM TELEFONOS").fetchall()
+    especies = cur.execute("SELECT Id, Categoria FROM ESPECIES").fetchall()
+    tiporef = cur.execute("SELECT Id, TipoRefug FROM TIPOREFUGIO").fetchall()
     get_db().commit()
     
     i = 0
@@ -129,7 +130,22 @@ def search():
         telef_dict[str(i)] = value
         i = i + 1
 
-    return render_template('search.html', ubic_dict=ubic_dict, aves_dict=aves_dict, refug_dict=refug_dict, telef_dict=telef_dict, nombre=nombre)
+    i = 0
+    espe_dict = { }
+    for value in especies:
+        espe_dict[str(i)] = value
+        i = i + 1
+
+    i = 0
+    tiporef_dict = { }
+    for value in tiporef:
+        tiporef_dict[str(i)] = value
+        i = i + 1    
+    
+
+    return render_template('search.html', ubic_dict=ubic_dict,
+     aves_dict=aves_dict, refug_dict=refug_dict, telef_dict=telef_dict,
+     espe_dict=espe_dict, tiporef_dict=tiporef_dict, nombre=nombre)
     
 @app.route('/addbird', methods=['GET', 'POST'])
 @login_required
@@ -164,21 +180,22 @@ def addbird():
         curs = connection.cursor()
 
         lista1 = curs.execute("SELECT Categoria FROM ESPECIES").fetchall()
-        idEspecies = 'none'
-        for i in lista1:
-            if i[0] == "('{0}',)".format(especie):
-                idEspecies = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = (?)", (especie,))
-                break
-        if idEspecies == 'none':
-            curs.execute("INSERT INTO ESPECIES (Categoria) VALUES (?)", (especie,))
-            connection.commit()
-            idEspecies = curs.execute("SELECT MAX(Id) FROM ESPECIES").fetchone()
+        #idEspecies = 'none'
+        #for i in lista1:
+        #    if i[0] == "('{0}',)".format(especie):
+        idEspecies = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = (?)", (especie,)).fetchone()
+        print(idEspecies)
+        #        break
+        #if idEspecies == 'none':
+        #    curs.execute("INSERT INTO ESPECIES (Categoria) VALUES (?)", (especie,))
+        #    connection.commit()
+        #    idEspecies = curs.execute("SELECT MAX(Id) FROM ESPECIES").fetchone()
 
         lista2 = curs.execute("SELECT Telefono FROM TELEFONOS").fetchall()
         idTelefonos = 'none'
         for i in lista2:
             if i[0] == "('{0}',)".format(contacto):
-                idEspecies = curs.execute("SELECT Id FROM TELEFONOS WHERE Telefono = (?)", (contacto,))
+                idEspecies = curs.execute("SELECT Id FROM TELEFONOS WHERE Telefono = (?)", (contacto,)).fetchone()
                 break
         if idTelefonos == 'none':
             curs.execute("INSERT INTO TELEFONOS (Telefono) VALUES (?)", (contacto,))
@@ -186,21 +203,21 @@ def addbird():
             connection.commit()
 
         lista3 = curs.execute("SELECT TipoRefug FROM TIPOREFUGIO").fetchall()
-        idTipoRefug = 'none'
-        for i in lista3:
-            if i[0] == "('{0}',)".format(lugar):
-                idTipoRefug = curs.execute("SELECT Id FROM TIPOREFUGIO WHERE TipoRefug = (?)", (lugar,))
-                break
-        if idTipoRefug == 'none':
-            curs.execute("INSERT INTO TIPOREFUGIO (TipoRefug) VALUES (?)", (lugar,))
-            idTipoRefug = curs.execute("SELECT MAX(Id) FROM TIPOREFUGIO").fetchone()
-            connection.commit()
+        #idTipoRefug = 'none'
+        #for i in lista3:
+        #    if i[0] == "('{0}',)".format(lugar):
+        idTipoRefug = curs.execute("SELECT Id FROM TIPOREFUGIO WHERE TipoRefug = (?)", (lugar,)).fetchone()
+        #        break
+        #if idTipoRefug == 'none':
+        #    curs.execute("INSERT INTO TIPOREFUGIO (TipoRefug) VALUES (?)", (lugar,))
+        #    idTipoRefug = curs.execute("SELECT MAX(Id) FROM TIPOREFUGIO").fetchone()
+        #    connection.commit()
 
         lista4 = curs.execute("SELECT Direccion FROM UBICACIONES").fetchall()
         idUbicaciones = 'none'
         for i in lista4:
             if i[0] == "('{0}',)".format(localiz):
-                idUbicaciones = curs.execute("SELECT Id FROM UBICACIONES WHERE Direccion = (?)", (localiz,))
+                idUbicaciones = curs.execute("SELECT Id FROM UBICACIONES WHERE Direccion = (?)", (localiz,)).fetchone()
                 break
         if idUbicaciones == 'none':
             curs.execute("INSERT INTO UBICACIONES (Latitud, Longitud, Direccion) VALUES (?, ?, ?)", (

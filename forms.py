@@ -67,7 +67,7 @@ class PlaceForm(FlaskForm):
   lugar = SelectMultipleField('Estás proponiendo (marcar uno o ambos)...:', [InputRequired()], \
     choices=[('transito', 'Un lugar de tránsito hasta su liberación.'), ('hogar', 'Un hogar permanente.')],\
     widget=select_multi_checkbox)
-  localiz = StringField('¿Dónde está el ave actualmente?:', [InputRequired()], render_kw={"placeholder": \
+  localiz = StringField('¿En qué ubicación?:', [InputRequired()], render_kw={"placeholder": \
     "Ejemplo: 'Estomba 900, Bahía Blanca.'"})
   loc_lat = HiddenField()
   loc_long = HiddenField()
@@ -77,5 +77,5 @@ class PlaceForm(FlaskForm):
     ('medsil', 'Aves silvestres medianas (loros, búhos, chimangos, etc.)'), ('corral', 'Aves de granja \
     (gallinas, patos, etc.)')], widget=select_multi_checkbox)
   contacto = StringField('Contacto:', render_kw={"placeholder": "Celular/Whatsapp"}, validators=[InputRequired()])
-  submit = SubmitField('Registrar ave')
+  submit = SubmitField('Registrar refugio')
 
