@@ -4,3 +4,6 @@ seguridad (e.g., validación del redireccionamiento, para "sanearla")
 
 "recordarme"
 
+estilo
+
+hacer más rápido --> más lindo

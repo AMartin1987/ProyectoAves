@@ -27,6 +27,24 @@
                     </div>
                 </div>
                 {% endfor %}
+                {% for refugio in refug_dict %}
+                <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+                    {% for ubic in ubic_dict %}
+                        {% if ubic_dict[ubic].Id == refug_dict[refugio].Id_UBICACIONES %}
+                            {% set direccion = ubic_dict[ubic].Direccion %} 
+                            {% set direccion = direccion.split(',') %}
+                            {% set direccion = direccion[0] %}
+                            <div class="card-header">{{ direccion }}</div>
+                        {% endif %}
+                    {% endfor %}      
+
+                    <div class="card-body">
+                    <h5 class="card-title">{{especies_ref }}</h5>
+                    
+                    <a href="#" class="btn btn-primary">Editar</a><span></span><a href="#" class="btn btn-primary">Eliminar</a>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>

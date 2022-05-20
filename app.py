@@ -344,25 +344,61 @@ def profile():
     #Get user Id
     user_id = current_user.get_id()
 
+    # get DB data for this user's Id
     cur = get_db().cursor()
-    ubicaciones = cur.execute("SELECT Id, Latitud, Longitud, Direccion FROM UBICACIONES").fetchall()
-    aves = cur.execute("SELECT Id, Especie, Edad, Foto, EstSalud, Requer, Id_ESPECIES, Id_TELEFONOS, Id_TIPOREFUGIO, Id_UBICACIONES FROM AVES").fetchall()
-    refugios = cur.execute("SELECT Id, Id_ESPECIES1, Id_ESPECIES2, Id_ESPECIES3, Id_ESPECIES4, Id_UBICACIONES, Id_TELEFONOS, Id_TIPOREFUGIO1, Id_TIPOREFUGIO2 FROM REFUGIOS").fetchall()
-    telefonos = cur.execute("SELECT Id, Telefono FROM TELEFONOS").fetchall()
+    ubicaciones = cur.execute("SELECT Id, Latitud, Longitud, Direccion \
+                FROM UBICACIONES WHERE Id IN (SELECT Id_UBICACIONES FROM \
+                AVES WHERE Id_USUARIOS = (?) UNION SELECT Id_UBICACIONES \
+                FROM REFUGIOS WHERE Id_USUARIOS = (?))", (user_id, user_id)).fetchall()
+    aves = cur.execute("SELECT Id, Especie, Edad, Foto, EstSalud, Requer, \
+         Id_ESPECIES, Id_TELEFONOS, Id_TIPOREFUGIO, Id_UBICACIONES FROM AVES \
+         WHERE Id_USUARIOS = (?)", (user_id,)).fetchall()
+    refugios = cur.execute("SELECT Id, Id_ESPECIES1, Id_ESPECIES2, Id_ESPECIES3, \
+             Id_ESPECIES4, Id_UBICACIONES, Id_TELEFONOS, Id_TIPOREFUGIO1, \
+             Id_TIPOREFUGIO2 FROM REFUGIOS WHERE Id_USUARIOS = (?)", (user_id,)).fetchall()
+    telefonos = cur.execute("SELECT Id, Telefono FROM TELEFONOS WHERE Id IN \
+              (SELECT Id_TELEFONOS FROM AVES WHERE Id_USUARIOS = (?) UNION \
+              SELECT Id_TELEFONOS FROM REFUGIOS WHERE Id_USUARIOS = (?))", (user_id, user_id)).fetchall()
     especies = cur.execute("SELECT Id, Categoria FROM ESPECIES").fetchall()
     tiporef = cur.execute("SELECT Id, TipoRefug FROM TIPOREFUGIO").fetchall()
     get_db().commit()
     
+    #Convert data from DB to dict type
     ubic_dict = helpers.make_dict(ubicaciones)
     aves_dict = helpers.make_dict(aves)
     refug_dict = helpers.make_dict(refugios)
     telef_dict = helpers.make_dict(telefonos)
     espe_dict = helpers.make_dict(especies)
     tiporef_dict = helpers.make_dict(tiporef)
-   
+
+
+    especies_ref = []
+    for i in range(len(refug_dict)):
+        dict = refug_dict[str(i)]
+        if dict["Id_ESPECIES1"] != 'NULL':
+            especies_ref.append(dict['Id_ESPECIES1'])
+        if (dict["Id_ESPECIES2"] != 'NULL'):
+            especies_ref.append(dict['Id_ESPECIES2'])
+        if (dict["Id_ESPECIES3"] != 'NULL'): 
+            especies_ref.append(dict['Id_ESPECIES3'])
+        if (dict["Id_ESPECIES4"] != 'NULL'):
+            especies_ref.append(dict['Id_ESPECIES4'])
+
+    for i in range(len(especies_ref)):
+        if (especies_ref[i] == 'paloma'):
+            especies_ref[i] = 'palomas'
+        if (especies_ref[i] == 'peqsil'):
+            especies_ref[i] = 'pequeñas aves silvestres'
+        if (especies_ref[i] == 'medsil'):
+            especies_ref[i] = 'aves silvestres medianas'
+        if (especies_ref[i] == 'corral'):
+            especies_ref[i] = 'aves de granja'
+
+    especies_ref                  
+    print(especies_ref)               
     return render_template('profile.html', ubic_dict=ubic_dict,
      aves_dict=aves_dict, refug_dict=refug_dict, telef_dict=telef_dict,
-     espe_dict=espe_dict, tiporef_dict=tiporef_dict, nombre=nombre)
+     espe_dict=espe_dict, tiporef_dict=tiporef_dict, especies_ref=especies_ref, nombre=nombre)
 
 
 if __name__ == "__main__":
