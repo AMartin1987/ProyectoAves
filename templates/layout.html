@@ -42,6 +42,7 @@
             </a>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             {% if current_user.is_authenticated: %}
+            <a class="dropdown-item" href="{{ url_for('profile') }}">Mis publicaciones</a>            
             <a class="dropdown-item" href="{{ url_for('logout') }}">Cerrar sesión</a>
             {% else %}
             <a class="dropdown-item" href="{{ url_for('login') }}">Iniciar sesión</a>

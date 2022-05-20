@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<title>Mi cuenta</title>
+{% endblock %}  
+
+{% block content %}
+<div class="container-fluid d-flex"></div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-group">
+                {% for ave in aves_dict %}
+                <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+                    {% for ubic in ubic_dict %}
+                        {% if ubic_dict[ubic].Id == aves_dict[ave].Id_UBICACIONES %}
+                            {% set direccion = ubic_dict[ubic].Direccion %} 
+                            {% set direccion = direccion.split(',') %}
+                            {% set direccion = direccion[0] %}
+                            <div class="card-header">{{ direccion }}</div>
+                        {% endif %}
+                    {% endfor %}    
+                    <div class="card-body">
+                    <h5 class="card-title">{{aves_dict[ave].Especie}}</h5>
+                    {% set foto = 'static/upload/' + aves_dict[ave].Foto  %}
+                    <img src= {{ foto }} class="card-img-top" alt="..." style="max-width: 12rem; border-radius: 8px; height: 8rem;object-fit:cover;">
+                    <a href="#" class="btn btn-primary">Editar</a><span></span><a href="#" class="btn btn-primary">Eliminar</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}  

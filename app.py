@@ -1,14 +1,16 @@
+import sqlite3, os, helpers
+
 from flask import Flask, render_template, url_for, redirect, request, flash, g, abort, current_app, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import BadRequest
-import sqlite3, os, flask_login
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 from models import User
 from forms import LoginForm, SignupForm, BirdForm, PlaceForm
 from urllib.parse import urlparse, urljoin
 from flask_uploads import configure_uploads, IMAGES, UploadSet
 from sqlitedict import SqliteDict
+
 
 app = Flask(__name__)
 
@@ -106,43 +108,13 @@ def search():
     tiporef = cur.execute("SELECT Id, TipoRefug FROM TIPOREFUGIO").fetchall()
     get_db().commit()
     
-    i = 0
-    ubic_dict = { }
-    for value in ubicaciones:
-        ubic_dict[str(i)] = value
-        i = i + 1
-
-    i = 0
-    aves_dict = { }
-    for value in aves:
-        aves_dict[str(i)] = value
-        i = i + 1
-
-    i = 0
-    refug_dict = { }
-    for value in refugios:
-        refug_dict[str(i)] = value
-        i = i + 1
-
-    i = 0
-    telef_dict = { }
-    for value in telefonos:
-        telef_dict[str(i)] = value
-        i = i + 1
-
-    i = 0
-    espe_dict = { }
-    for value in especies:
-        espe_dict[str(i)] = value
-        i = i + 1
-
-    i = 0
-    tiporef_dict = { }
-    for value in tiporef:
-        tiporef_dict[str(i)] = value
-        i = i + 1    
-    
-
+    ubic_dict = helpers.make_dict(ubicaciones)
+    aves_dict = helpers.make_dict(aves)
+    refug_dict = helpers.make_dict(refugios)
+    telef_dict = helpers.make_dict(telefonos)
+    espe_dict = helpers.make_dict(especies)
+    tiporef_dict = helpers.make_dict(tiporef)
+   
     return render_template('search.html', ubic_dict=ubic_dict,
      aves_dict=aves_dict, refug_dict=refug_dict, telef_dict=telef_dict,
      espe_dict=espe_dict, tiporef_dict=tiporef_dict, nombre=nombre)
@@ -180,16 +152,8 @@ def addbird():
         curs = connection.cursor()
 
         lista1 = curs.execute("SELECT Categoria FROM ESPECIES").fetchall()
-        #idEspecies = 'none'
-        #for i in lista1:
-        #    if i[0] == "('{0}',)".format(especie):
         idEspecies = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = (?)", (especie,)).fetchone()
         print(idEspecies)
-        #        break
-        #if idEspecies == 'none':
-        #    curs.execute("INSERT INTO ESPECIES (Categoria) VALUES (?)", (especie,))
-        #    connection.commit()
-        #    idEspecies = curs.execute("SELECT MAX(Id) FROM ESPECIES").fetchone()
 
         lista2 = curs.execute("SELECT Telefono FROM TELEFONOS").fetchall()
         idTelefonos = 'none'
@@ -203,15 +167,7 @@ def addbird():
             connection.commit()
 
         lista3 = curs.execute("SELECT TipoRefug FROM TIPOREFUGIO").fetchall()
-        #idTipoRefug = 'none'
-        #for i in lista3:
-        #    if i[0] == "('{0}',)".format(lugar):
         idTipoRefug = curs.execute("SELECT Id FROM TIPOREFUGIO WHERE TipoRefug = (?)", (lugar,)).fetchone()
-        #        break
-        #if idTipoRefug == 'none':
-        #    curs.execute("INSERT INTO TIPOREFUGIO (TipoRefug) VALUES (?)", (lugar,))
-        #    idTipoRefug = curs.execute("SELECT MAX(Id) FROM TIPOREFUGIO").fetchone()
-        #    connection.commit()
 
         lista4 = curs.execute("SELECT Direccion FROM UBICACIONES").fetchall()
         idUbicaciones = 'none'
@@ -380,6 +336,34 @@ def logout():
     logout_user()
     next = request.args.get('next')
     return redirect(get_safe_redirect(next) or url_for('index'))  
+
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    nombre = current_user.name
+    #Get user Id
+    user_id = current_user.get_id()
+
+    cur = get_db().cursor()
+    ubicaciones = cur.execute("SELECT Id, Latitud, Longitud, Direccion FROM UBICACIONES").fetchall()
+    aves = cur.execute("SELECT Id, Especie, Edad, Foto, EstSalud, Requer, Id_ESPECIES, Id_TELEFONOS, Id_TIPOREFUGIO, Id_UBICACIONES FROM AVES").fetchall()
+    refugios = cur.execute("SELECT Id, Id_ESPECIES1, Id_ESPECIES2, Id_ESPECIES3, Id_ESPECIES4, Id_UBICACIONES, Id_TELEFONOS, Id_TIPOREFUGIO1, Id_TIPOREFUGIO2 FROM REFUGIOS").fetchall()
+    telefonos = cur.execute("SELECT Id, Telefono FROM TELEFONOS").fetchall()
+    especies = cur.execute("SELECT Id, Categoria FROM ESPECIES").fetchall()
+    tiporef = cur.execute("SELECT Id, TipoRefug FROM TIPOREFUGIO").fetchall()
+    get_db().commit()
+    
+    ubic_dict = helpers.make_dict(ubicaciones)
+    aves_dict = helpers.make_dict(aves)
+    refug_dict = helpers.make_dict(refugios)
+    telef_dict = helpers.make_dict(telefonos)
+    espe_dict = helpers.make_dict(especies)
+    tiporef_dict = helpers.make_dict(tiporef)
+   
+    return render_template('profile.html', ubic_dict=ubic_dict,
+     aves_dict=aves_dict, refug_dict=refug_dict, telef_dict=telef_dict,
+     espe_dict=espe_dict, tiporef_dict=tiporef_dict, nombre=nombre)
+
 
 if __name__ == "__main__":
     app.run(ssl_context='adhoc')

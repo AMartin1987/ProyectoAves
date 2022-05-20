@@ -61,12 +61,12 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <div><span class="negrita">Especie: </span><span id="especie"></span></div>
-              <div><span class="negrita">Edad: </span><span id="edad"></span></div>
-              <div><span class="negrita">Estado de salud: </span><span id="estsalud"></span></div>
-              <div><span class="negrita">Requerimientos de cuidado: </span><span id="requer"></span></div>
-              <div><span class="negrita">Necesita un lugar para...: </span><span id="tiporef"></span></div>
-              <div><span class="negrita">Ubicación actual del ave: </span><span id="ubicacion-a"></span></div>
+              <div><span class="negrita">Especie: </span><span id="especie"></span><span>.</span></div>
+              <div><span class="negrita">Edad: </span><span id="edad"></span><span>.</span></div>
+              <div><span class="negrita">Estado de salud: </span><span id="estsalud"></span><span>.</span></div>
+              <div><span class="negrita">Requerimientos de cuidado: </span><span id="requer"></span><span>.</span></div>
+              <div><span class="negrita">Necesita un lugar para: </span><span id="tiporef"></span><span>.</span></div>
+              <div><span class="negrita">Ubicación actual del ave: </span><span id="ubicacion-a"></span><span>.</span></div>
               <div><span class="negrita">Teléfono de contacto (celular y/o Whatsapp): </span><span id="telefono"></span></div>
               <br><div class="gm-style img"><div id="foto"></div></div>
             </div>
@@ -86,9 +86,10 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <div><span class="negrita">Ubicación: </span><span id="ubicacion-r"></span></div>
-              <div><span class="negrita">Refugio para...: </span><span id="tiporef1"></span><span id="tiporef2"></span></div>              
-              <div><span class="negrita">Puede alojar: </span><span id="especies"></span></div>          
+              <div><span class="negrita">Ubicación: </span><span id="ubicacion-r"></span><span>.</span></div>
+              <div><span class="negrita">Refugio para: </span><span id="tiporef1"></span><span id="tiporef2"></span><span>.</span></div>              
+              <div><span class="negrita">Puede alojar: </span><span id="especies"></span><span>.</span></span></div>          
+              <div><span class="negrita">Teléfono de contacto (celular y/o Whatsapp): </span><span id="telefono-r"></span></div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -211,7 +212,7 @@ function initMap() {
                 document.getElementById('estsalud').innerHTML = aves_dict[j].EstSalud;
                 document.getElementById('requer').innerHTML = aves_dict[j].Requer;
                 document.getElementById('ubicacion-a').innerHTML = direccion;
-                let telefono;
+                
                 for (t=0;t <= telef_len;t++) {
                     if (telef_dict[t].Id == aves_dict[j].Id_TELEFONOS) {
                         telefono = telef_dict[t].Telefono;
@@ -219,7 +220,7 @@ function initMap() {
                     }
                 }; 
                 document.getElementById('telefono').innerHTML = telefono;
-                let tiporef1;
+                
                 for (t=0;t < tiporef_len;t++) {  
                     if (tiporef_dict[t].Id == aves_dict[j].Id_TIPOREFUGIO) {
                         if (aves_dict[j].Id_TIPOREFUGIO == '1') {
@@ -299,8 +300,54 @@ function initMap() {
                 direccion = ubic_dict[i].Direccion.split(',');
                 direccion = direccion[0];            
                 document.getElementById('ubicacion-r').innerHTML = direccion;
+
+                especies.push(refug_dict[k].Id_ESPECIES1);
+                if (refug_dict[k].Id_ESPECIES2 !== 'NULL'){
+                    especies.push(refug_dict[k].Id_ESPECIES2);
+                }       
+                if (refug_dict[k].Id_ESPECIES3 =! 'NULL'){
+                    especies.push(refug_dict[k].Id_ESPECIES3);
+                }
+                if (refug_dict[k].Id_ESPECIES4 =! 'NULL'){
+                    especies.push(refug_dict[k].Id_ESPECIES4);
+                }
+                for (var n = 0; n < especies.length; n++) {
+                    especies[n] = especies[n].replace("paloma","palomas");
+                    especies[n] = especies[n].replace("peqsil"," pequeñas aves silvestres");
+                    especies[n] = especies[n].replace("medsil"," aves silvestres de tamaño mediano");
+                    especies[n] = especies[n].replace("corral"," aves de corral");
+                }
+                document.getElementById('especies').innerHTML = especies;
+                especies = [];  
+                if (refug_dict[k].Id_TIPOREFUGIO1 == '1') {
+                    tiporef1 = 'Hogar (permanente)';
+                }
+                else if (refug_dict[k].Id_TIPOREFUGIO1 == '2') {
+                    tiporef1 = 'Tránsito (temporal)';
+                }
+                if (refug_dict[k].Id_TIPOREFUGIO2 == '1') {
+                    tiporef2 = '<br> Hogar (permanente)';
+                }
+                else if (refug_dict[k].Id_TIPOREFUGIO2 == '2') {
+                    tiporef2 = '<br> Tránsito (temporal)';
+                }
+                else if (refug_dict[k].Id_TIPOREFUGIO2 == 'NULL') {
+                    tiporef2 = '';
+                }
+                document.getElementById('tiporef1').innerHTML = tiporef1;                
+                document.getElementById('tiporef2').innerHTML = tiporef2;
+
+                for (t=0;t <= telef_len;t++) {
+                    if (telef_dict[t].Id == refug_dict[k].Id_TELEFONOS) {
+                        telefono = telef_dict[t].Telefono;
+                        break;
+                    }
+                };
+                console.log(telefono); 
+                document.getElementById('telefono-r').innerHTML = telefono;
              });
             });
+
 
             // Añadir infowindow a cada marker, abrirlo onclick, cerrar infowindow anterior
             marker.addListener('click', function () { 
