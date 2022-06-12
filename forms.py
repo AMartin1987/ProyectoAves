@@ -59,7 +59,7 @@ class BirdForm(FlaskForm):
   lugar = RadioField('El ave necesita:', choices=[('transito', 'Un lugar de tránsito hasta su liberación.'), \
     ('hogar', 'Un hogar permanente.')], validators=[InputRequired()])
   requer = TextAreaField('Requerimientos que debería cumplir este nuevo lugar para el cuidado del ave:')
-  contacto = StringField('Contacto:', render_kw={"placeholder": "Celular/Whatsapp"}, validators=[InputRequired()])
+  contacto = StringField('Teléfono/Whatsapp:', render_kw={"placeholder": "Teléfono/Whatsapp"}, validators=[InputRequired()])
   imagen = FileField('Subir imagen')
   submit = SubmitField('Registrar ave')
 
@@ -78,4 +78,5 @@ class PlaceForm(FlaskForm):
     (gallinas, patos, etc.)')], widget=select_multi_checkbox)
   contacto = StringField('Contacto:', render_kw={"placeholder": "Celular/Whatsapp"}, validators=[InputRequired()])
   submit = SubmitField('Registrar refugio')
+
 

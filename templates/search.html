@@ -5,13 +5,34 @@
   <script
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqoKvZMX0sWGNCDPWKYyBvLNkkPrV6KvE&region=AR&language=es&callback=initMap&v=weekly"
   async></script>
+  <script>
+    let ubic_dict = "{{ubic_dict|safe}}";
+    ubic_dict = JSON.parse(ubic_dict.replace(/'/gi,"\""));
+    const ubic_len = Object.keys(ubic_dict).length; 
+    let aves_dict = "{{aves_dict|safe}}";
+    aves_dict = JSON.parse(aves_dict.replace(/'/gi,"\""));
+    const aves_len = Object.keys(aves_dict).length;
+    let refug_dict = "{{refug_dict|safe}}";
+    refug_dict = JSON.parse(refug_dict.replace(/'/gi,"\""));
+    const refug_len = Object.keys(refug_dict).length;
+    let telef_dict = "{{telef_dict|safe}}";
+    telef_dict = JSON.parse(telef_dict.replace(/'/gi,"\""));
+    const telef_len = Object.keys(telef_dict).length;
+    let espe_dict = "{{espe_dict|safe}}";
+    espe_dict = JSON.parse(espe_dict.replace(/'/gi,"\""));
+    const espe_len = Object.keys(espe_dict).length;
+    let tiporef_dict = "{{tiporef_dict|safe}}";
+    tiporef_dict = JSON.parse(tiporef_dict.replace(/'/gi,"\""));
+    const tiporef_len = Object.keys(tiporef_dict).length;
+  </script>
+  <script src="{{ url_for('static', filename='search.js')}}"></script>
   <title>Aves y refugios</title>
- 
+
 {% endblock %}  
-       
+   
 {% block content %}
 
-<div class="container-fluid d-flex main ">
+<div class="container-fluid d-flex main">
   <div class="row inside-main  align-items-center">
     <div class="col-3 main-left">
       <div class="card h-100">
@@ -87,7 +108,7 @@
             </div>
             <div class="modal-body">
               <div><span class="negrita">Ubicación: </span><span id="ubicacion-r"></span><span>.</span></div>
-              <div><span class="negrita">Refugio para: </span><span id="tiporef1"></span><span id="tiporef2"></span><span>.</span></div>              
+              <div><span class="negrita">Refugio para: </span><span id="tiporef1"></span><span id="tiporef2"></span><span id="tiporef3"></span><span>.</span></div>              
               <div><span class="negrita">Puede alojar: </span><span id="especies"></span><span>.</span></span></div>          
               <div><span class="negrita">Teléfono de contacto (celular y/o Whatsapp): </span><span id="telefono-r"></span></div>
             </div>
@@ -101,400 +122,9 @@
 
     <div class="col-9 main-right">
       <div id="map" class="w-auto"></div>
-      <div id="ubic_dict" hidden > {{ ubic_dict }}</div>
-      <div id="aves_dict" hidden > {{ aves_dict }}</div>
-      <div id="refug_dict" hidden > {{ refug_dict }}</div>
-      <div id="telef_dict" hidden > {{ telef_dict }}</div>
-      <div id="espe_dict" hidden > {{ espe_dict }}</div>
-      <div id="tiporef_dict" hidden > {{ tiporef_dict }}</div>
+
     </div>
   </div>
 </div>  
-
-<script>
-  
-// Datos que importo de la DB como JSON
-var ubic_dict = document.getElementById("ubic_dict").innerHTML.replace(/'/gi,"\"");
-ubic_dict = JSON.parse(ubic_dict);
-const ubic_len = Object.keys(ubic_dict).length; 
-var aves_dict = document.getElementById("aves_dict").innerHTML.replace(/'/gi,"\"");
-aves_dict = JSON.parse(aves_dict);
-const aves_len = Object.keys(aves_dict).length;
-var refug_dict = document.getElementById("refug_dict").innerHTML.replace(/'/gi,"\"");
-refug_dict = JSON.parse(refug_dict);
-const refug_len = Object.keys(refug_dict).length;
-var espe_dict = document.getElementById("espe_dict").innerHTML.replace(/'/gi,"\"");
-espe_dict = JSON.parse(espe_dict);
-const espe_len = Object.keys(espe_dict).length;
-var telef_dict = document.getElementById("telef_dict").innerHTML.replace(/'/gi,"\"");
-telef_dict = JSON.parse(telef_dict);
-const telef_len = Object.keys(telef_dict).length;
-var tiporef_dict = document.getElementById("tiporef_dict").innerHTML.replace(/'/gi,"\"");
-tiporef_dict = JSON.parse(tiporef_dict);
-const tiporef_len = Object.keys(tiporef_dict).length;
-
-// Crear variables para usar después
-let map, infoWindow;
-var markers = [];
-var especie = [];
-var edad = [];
-var foto = [];
-var direccion, tiporef1, tiporef2;
-var especies = [];
-var InforObj = [];
-var ID = [];
-
-// Crear mapa
-function initMap() {
-    map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: -38.718258, lng: -62.261487 }, // Bahía Blanca
-    zoom: 13,
-    });
-
-    // Generar markers
-    for (let i = 0; i < ubic_len; i++) {
-        let lat = ubic_dict[i].Latitud;
-        let lng = ubic_dict[i].Longitud;
-
-        // Generar ID de cada marker
-        for (let m = 0; m < aves_len; m++) { // Chequea todas las aves posibles para esta ubicación
-            if (ubic_dict[i].Id == aves_dict[m].Id_UBICACIONES) {
-                for (let o = 0; o < espe_len; o ++) { // Chequea todas las especies contra este ave
-                    if (aves_dict[m].Id_ESPECIES == espe_dict[o].Id ) {
-                        n = espe_dict[o].Categoria; // Agrega esta especie al array ID
-                    }
-                }
-            }
-        }
-        for (let m = 0; m < refug_len; m++) {
-            if (ubic_dict[i].Id == refug_dict[m].Id_UBICACIONES) {
-                n = 'refugio';
-            }
-        }
-        ID.push(n);
-
-        // Agregar ID y localización a cada marcador
-        myLocation = new google.maps.LatLng(lat, lng);
-        const marker = new google.maps.Marker({
-            position: myLocation,
-            map,
-            id: ID[i],
-            icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png'
-        });
-        // Almacenar cada marcador en array "markers"
-        markers.push(marker);
-    
-        // Generar infowindow para cada marker de ave
-        for (let j = 0; j < aves_len; j++) {
-            if (ubic_dict[i].Id == aves_dict[j].Id_UBICACIONES) {
-            especie.push(aves_dict[j].Especie);
-            edad.push(aves_dict[j].Edad);
-            img = String(aves_dict[j].Foto.replace(/"/g,''));
-            foto.push(img);
-            direccion = ubic_dict[i].Direccion.split(',');
-            direccion = direccion[0];
-            const info = new google.maps.InfoWindow({
-            content: '<div style=line-height:2;text-align: left><span style="font-size:1.2em;font-weight: bold;">' +
-            especie[j] +
-            '</span><br><class="edad"><span style="text-decoration: underline;">Edad:</span> ' +
-            edad[j] + '<img src="static/upload/' + foto[j] + '"><span style="text-decoration:underline;">Dirección:</span> ' + direccion + '<br><div id="datos_aves"> <a href="">Contacto y más información</a></div></div>',
-            maxWidth: 200,
-            });
-
-            // Modal al hacer click en infowindows de aves
-            google.maps.event.addListener(info, 'domready', function() {
-            document.getElementById("datos_aves").addEventListener("click", function() {
-                var myModal = new bootstrap.Modal(document.getElementById('modal_aves'))
-                myModal.show();
-                event.preventDefault();
-                document.getElementById('especie').innerHTML = aves_dict[j].Especie;
-                document.getElementById('edad').innerHTML = aves_dict[j].Edad;
-                document.getElementById('estsalud').innerHTML = aves_dict[j].EstSalud;
-                document.getElementById('requer').innerHTML = aves_dict[j].Requer;
-                document.getElementById('ubicacion-a').innerHTML = direccion;
-                
-                for (t=0;t <= telef_len;t++) {
-                    if (telef_dict[t].Id == aves_dict[j].Id_TELEFONOS) {
-                        telefono = telef_dict[t].Telefono;
-                        break;
-                    }
-                }; 
-                document.getElementById('telefono').innerHTML = telefono;
-                
-                for (t=0;t < tiporef_len;t++) {  
-                    if (tiporef_dict[t].Id == aves_dict[j].Id_TIPOREFUGIO) {
-                        if (aves_dict[j].Id_TIPOREFUGIO == '1') {
-                            tiporef = 'Hogar (permanente)';
-                        }
-                        else if (aves_dict[j].Id_TIPOREFUGIO == '2') {
-                            tiporef = 'Tránsito (temporal)';
-                        }
-                    }
-                };
-                document.getElementById('tiporef').innerHTML = tiporef;
-                document.getElementById('foto').innerHTML = '<img src="static/upload/' + aves_dict[j].Foto + '">';            
-            });
-            });
-              
-            // Añadir infowindow a cada marker, abrirlo onclick, cerrar infowindow anterior
-            marker.addListener('click', function () { 
-          closeOtherInfo();
-          info.open(marker.get('map'), marker);
-          InforObj[0] = info;
-        });
-            }
-
-        }; // Cierra generar markers de ave
-
-        // Generar infowindow para cada marker de refugio
-        for (let k = 0; k < refug_len; k++) {
-        if (ubic_dict[i].Id == refug_dict[k].Id_UBICACIONES) {
-            if (refug_dict[k].Id_TIPOREFUGIO1 == '1') {
-                tiporef1 = 'Hogar (permanente)';
-            }
-            else if (refug_dict[k].Id_TIPOREFUGIO1 == '2') {
-                tiporef1 = 'Tránsito (temporal)';
-            }
-            if (refug_dict[k].Id_TIPOREFUGIO2 == '1') {
-                tiporef2 = '<br> Hogar (permanente)';
-            }
-            else if (refug_dict[k].Id_TIPOREFUGIO2 == '2') {
-                tiporef2 = '<br> Tránsito (temporal)';
-            }
-            else if (refug_dict[k].Id_TIPOREFUGIO2 == 'NULL') {
-                tiporef2 = '';
-            }
-            direccion = ubic_dict[i].Direccion.split(',');
-            direccion = direccion[0];
-            especies.push(refug_dict[k].Id_ESPECIES1);
-            if (refug_dict[k].Id_ESPECIES2 !== 'NULL'){
-                especies.push(refug_dict[k].Id_ESPECIES2);
-            }       
-            if (refug_dict[k].Id_ESPECIES3 =! 'NULL'){
-                especies.push(refug_dict[k].Id_ESPECIES3);
-            }
-            if (refug_dict[k].Id_ESPECIES4 =! 'NULL'){
-                especies.push(refug_dict[k].Id_ESPECIES4);
-            }
-            for (var n = 0; n < especies.length; n++) {
-                especies[n] = especies[n].replace("paloma","palomas");
-                especies[n] = especies[n].replace("peqsil"," pequeñas aves silvestres");
-                especies[n] = especies[n].replace("medsil"," aves silvestres de tamaño mediano");
-                especies[n] = especies[n].replace("corral"," aves de corral");
-            }  
-        
-            const info2 = new google.maps.InfoWindow({
-            content: '<div style=line-height:2;text-align: left><span style="font-size:1.2em;font-weight: bold;">Refugio para: </span><br>' +
-                tiporef1 + tiporef2 + '<br><span style="text-decoration:underline;">Se reciben:</span> ' + especies +
-                '<br><span style="text-decoration:underline;">Dirección:</span> ' +
-                direccion + '<br><div id="datos_refugios"><a href="">Contacto y más información</a></div></div>'
-            });
-            especies = [];
-
-            // Modal al hacer click en infowindows de refugios
-            google.maps.event.addListener(info2, 'domready', function() {
-            document.getElementById("datos_refugios").addEventListener("click", function() {
-                var myModal = new bootstrap.Modal(document.getElementById('modal_refugios'))
-                myModal.show();
-                event.preventDefault();
-                direccion = ubic_dict[i].Direccion.split(',');
-                direccion = direccion[0];            
-                document.getElementById('ubicacion-r').innerHTML = direccion;
-
-                especies.push(refug_dict[k].Id_ESPECIES1);
-                if (refug_dict[k].Id_ESPECIES2 !== 'NULL'){
-                    especies.push(refug_dict[k].Id_ESPECIES2);
-                }       
-                if (refug_dict[k].Id_ESPECIES3 =! 'NULL'){
-                    especies.push(refug_dict[k].Id_ESPECIES3);
-                }
-                if (refug_dict[k].Id_ESPECIES4 =! 'NULL'){
-                    especies.push(refug_dict[k].Id_ESPECIES4);
-                }
-                for (var n = 0; n < especies.length; n++) {
-                    especies[n] = especies[n].replace("paloma","palomas");
-                    especies[n] = especies[n].replace("peqsil"," pequeñas aves silvestres");
-                    especies[n] = especies[n].replace("medsil"," aves silvestres de tamaño mediano");
-                    especies[n] = especies[n].replace("corral"," aves de corral");
-                }
-                document.getElementById('especies').innerHTML = especies;
-                especies = [];  
-                if (refug_dict[k].Id_TIPOREFUGIO1 == '1') {
-                    tiporef1 = 'Hogar (permanente)';
-                }
-                else if (refug_dict[k].Id_TIPOREFUGIO1 == '2') {
-                    tiporef1 = 'Tránsito (temporal)';
-                }
-                if (refug_dict[k].Id_TIPOREFUGIO2 == '1') {
-                    tiporef2 = '<br> Hogar (permanente)';
-                }
-                else if (refug_dict[k].Id_TIPOREFUGIO2 == '2') {
-                    tiporef2 = '<br> Tránsito (temporal)';
-                }
-                else if (refug_dict[k].Id_TIPOREFUGIO2 == 'NULL') {
-                    tiporef2 = '';
-                }
-                document.getElementById('tiporef1').innerHTML = tiporef1;                
-                document.getElementById('tiporef2').innerHTML = tiporef2;
-
-                for (t=0;t <= telef_len;t++) {
-                    if (telef_dict[t].Id == refug_dict[k].Id_TELEFONOS) {
-                        telefono = telef_dict[t].Telefono;
-                        break;
-                    }
-                };
-                console.log(telefono); 
-                document.getElementById('telefono-r').innerHTML = telefono;
-             });
-            });
-
-
-            // Añadir infowindow a cada marker, abrirlo onclick, cerrar infowindow anterior
-            marker.addListener('click', function () { 
-                closeOtherInfo();
-                info2.open(marker.get('map'), marker);
-                InforObj[0] = info2;
-            });
-        }
-        }    
-    };
-
-    //Función para cerrar infowindow anterior
-    function closeOtherInfo() { 
-        if (InforObj.length > 0) {
-            InforObj[0].set("marker", null);
-            InforObj[0].close();
-            InforObj.length = 0;
-        }
-   }
-
- // Geolocalización
- infoWindow = new google.maps.InfoWindow(); 
-  const locationButton = document.createElement("button");
-
-  locationButton.textContent = "Ir a mi ubicación";
-  locationButton.classList.add("custom-map-control-button");
-  map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
-  locationButton.addEventListener("click", () => {
-    // Try HTML5 geolocation.
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const pos = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-
-          infoWindow.setPosition(pos);
-          infoWindow.setContent("Estás aquí.");
-          infoWindow.open(map);
-          map.setCenter(pos);
-        },
-        () => {
-          handleLocationError(true, infoWindow, map.getCenter());
-        }
-      );
-    } else {
-      // Mensajes de error de geolocalización
-      handleLocationError(false, infoWindow, map.getCenter());
-    }
-  });
-
-  function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-  infoWindow.setPosition(pos);
-  infoWindow.setContent(
-    browserHasGeolocation
-      ? "Error: El servicio de geolocalización falló."
-      : "Error: Tu navegador no soporta la geolocalización."
-  );
-  infoWindow.open(map);
-  }
-
-  //Ocultar/mostrar markers
-  const checkboxes = document.getElementsByClassName('form-check-input');
-  mar_len = markers.length;
-  for (var i = 0; i < checkboxes.length; i++) {
-    checkboxes[i].addEventListener('change', function() {
-      //Mostrar/ocultar refugios
-      if (document.getElementById("idRefugios").checked) {
-        for (i = 0; i < mar_len; i++) {
-          if (markers[i].id == 'refugio'){
-            markers[i].setVisible(true);
-          }
-        }
-      }  
-      else {
-        for (i = 0; i < mar_len; i++) {
-          if (markers[i].id == 'refugio'){
-            markers[i].setVisible(false);
-          }
-        }
-      }
-      //Mostrar/ocultar palomas
-      if (document.getElementById("idPalomas").checked) {
-        for (i = 0; i < mar_len; i++) {
-          if (markers[i].id == 'paloma'){
-            markers[i].setVisible(true);
-          }
-        }
-      }  
-      else {
-        for (i = 0; i < mar_len; i++) {
-          if (markers[i].id == 'paloma'){
-            markers[i].setVisible(false);
-          }
-        }
-      }
-      //Mostrar/ocultar pequeñas aves silvestres
-      if (document.getElementById("idPeqsil").checked) {
-        for (i = 0; i < mar_len; i++) {
-          if (markers[i].id == 'peqsil'){
-            markers[i].setVisible(true);
-          }
-        }
-      }  
-      else {
-        for (i = 0; i < mar_len; i++) {
-          if (markers[i].id == 'peqsil'){
-            markers[i].setVisible(false);
-          }
-        }
-      }
-      //Mostrar/ocultar aves silvestres medianas
-      if (document.getElementById("idMedsil").checked) {
-        for (i = 0; i < mar_len; i++) {
-          if (markers[i].id == 'medsil'){
-            markers[i].setVisible(true);
-          }
-        }
-      }  
-      else {
-        for (i = 0; i < mar_len; i++) {
-          if (markers[i].id == 'medsil'){
-            markers[i].setVisible(false);
-          }
-        }
-      }  
-      //Mostrar/ocultar aves de corral
-      if (document.getElementById("idCorral").checked) {
-        for (i = 0; i < mar_len; i++) {
-          if (markers[i].id == 'corral'){
-            markers[i].setVisible(true);
-          }
-        }
-      }  
-      else {
-        for (i = 0; i < mar_len; i++) {
-          if (markers[i].id == 'corral'){
-            markers[i].setVisible(false);
-          }
-        }
-      }        
-  })   
- }
-
-}  //Cierra initMap 
-
-</script>
 
 {% endblock %}

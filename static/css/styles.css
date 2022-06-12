@@ -53,3 +53,7 @@ ul {
 .negrita {
   font-weight: bold;
 }
+
+.modal-title, .modal-body {
+  color: black;
+}

@@ -9,7 +9,7 @@
 {% block content %}
 <div class="container-fluid d-flex" style="margin:none;">
   <div class="bg-image" 
-  style="background-image: url('static/css/aves-1.jpg');
+  style="background-image: url('static/images/aves-1.jpg');
   height: 100vh; background-size: cover; width: 100%; position:absolute">
   </div>
   <div class="row">
@@ -45,9 +45,6 @@
                         var near_place = autocomplete.getPlace();
                         document.getElementById('loc_lat').value = near_place.geometry.location.lat();
                         document.getElementById('loc_long').value = near_place.geometry.location.lng();
-                                
-                        document.getElementById('latitude_view').innerHTML = near_place.geometry.location.lat();
-                        document.getElementById('longitude_view').innerHTML = near_place.geometry.location.lng();
                     });
                 });
                 </script>

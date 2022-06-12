@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 import sqlite3, os, helpers
 
 from flask import Flask, render_template, url_for, redirect, request, flash, g, abort, current_app, jsonify
@@ -10,7 +11,6 @@ from forms import LoginForm, SignupForm, BirdForm, PlaceForm
 from urllib.parse import urlparse, urljoin
 from flask_uploads import configure_uploads, IMAGES, UploadSet
 from sqlitedict import SqliteDict
-
 
 app = Flask(__name__)
 
@@ -94,7 +94,7 @@ def index():
         return render_template('index.html', nombre=nombre)
     return render_template('index.html')
  
-@app.route('/search', methods=['GET'])
+@app.route('/search', methods=['GET','POST'])
 def search():
     nombre = 'Mi cuenta'
     if current_user.is_authenticated:
@@ -114,11 +114,26 @@ def search():
     telef_dict = helpers.make_dict(telefonos)
     espe_dict = helpers.make_dict(especies)
     tiporef_dict = helpers.make_dict(tiporef)
-   
+
     return render_template('search.html', ubic_dict=ubic_dict,
      aves_dict=aves_dict, refug_dict=refug_dict, telef_dict=telef_dict,
      espe_dict=espe_dict, tiporef_dict=tiporef_dict, nombre=nombre)
     
+@app.route('/getdata/<index_no>', methods=['GET','POST'])
+def data_get(index_no):
+    
+    cur = get_db().cursor()
+    ubicaciones = cur.execute("SELECT Id, Latitud, Longitud, Direccion FROM UBICACIONES").fetchall()
+    get_db().commit()
+    ubic_dict = helpers.make_dict(ubicaciones)
+
+    if request.method == 'POST': # POST request
+        print(request.get_text())  # parse as text
+        return 'OK', 200
+
+    else: # GET request
+        return index_no, ubic_dict[int(index_no)]
+
 @app.route('/addbird', methods=['GET', 'POST'])
 @login_required
 def addbird():
@@ -153,7 +168,6 @@ def addbird():
 
         lista1 = curs.execute("SELECT Categoria FROM ESPECIES").fetchall()
         idEspecies = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = (?)", (especie,)).fetchone()
-        print(idEspecies)
 
         lista2 = curs.execute("SELECT Telefono FROM TELEFONOS").fetchall()
         idTelefonos = 'none'
@@ -227,11 +241,10 @@ def addplace():
         tipoRef2 = 'NULL'
         if lugar[0] == 'hogar':
             tipoRef1 = 1 #Si tildó hogar, eso va a la col 1 de la DB
-            if len(lugar) > 1:
-                tipoRef2 = 2 #Si además de hogar tildó tránsito, eso además va a la col 2
         elif lugar[0] == 'transito':
             tipoRef1 = 2 #Si sólo tildó tránsito, eso va a la col 1
-
+            if len(lugar) > 1:
+                tipoRef2 = 1 #Si tildó ambas, hogar además va en la col 2
         lista2 = curs.execute("SELECT Telefono FROM TELEFONOS").fetchall()
         idTelefonos = 'none'
         for i in lista2:
@@ -247,6 +260,7 @@ def addplace():
         especie2 = 'NULL'
         especie3 = 'NULL'
         especie4 = 'NULL'
+
         if especie[0] == 'paloma':
             especie1 = 'paloma' #Si tildó paloma, eso va a la col 1 de la DB
             if len(especie) > 1:
@@ -371,35 +385,69 @@ def profile():
     espe_dict = helpers.make_dict(especies)
     tiporef_dict = helpers.make_dict(tiporef)
 
-
+    # String de tipos de especies que se aceptan en cada refugio, lista para imprimir en profile.html
     especies_ref = []
-    for i in range(len(refug_dict)):
-        dict = refug_dict[str(i)]
-        if dict["Id_ESPECIES1"] != 'NULL':
-            especies_ref.append(dict['Id_ESPECIES1'])
-        if (dict["Id_ESPECIES2"] != 'NULL'):
-            especies_ref.append(dict['Id_ESPECIES2'])
-        if (dict["Id_ESPECIES3"] != 'NULL'): 
-            especies_ref.append(dict['Id_ESPECIES3'])
-        if (dict["Id_ESPECIES4"] != 'NULL'):
-            especies_ref.append(dict['Id_ESPECIES4'])
+    if refug_dict:              
+        for i in range(len(refug_dict)):
+            if refug_dict[str(i)]["Id_ESPECIES1"] != 'NULL':
+                refug_dict[str(i)]["Id_ESPECIES1"] = "palomas"
+            if refug_dict[str(i)]["Id_ESPECIES2"] != 'NULL':
+                refug_dict[str(i)]["Id_ESPECIES2"] = "pequeñas aves silvestres"
+            if refug_dict[str(i)]["Id_ESPECIES3"] != 'NULL':
+                refug_dict[str(i)]["Id_ESPECIES3"] = "aves silvestres medianas"
+            if refug_dict[str(i)]["Id_ESPECIES4"] != 'NULL':
+                refug_dict[str(i)]["Id_ESPECIES4"] = "aves de granja"
 
-    for i in range(len(especies_ref)):
-        if (especies_ref[i] == 'paloma'):
-            especies_ref[i] = 'palomas'
-        if (especies_ref[i] == 'peqsil'):
-            especies_ref[i] = 'pequeñas aves silvestres'
-        if (especies_ref[i] == 'medsil'):
-            especies_ref[i] = 'aves silvestres medianas'
-        if (especies_ref[i] == 'corral'):
-            especies_ref[i] = 'aves de granja'
+    # String de tipo de refugio que se necesita cada ave, lista para imprimir en profile.html
+    refugios_ave = []
+    if aves_dict:
+        for i in range(len(aves_dict)):
+            dict = aves_dict[str(i)]
+            refugios_ave.append(dict['Id_TIPOREFUGIO'])
 
-    especies_ref                  
-    print(especies_ref)               
+        for i in range(len(refugios_ave)):
+            if (refugios_ave[i] == '1'):
+                refugios_ave[i] = 'hogar'
+            else:
+                refugios_ave[i] = 'tránsito'
+
     return render_template('profile.html', ubic_dict=ubic_dict,
      aves_dict=aves_dict, refug_dict=refug_dict, telef_dict=telef_dict,
-     espe_dict=espe_dict, tiporef_dict=tiporef_dict, especies_ref=especies_ref, nombre=nombre)
+     espe_dict=espe_dict, tiporef_dict=tiporef_dict, especies_ref=especies_ref,
+     refugios_ave=refugios_ave, nombre=nombre)
 
+@app.route('/profile/deleteRef', methods=['POST'])
+@login_required
+def delete_refugio():
+    # Delete refugio entry from DB
+    delete_id_refugio = request.form.get("delete_id_refugio")
+    
+    if delete_id_refugio:
+        connection = sqlite3.connect("proyecto.db")
+        curs = connection.cursor()
+        curs.execute("DELETE FROM UBICACIONES WHERE Id IN (SELECT Id_UBICACIONES FROM REFUGIOS WHERE Id = (?))", (delete_id_refugio,))
+        curs.execute("DELETE FROM REFUGIOS WHERE Id = (?)", (delete_id_refugio,))
 
+        connection.commit()
+    print(delete_id_refugio)    
+    flash('Registro de refugio eliminado.')
+    return redirect(url_for('profile'))
+
+@app.route('/profile/deleteAve', methods=['POST'])
+@login_required
+def delete_ave():
+    # Delete ave entry from DB
+    delete_id_ave = request.form.get("delete_id_ave")
+    
+    if delete_id_ave:
+        connection = sqlite3.connect("proyecto.db")
+        curs = connection.cursor()
+        curs.execute("DELETE FROM UBICACIONES WHERE Id IN (SELECT Id_UBICACIONES FROM AVES WHERE Id = (?))", (delete_id_ave,))
+        curs.execute("DELETE FROM AVES WHERE Id = (?)", (delete_id_ave,))
+
+        connection.commit()
+    flash('Registro de ave eliminado.')
+    return redirect(url_for('profile'))
+    
 if __name__ == "__main__":
     app.run(ssl_context='adhoc')
