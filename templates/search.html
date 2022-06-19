@@ -1,5 +1,12 @@
 {% extends "layout.html" %}
 
+{% block navbar %}
+<li><a href="{{ url_for('index') }}" class="nav-link px-2 text-secondary">Inicio</a></li>
+<li><a href="{{ url_for('addbird') }}" class="nav-link px-2 text-white">Reportar un ave</a></li>
+<li><a href="{{ url_for('addplace') }}" class="nav-link px-2 text-white">Ofrecer un refugio</a></li>            
+<li><a href="{{ url_for('search') }}" class="nav-link px-2 text-white">Buscar aves o refugios</a></li>
+{% endblock %}
+
 {% block head %}
   <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
   <script

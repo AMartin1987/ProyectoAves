@@ -1,17 +1,14 @@
 {% extends "layout.html" %}
 
+{% block head %}
+<title>Mi cuenta</title>
+{% endblock %}  
+
 {% block navbar %}
 <li><a href="{{ url_for('index') }}" class="nav-link px-2 text-secondary">Inicio</a></li>
 <li><a href="{{ url_for('addbird') }}" class="nav-link px-2 text-white">Reportar un ave</a></li>
 <li><a href="{{ url_for('addplace') }}" class="nav-link px-2 text-white">Ofrecer un refugio</a></li>            
 <li><a href="{{ url_for('search') }}" class="nav-link px-2 text-white">Buscar aves o refugios</a></li>
-{% endblock %}
-
-{% block head %}
-  <title>Reportar un ave</title>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyAqoKvZMX0sWGNCDPWKYyBvLNkkPrV6KvE"></script>
-
 {% endblock %}
 
 {% block content %}
@@ -45,14 +42,13 @@
                 {{ form.salud.label }}
                 {{ form.salud }}
               </div>
-              <div class="mb-3">
-                {{ form.localiz.label }}
-                {{ form.localiz }}
-              <div class="form-group">
-                {{ form.loc_lat }}
-                {{ form.loc_long }}
-              </div>
-
+                <div class="mb-3">
+                  {{ form.localiz.label }}
+                  {{ form.localiz }}
+                <div class="form-group">
+                  {{ form.loc_lat }}
+                  {{ form.loc_long }}
+                </div>
               </div>
 
               <script>

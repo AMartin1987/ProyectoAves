@@ -4,6 +4,13 @@
 <title>Mi cuenta</title>
 {% endblock %}  
 
+{% block navbar %}
+<li><a href="{{ url_for('index') }}" class="nav-link px-2 text-secondary">Inicio</a></li>
+<li><a href="{{ url_for('addbird') }}" class="nav-link px-2 text-white">Reportar un ave</a></li>
+<li><a href="{{ url_for('addplace') }}" class="nav-link px-2 text-white">Ofrecer un refugio</a></li>            
+<li><a href="{{ url_for('search') }}" class="nav-link px-2 text-white">Buscar aves o refugios</a></li>
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid d-flex"></div>
     <div class="row">
@@ -13,18 +20,39 @@
                 <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
                     {% set i = 0 %}
                     <div class="card-header">En busca de {{ refugios_ave[i] }}</div>
-                    {% set i = i + 1 %}
+                    {% set i = i + 1 %} 
                     <div class="card-body">
                     <h5 class="card-title">{{ aves_dict[ave].Especie }}</h5>
                     {% set foto = 'static/upload/' + aves_dict[ave].Foto  %}
                     <img src= {{ foto }} class="card-img-top" alt="..." style="max-width: 12rem; border-radius: 8px; height: 8rem;object-fit:cover;">
-                    <a href="#" class="btn btn-primary" id="editar_ave">Editar</a><span></span>
-                    <a href="#" class="btn btn-primary" id="buttonDelAve">Eliminar</a>  
+                    <a href="{{ url_for('editbird') }}" class="btn btn-primary editar_ave">Editar</a><span></span>
+                    <a href="#" class="btn btn-primary buttonDelAve">Eliminar</a>  
                     </div>
+                </div>
+                <!-- Modal AVES-->
+                <div class="modal fade" id="modalDeleteAve" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel"><p>Eliminar ave</p></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                        <div>¿Desea eliminar este ave?</div>
+                        </div>
+                        <div class="modal-footer">
+                        <form action="/profile/deleteAve" method="post">
+                            {% set delete_id_ave = aves_dict[ave].Id %}
+                            <input type="submit" class="btn btn-primary" value="Eliminar">
+                            <input name="delete_id_ave" type="hidden" value="{{ delete_id_ave }}">
+                        </form>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        </div>
+                    </div>
+                    </div>      
                 </div>
                 {% endfor %}
                 {% for refugio in refug_dict %}
-                
                 <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
                     {% for ubic in ubic_dict %}
                         {% if ubic_dict[ubic].Id == refug_dict[refugio].Id_UBICACIONES %}
@@ -36,23 +64,23 @@
                     {% endfor %}
  
                     <div class="card-body">
-                    <h5 class="card-title">Refugio para
-                        {% set especies = [refug_dict[refugio].Id_ESPECIES1, refug_dict[refugio].Id_ESPECIES2,
-                            refug_dict[refugio].Id_ESPECIES3, refug_dict[refugio].Id_ESPECIES4] %}
-                        {% for especie in especies [:-1] %}
-                            {% if especie != 'NULL' %}
-                            {{  especie }},
-                            {% endif %}  
-                        {% endfor %}
-                        {% if especies[-1] != 'NULL' %}
-                            y {{ especies[-1] }}.
-                        {% else %}
-                            y {{ especies[-3] }}.    
-                        {% endif %}
-                    </h5>
+                        <h5 class="card-title">Refugio para
+                            {% set especies = [refug_dict[refugio].Id_ESPECIES1, refug_dict[refugio].Id_ESPECIES2,
+                                refug_dict[refugio].Id_ESPECIES3, refug_dict[refugio].Id_ESPECIES4] %}
+                            {% for especie in especies [:-1] %}
+                                {% if especie != 'NULL' %}
+                                {{  especie }},
+                                {% endif %}  
+                            {% endfor %}
+                            {% if especies[-1] != 'NULL' %}
+                                y {{ especies[-1] }}.
+                            {% else %}
+                                y {{ especies[-3] }}.    
+                            {% endif %}
+                        </h5>
                     
                     <a href="#" class="btn btn-primary">Editar</a>
-                    <a href="#" class="btn btn-primary" id="buttonDelRefugio">Eliminar</a>  
+                    <a href="#" class="btn btn-primary buttonDelRefugio">Eliminar</a>  
 
                     <!-- Modal REFUGIOS-->
                     <div class="modal fade" id="modalDeleteRef" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -78,7 +106,7 @@
                         </div>      
                     </div>
                     </div>
-                    </div>
+                </div>
                 </div>
                 {% endfor %}
             </div>
@@ -87,10 +115,21 @@
 </div>
 
 <script>
-document.getElementById("buttonDelRefugio").addEventListener("click", function() {
+document.querySelectorAll('.buttonDelRefugio').forEach(item => {
+  item.addEventListener('click', function() {
     var myModal = new bootstrap.Modal(document.getElementById('modalDeleteRef'))
     myModal.show();
     event.preventDefault();
-});    
+    console.log("jjj");
+});
+})
+document.querySelectorAll('.buttonDelAve').forEach(item => {
+  item.addEventListener('click', function() {
+    var myModal = new bootstrap.Modal(document.getElementById('modalDeleteAve'))
+    myModal.show();
+    event.preventDefault();
+    console.log("jjj");
+});
+})
 </script>
 {% endblock %}  

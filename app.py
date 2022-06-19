@@ -10,10 +10,8 @@ from models import User
 from forms import LoginForm, SignupForm, BirdForm, PlaceForm
 from urllib.parse import urlparse, urljoin
 from flask_uploads import configure_uploads, IMAGES, UploadSet
-from sqlitedict import SqliteDict
 
 app = Flask(__name__)
-
 app.debug=True
 
 # Google Maps JS API Key
@@ -448,6 +446,38 @@ def delete_ave():
         connection.commit()
     flash('Registro de ave eliminado.')
     return redirect(url_for('profile'))
+
+@app.route('/editbird', methods=['GET', 'POST'])
+@login_required
+def editbird():
+    form = BirdForm()
+    nombre = current_user.name
+    if form.validate_on_submit():
+        #Get user Id
+        user_id = current_user.get_id()
+        
+        #Image upload
+        file = form.imagen.data
+        file_ext = os.path.splitext(file.filename)[1]
+        if file_ext not in current_app.config['UPLOAD_EXTENSIONS']:
+            raise BadRequest('Por favor suba un archivo de imagen válido (JPG, GIF o PNG). Tamaño máximo: 4 MB.')
+        file = photos.save(form.imagen.data)
+        
+        #WTForms
+        especie = form.especie.data
+        espEsp = form.espEsp.data
+        edad = form.edad.data
+        salud = form.salud.data
+        requer = form.requer.data
+        contacto = form.contacto.data
+        localiz = form.localiz.data
+        loc_lat = form.loc_lat.data
+        loc_long = form.loc_long.data
+        lugar = form.lugar.data
+
+        #Registering in database
+        connection = sqlite3.connect("proyecto.db")
+        curs = connection.cursor()    
     
 if __name__ == "__main__":
     app.run(ssl_context='adhoc')
