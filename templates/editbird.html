@@ -17,38 +17,22 @@
   style="background-image: url('static/aves-1.jpg');
       height: 100vh; background-size: cover; width: 100%; position:absolute">
   </div>
-  <div class="row align-items-center">
-    <div class="col-5">
-      <div class="card">
-        <div class="card-body">
-          <form method='POST' action="" enctype="multipart/form-data">
-          {{ form.hidden_tag() }}
-            <fieldset class="form-group"> 
-            <h1>Registra un ave caída</h1>
-            <div class="form-group">
-              <div class="mb-3">
-                {{ form.especie.label }}
-                {{ form.especie }}
-              </div>
-              <div class="mb-3">
-                {{ form.espEsp.label }}
-                {{ form.espEsp }}
-              </div>
-              <div class="mb-3">
-                {{ form.edad.label }}
-                {{ form.edad }}
-              </div>
-              <div class="mb-3">
-                {{ form.salud.label }}
-                {{ form.salud }}
-              </div>
-                <div class="mb-3">
-                  {{ form.localiz.label }}
-                  {{ form.localiz }}
-                <div class="form-group">
-                  {{ form.loc_lat }}
-                  {{ form.loc_long }}
-                </div>
+  <div class="container-fluid d-flex"></div>
+  <div class="row">
+      <div class="col-sm-12">
+          <div class="card-group">
+              {% for ave in aves_dict %}
+              <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+                  {% set i = 0 %}
+                  <div class="card-header">En busca de {{ refugios_ave[i] }}</div>
+                  {% set i = i + 1 %} 
+                  <div class="card-body">
+                  <h5 class="card-title">{{ aves_dict[ave].Especie }}</h5>
+                  {% set foto = 'static/upload/' + aves_dict[ave].Foto  %}
+                  <img src= {{ foto }} class="card-img-top" alt="..." style="max-width: 12rem; border-radius: 8px; height: 8rem;object-fit:cover;">
+                  <a href="{{ url_for('editbird') }}" class="btn btn-primary editar_ave">Editar</a><span></span>
+                  <a href="#" class="btn btn-primary buttonDelAve">Eliminar</a>  
+                  </div>
               </div>
 
               <script>

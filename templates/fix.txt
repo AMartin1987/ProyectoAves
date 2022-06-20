@@ -49,3 +49,18 @@ Muchas gracias por utilizar el servicio web de turnos.
 Uso de cajero automático en el exterior: usd 4.84
 
 14+iva hasta 1000 usd por ayuda familiar
+---------------
+@app.route('/getdata/<index_no>', methods=['GET','POST'])
+def data_get(index_no):
+    
+    cur = get_db().cursor()
+    ubicaciones = cur.execute("SELECT Id, Latitud, Longitud, Direccion FROM UBICACIONES").fetchall()
+    get_db().commit()
+    ubic_dict = helpers.make_dict(ubicaciones)
+
+    if request.method == 'POST': # POST request
+        print(request.get_text())  # parse as text
+        return 'OK', 200
+
+    else: # GET request
+        return index_no, ubic_dict[int(index_no)]

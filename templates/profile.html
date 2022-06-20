@@ -65,8 +65,7 @@
  
                     <div class="card-body">
                         <h5 class="card-title">Refugio para
-                            {% set especies = [refug_dict[refugio].Id_ESPECIES1, refug_dict[refugio].Id_ESPECIES2,
-                                refug_dict[refugio].Id_ESPECIES3, refug_dict[refugio].Id_ESPECIES4] %}
+                            {% set especies = especies_ref %}
                             {% for especie in especies [:-1] %}
                                 {% if especie != 'NULL' %}
                                 {{  especie }},

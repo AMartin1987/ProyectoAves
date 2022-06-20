@@ -117,21 +117,6 @@ def search():
      aves_dict=aves_dict, refug_dict=refug_dict, telef_dict=telef_dict,
      espe_dict=espe_dict, tiporef_dict=tiporef_dict, nombre=nombre)
     
-@app.route('/getdata/<index_no>', methods=['GET','POST'])
-def data_get(index_no):
-    
-    cur = get_db().cursor()
-    ubicaciones = cur.execute("SELECT Id, Latitud, Longitud, Direccion FROM UBICACIONES").fetchall()
-    get_db().commit()
-    ubic_dict = helpers.make_dict(ubicaciones)
-
-    if request.method == 'POST': # POST request
-        print(request.get_text())  # parse as text
-        return 'OK', 200
-
-    else: # GET request
-        return index_no, ubic_dict[int(index_no)]
-
 @app.route('/addbird', methods=['GET', 'POST'])
 @login_required
 def addbird():
@@ -277,13 +262,13 @@ def addplace():
                             especie3 = 'corral' #Si además de paloma y medsil tildó corral, este va a la col 3
                 elif especie[1] == 'corral':
                     especie2 = 'corral' #Si además de paloma tildó corral, eso además va a la col 2
-        elif lugar[0] == 'peqsil':
+        elif especie[0] == 'peqsil':
             especie1 = 'peqsil' #Si sólo tildó peqsil, eso va a la col 1
-        elif lugar[0] == 'medsil':
+        elif especie[0] == 'medsil':
             especie1 = 'medsil' #Si sólo tildó medsil, eso va a la col 1
-        elif lugar[0] == 'corral':
+        elif especie[0] == 'corral':
             especie1 = 'corral' #Si sólo tildó corral, eso va a la col 1                     
-
+        print(especie1)
         curs.execute(
             "INSERT INTO REFUGIOS (Id_USUARIOS, Id_UBICACIONES, Id_ESPECIES1, Id_ESPECIES2, Id_ESPECIES3, Id_ESPECIES4, Id_TELEFONOS, Id_TIPOREFUGIO1, Id_TIPOREFUGIO2) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (
             user_id, idUbicaciones[0], especie1, especie2, especie3, especie4, idTelefonos[0], tipoRef1, tipoRef2))
@@ -384,18 +369,33 @@ def profile():
     tiporef_dict = helpers.make_dict(tiporef)
 
     # String de tipos de especies que se aceptan en cada refugio, lista para imprimir en profile.html
-    especies_ref = []
+    
+    def translate(esp):
+        if esp == 'paloma':
+            esp = 'palomas'
+        elif esp == 'peqsil':
+            esp = 'pequeñas aves silvestres'
+        elif esp == 'medsil':
+            esp = 'aves silvestres de tamaño medio'
+        else:
+            esp = 'aves de corral'
+        return esp    
+    x = 'medsil'
+    x = translate(x)
+    print(x)
+    i = 0
     if refug_dict:              
         for i in range(len(refug_dict)):
             if refug_dict[str(i)]["Id_ESPECIES1"] != 'NULL':
-                refug_dict[str(i)]["Id_ESPECIES1"] = "palomas"
+                refug_dict[str(i)]["Id_ESPECIES1"] = translate(refug_dict[str(i)]["Id_ESPECIES1"])
             if refug_dict[str(i)]["Id_ESPECIES2"] != 'NULL':
-                refug_dict[str(i)]["Id_ESPECIES2"] = "pequeñas aves silvestres"
+                refug_dict[str(i)]["Id_ESPECIES1"] =  translate(refug_dict[str(i)]["Id_ESPECIES2"])
             if refug_dict[str(i)]["Id_ESPECIES3"] != 'NULL':
-                refug_dict[str(i)]["Id_ESPECIES3"] = "aves silvestres medianas"
+                translate(refug_dict[str(i)]["Id_ESPECIES3"])
             if refug_dict[str(i)]["Id_ESPECIES4"] != 'NULL':
-                refug_dict[str(i)]["Id_ESPECIES4"] = "aves de granja"
-
+                translate(refug_dict[str(i)]["Id_ESPECIES4"])
+        
+    print(refug_dict)
     # String de tipo de refugio que se necesita cada ave, lista para imprimir en profile.html
     refugios_ave = []
     if aves_dict:
@@ -411,8 +411,8 @@ def profile():
 
     return render_template('profile.html', ubic_dict=ubic_dict,
      aves_dict=aves_dict, refug_dict=refug_dict, telef_dict=telef_dict,
-     espe_dict=espe_dict, tiporef_dict=tiporef_dict, especies_ref=especies_ref,
-     refugios_ave=refugios_ave, nombre=nombre)
+     espe_dict=espe_dict, tiporef_dict=tiporef_dict, refugios_ave=refugios_ave,
+    nombre=nombre)
 
 @app.route('/profile/deleteRef', methods=['POST'])
 @login_required
@@ -456,28 +456,13 @@ def editbird():
         #Get user Id
         user_id = current_user.get_id()
         
-        #Image upload
-        file = form.imagen.data
-        file_ext = os.path.splitext(file.filename)[1]
-        if file_ext not in current_app.config['UPLOAD_EXTENSIONS']:
-            raise BadRequest('Por favor suba un archivo de imagen válido (JPG, GIF o PNG). Tamaño máximo: 4 MB.')
-        file = photos.save(form.imagen.data)
-        
-        #WTForms
-        especie = form.especie.data
-        espEsp = form.espEsp.data
-        edad = form.edad.data
-        salud = form.salud.data
-        requer = form.requer.data
-        contacto = form.contacto.data
-        localiz = form.localiz.data
-        loc_lat = form.loc_lat.data
-        loc_long = form.loc_long.data
-        lugar = form.lugar.data
+        #Display info about this bird
+
 
         #Registering in database
         connection = sqlite3.connect("proyecto.db")
         curs = connection.cursor()    
     
+    return render_template('editbird.html', form=form, nombre=nombre)
 if __name__ == "__main__":
     app.run(ssl_context='adhoc')
