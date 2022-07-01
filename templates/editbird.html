@@ -2,6 +2,58 @@
 
 {% block head %}
 <title>Mi cuenta</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyAqoKvZMX0sWGNCDPWKYyBvLNkkPrV6KvE"></script>
+<script>
+$(document).ready(function(){
+
+  var replaced;
+  $(document).on("click", "#ubicacion", function() {
+    // Save what's being replaced
+    replaced = $(this).replaceWith('<td><form><input type="text" id="ubicacion"></form></td>');
+    $("#ubicacion").focus()
+    console.log('replacing');
+
+  /*Google Places Autocomplete*/
+  var searchInput = 'ubicacion';
+
+  var autocomplete;
+  autocomplete = new google.maps.places.Autocomplete((document.getElementById(searchInput)), {
+    types: ['geocode'],
+  });
+    
+  google.maps.event.addListener(autocomplete, 'place_changed', function () {
+      var near_place = autocomplete.getPlace();
+      document.getElementById('loc_lat').value = near_place.geometry.location.lat();
+      document.getElementById('loc_long').value = near_place.geometry.location.lng();
+  });
+
+  });
+ 
+  $(document).on("click", "#telef", function() {
+    // Restore it
+    $("#ubicacion").replaceWith(replaced);
+    console.log('restoring')
+  });
+  
+  /*Send new values to update DB*/      
+  $("#update").click(function(){
+    var especie = $("#especie").html()
+    var edad = $("#edad").html()
+    var ubicacion = $("#ubicacion").html()
+    $.post("/editbird/updatebird",
+    {
+    especie:especie,
+    edad:edad,
+    estsalud:estsalud,
+    requer:requer,
+    tiporef:tiporef,
+    ubicacion:ubicacion,
+    telef:telef
+    },
+  )});
+});
+</script>
 {% endblock %}  
 
 {% block navbar %}
@@ -12,77 +64,74 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid d-flex" style="margin:none;">
-  <div class="bg-image" 
-  style="background-image: url('static/aves-1.jpg');
-      height: 100vh; background-size: cover; width: 100%; position:absolute">
-  </div>
-  <div class="container-fluid d-flex"></div>
+<div class="container">
   <div class="row">
-      <div class="col-sm-12">
-          <div class="card-group">
-              {% for ave in aves_dict %}
-              <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
-                  {% set i = 0 %}
-                  <div class="card-header">En busca de {{ refugios_ave[i] }}</div>
-                  {% set i = i + 1 %} 
-                  <div class="card-body">
-                  <h5 class="card-title">{{ aves_dict[ave].Especie }}</h5>
-                  {% set foto = 'static/upload/' + aves_dict[ave].Foto  %}
-                  <img src= {{ foto }} class="card-img-top" alt="..." style="max-width: 12rem; border-radius: 8px; height: 8rem;object-fit:cover;">
-                  <a href="{{ url_for('editbird') }}" class="btn btn-primary editar_ave">Editar</a><span></span>
-                  <a href="#" class="btn btn-primary buttonDelAve">Eliminar</a>  
-                  </div>
-              </div>
-
-              <script>
-              var searchInput = 'localiz';
-
-              $(document).ready(function () {
-                  var autocomplete;
-                  autocomplete = new google.maps.places.Autocomplete((document.getElementById(searchInput)), {
-                      types: ['geocode'],
-                  });
-                      
-                  google.maps.event.addListener(autocomplete, 'place_changed', function () {
-                      var near_place = autocomplete.getPlace();
-                      document.getElementById('loc_lat').value = near_place.geometry.location.lat();
-                      document.getElementById('loc_long').value = near_place.geometry.location.lng();
-                              
-                      document.getElementById('latitude_view').innerHTML = near_place.geometry.location.lat();
-                      document.getElementById('longitude_view').innerHTML = near_place.geometry.location.lng();
-                  });
-              });
-              </script>
-              <div class="mb-3">
-                {{ form.lugar.label }} <br>
-                {% for subfield in form.lugar %}
-                  {{ subfield }}
-                  {{ subfield.label }}
+    <div class="col-8">
+        {% for ave in aves_dict %}
+        <div class="table-content">
+          <table class="table table-borded table-striped" style="table-layout:fixed; overflow:auto;" id="table-list">
+            <thead>
+              <tr>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Especie:</td>
+                <td class="edit" id="especie" contenteditable="true">{{aves_dict[ave].Especie[0]|upper}}{{aves_dict[ave].Especie[1:]}}</td>
+              </tr>
+              <tr>
+                <td>Edad:</td>
+                <td class="edit" id="edad" contenteditable="true">{{aves_dict[ave].Edad[0]|upper}}{{aves_dict[ave].Edad[1:]}}</td>
+              </tr>
+              <tr>
+                <td>Estado de salud:</td>
+                <td class="edit" id="estsalud" contenteditable="true">{{aves_dict[ave].EstSalud[0]|upper}}{{aves_dict[ave].EstSalud[1:]}}</td>
+              </tr>
+              <tr>
+                <td>Requerimientos de cuidado:</td>
+                <td class="edit" id="requer" contenteditable="true">{{aves_dict[ave].Requer[0]|upper}}{{aves_dict[ave].Requer[1:]}}</td>
+              </tr>
+              <tr>
+                {% for tipo in refugios_ave %}
+                <td>Necesita un lugar para: </td>
+                <td class="edit" id="tiporef" contenteditable="true">{{refugios_ave[0]}}</td>
                 {% endfor %}
-              </div>  
-              <div class="mb-3">
-                {{ form.requer.label }}
-                {{ form.requer }}
-              </div>
-              <div class="mb-3">
-                {{ form.contacto.label }}
-                {{ form.contacto }}
-              </div>
-              <div class="mb-3">
-              <h1>File Upload</h1>
-                {{ form.imagen }}
-              </div>  
-          </form>
-        </div>
-              <div>
-                {{ form.submit }}
-              </div>
-      </div>
+              </tr>
+              <tr>
+                {% for ubicacion in ubic_dict %}
+                <td>Ubicación actual del ave: </td>
+                <td class="edit" id="ubicacion" contenteditable="true">{{ubic_dict[ubicacion].Direccion}}</td>
+                {% endfor %}
+              </tr>
+              <tr>
+                {% for telefono in telef_dict %}
+                <td>Teléfono de contacto (celular y/o Whatsapp): </td>
+                <td class="edit" id="telef" contenteditable="true">{{telef_dict[telefono].Telefono}}</td>
+                {% endfor %}
+              </tr>
+            </tbody>
+          </table>
+        </div> 
+        {% endfor %}
     </div>
-      <div class="col-7 d-flex align-items-center" style="z-index:10; color:rgb(231, 231, 231); text-align: end;">
-        <h1>Reportá un ave caída para que otras personas le den un lugar de tránsito o un hogar permanente.</h1>
-      </div>
+    <div class="col-4">
+        {% for ave in aves_dict %}
+        {% set foto = 'static/upload/' + aves_dict[ave].Foto  %}
+            <img src= {{ foto }} class="card-img-top" alt="..." style="max-width: 22rem; border-radius: 8px; ;object-fit:cover;">
+            <p>Subir otra imagen</p>
+        {% endfor%}
+        <form action="/profile">
+        <button type="submit" id="update"><span class="glyphicon glyphicon-plus-sign"></span>Confirmar cambios</button>
+        </form>
+      </div>    
   </div>
 </div>
-  {% endblock %}
+
+<script>
+
+
+  
+
+</script>
+
+{% endblock %}

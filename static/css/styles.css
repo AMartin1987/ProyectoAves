@@ -1,3 +1,11 @@
+.table {
+  width: 100%;
+}
+
+td {
+  width: 100px;
+}
+
 .inside-main {
   border: 10 100 10 100!important;
   width: 100%;

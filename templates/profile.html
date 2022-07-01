@@ -22,10 +22,12 @@
                     <div class="card-header">En busca de {{ refugios_ave[i] }}</div>
                     {% set i = i + 1 %} 
                     <div class="card-body">
-                    <h5 class="card-title">{{ aves_dict[ave].Especie }}</h5>
+                    <h5 class="card-title">{{ aves_dict[ave].Especie[0]|upper}}{{aves_dict[ave].Especie[1:] }}</h5>
                     {% set foto = 'static/upload/' + aves_dict[ave].Foto  %}
                     <img src= {{ foto }} class="card-img-top" alt="..." style="max-width: 12rem; border-radius: 8px; height: 8rem;object-fit:cover;">
-                    <a href="{{ url_for('editbird') }}" class="btn btn-primary editar_ave">Editar</a><span></span>
+                    <form action="{{ url_for('editbird') }}" method="POST">    
+                    <button type="submit"  class="btn btn-primary editar_ave" name="editbird" value="{{ aves_dict[ave].Id }}">Editar</button>
+                    </form>
                     <a href="#" class="btn btn-primary buttonDelAve">Eliminar</a>  
                     </div>
                 </div>
@@ -64,18 +66,16 @@
                     {% endfor %}
  
                     <div class="card-body">
-                        <h5 class="card-title">Refugio para
-                            {% set especies = especies_ref %}
-                            {% for especie in especies [:-1] %}
+                        <h5 class="card-title">Refugio para:
+                            {% set especies = [refug_dict[refugio].Id_ESPECIES1, refug_dict[refugio].Id_ESPECIES2,
+                                refug_dict[refugio].Id_ESPECIES3, refug_dict[refugio].Id_ESPECIES4] %}
+                            <ul>
+                            {% for especie in especies [:-2] %}
                                 {% if especie != 'NULL' %}
-                                {{  especie }},
-                                {% endif %}  
+                                    <li>- {{especie[0]|upper}}{{especie[1:]}}</li> 
+                                {% endif %}
                             {% endfor %}
-                            {% if especies[-1] != 'NULL' %}
-                                y {{ especies[-1] }}.
-                            {% else %}
-                                y {{ especies[-3] }}.    
-                            {% endif %}
+                            </ul>
                         </h5>
                     
                     <a href="#" class="btn btn-primary">Editar</a>

@@ -64,3 +64,24 @@ def data_get(index_no):
 
     else: # GET request
         return index_no, ubic_dict[int(index_no)]
+
+        ---
+----
+$(document).ready(function(){
+  $(".edit").click(function(){
+
+    $(this).replaceWith("<input id='editForm' type='text'>")
+    $('#editForm').after("<button id='editButton' type='button'>Editar</button>");
+  });
+  $("#editButton").click(function(){
+    var newValue = $("#editButton").val()
+    $('#editForm').replaceWith(newValue);
+    $('#editButton').remove();
+  });
+  $('html').click((e) => {
+  if (e.target.id !== 'editForm' && $(e.target).parents('#editForm').length === 0) {
+    console.log('clicked outside')
+  }
+  
+});
+});  

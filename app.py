@@ -1,7 +1,7 @@
 from asyncio.windows_events import NULL
 import sqlite3, os, helpers
 
-from flask import Flask, render_template, url_for, redirect, request, flash, g, abort, current_app, jsonify
+from flask import Flask, render_template, url_for, redirect, request, flash, g, abort, current_app, session, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import BadRequest
@@ -380,22 +380,19 @@ def profile():
         else:
             esp = 'aves de corral'
         return esp    
-    x = 'medsil'
-    x = translate(x)
-    print(x)
+
     i = 0
     if refug_dict:              
         for i in range(len(refug_dict)):
             if refug_dict[str(i)]["Id_ESPECIES1"] != 'NULL':
                 refug_dict[str(i)]["Id_ESPECIES1"] = translate(refug_dict[str(i)]["Id_ESPECIES1"])
             if refug_dict[str(i)]["Id_ESPECIES2"] != 'NULL':
-                refug_dict[str(i)]["Id_ESPECIES1"] =  translate(refug_dict[str(i)]["Id_ESPECIES2"])
+                refug_dict[str(i)]["Id_ESPECIES2"] =  translate(refug_dict[str(i)]["Id_ESPECIES2"])
             if refug_dict[str(i)]["Id_ESPECIES3"] != 'NULL':
-                translate(refug_dict[str(i)]["Id_ESPECIES3"])
+                refug_dict[str(i)]["Id_ESPECIES3"] =  translate(refug_dict[str(i)]["Id_ESPECIES3"])
             if refug_dict[str(i)]["Id_ESPECIES4"] != 'NULL':
-                translate(refug_dict[str(i)]["Id_ESPECIES4"])
-        
-    print(refug_dict)
+                refug_dict[str(i)]["Id_ESPECIES4"] =  translate(refug_dict[str(i)]["Id_ESPECIES4"])
+
     # String de tipo de refugio que se necesita cada ave, lista para imprimir en profile.html
     refugios_ave = []
     if aves_dict:
@@ -408,7 +405,13 @@ def profile():
                 refugios_ave[i] = 'hogar'
             else:
                 refugios_ave[i] = 'tránsito'
+    
+    if request.method == 'POST':
+        editbird = request.form.get('editbird')
+        session["editbird"] = editbird
 
+        return redirect(url_for('editbird', editbird=editbird))
+    
     return render_template('profile.html', ubic_dict=ubic_dict,
      aves_dict=aves_dict, refug_dict=refug_dict, telef_dict=telef_dict,
      espe_dict=espe_dict, tiporef_dict=tiporef_dict, refugios_ave=refugios_ave,
@@ -427,7 +430,7 @@ def delete_refugio():
         curs.execute("DELETE FROM REFUGIOS WHERE Id = (?)", (delete_id_refugio,))
 
         connection.commit()
-    print(delete_id_refugio)    
+   
     flash('Registro de refugio eliminado.')
     return redirect(url_for('profile'))
 
@@ -452,17 +455,80 @@ def delete_ave():
 def editbird():
     form = BirdForm()
     nombre = current_user.name
-    if form.validate_on_submit():
-        #Get user Id
-        user_id = current_user.get_id()
+    #Get user Id
+    user_id = current_user.get_id()
         
-        #Display info about this bird
+    #Get bird Id
+    if request.method == 'POST':
+        bird_id = request.form.get('editbird')
+        session["bird_id"] = bird_id
 
+        #Display info about this bird
+        # get DB data for this user's Id
+        connection = sqlite3.connect("proyecto.db")
+        cur = get_db().cursor()
+        ubicaciones = cur.execute("SELECT Id, Latitud, Longitud, Direccion \
+                      FROM UBICACIONES WHERE Id IN (SELECT Id_UBICACIONES FROM \
+                      AVES WHERE Id = (?))", (bird_id,)).fetchall()
+        aves = cur.execute("SELECT Id, Especie, Edad, Foto, EstSalud, Requer, \
+               Id_ESPECIES, Id_TELEFONOS, Id_TIPOREFUGIO, Id_UBICACIONES FROM AVES \
+               WHERE Id = (?)", (bird_id,)).fetchall()
+        telefonos = cur.execute("SELECT Id, Telefono FROM TELEFONOS WHERE Id IN \
+                (SELECT Id_TELEFONOS FROM AVES WHERE Id = (?))", (bird_id,)).fetchall()
+        tiporef = cur.execute("SELECT Id, TipoRefug FROM TIPOREFUGIO WHERE Id IN \
+                (SELECT Id_TIPOREFUGIO FROM AVES WHERE Id = (?))", (bird_id,)).fetchall()
+        get_db().commit()
+    
+        #Convert data from DB to dict type
+        ubic_dict = helpers.make_dict(ubicaciones)
+        aves_dict = helpers.make_dict(aves)
+        telef_dict = helpers.make_dict(telefonos)
+        tiporef_dict = helpers.make_dict(tiporef)
+
+        # String de tipo de refugio que se necesita cada ave, lista para imprimir en profile.html
+        refugios_ave = []
+        if aves_dict:
+            for i in range(len(aves_dict)):
+                dict = aves_dict[str(i)]
+                refugios_ave.append(dict['Id_TIPOREFUGIO'])
+
+            for i in range(len(refugios_ave)):
+                if (refugios_ave[i] == '1'):
+                    refugios_ave[i] = 'Hogar'
+                else:
+                    refugios_ave[i] = 'Tránsito'
 
         #Registering in database
-        connection = sqlite3.connect("proyecto.db")
-        curs = connection.cursor()    
-    
-    return render_template('editbird.html', form=form, nombre=nombre)
+
+        return render_template('editbird.html', form=form, nombre=nombre, ubic_dict=ubic_dict,
+        aves_dict=aves_dict, telef_dict=telef_dict, refugios_ave=refugios_ave)
+
+@app.route('/editbird/updatebird', methods=['POST'])
+@login_required
+def update_bird():
+    nombre = current_user.name    
+
+    #Get user Id
+    user_id = current_user.get_id()
+        
+    especie = request.form.get('especie')
+    edad = request.form.get('edad')
+    estsalud = request.form.get('estsalud')
+    requer = request.form.get('requer')
+    tiporef = request.form.get('tiporef')
+    ubicacion = request.form.get('ubicacion')
+    telef = request.form.get('telef')
+
+    connection = sqlite3.connect('proyecto.db')
+    curs = connection.cursor()
+    curs.execute("UPDATE AVES SET Especie = (?) WHERE Id = 4", (especie,))
+    curs.execute("UPDATE AVES SET Edad = (?) WHERE Id = 4", (edad,))
+    curs.execute("UPDATE AVES SET EstSalud = (?) WHERE Id = 4", (estsalud,))
+    curs.execute("UPDATE AVES SET Requer = (?) WHERE Id = 4", (requer,))
+    #curs.execute("UPDATE AVES SET TipoRef = (?) WHERE Id = 4", (tiporef,))
+    #curs.execute("UPDATE UBICACIONES SET Direccion = (?) WHERE Id IN (SELECT Id_UBICACIONES FROM AVES WHERE Id = (?))", (delete_id_ave,))", (edad,))    
+    connection.commit()
+    return redirect(url_for('profile'))
+
 if __name__ == "__main__":
     app.run(ssl_context='adhoc')
