@@ -7,35 +7,6 @@
 <script>
 $(document).ready(function(){
 
-  var replaced;
-  $(document).on("click", "#ubicacion", function() {
-    // Save what's being replaced
-    replaced = $(this).replaceWith('<td><form><input type="text" id="ubicacion"></form></td>');
-    $("#ubicacion").focus()
-    console.log('replacing');
-
-  /*Google Places Autocomplete*/
-  var searchInput = 'ubicacion';
-
-  var autocomplete;
-  autocomplete = new google.maps.places.Autocomplete((document.getElementById(searchInput)), {
-    types: ['geocode'],
-  });
-    
-  google.maps.event.addListener(autocomplete, 'place_changed', function () {
-      var near_place = autocomplete.getPlace();
-      document.getElementById('loc_lat').value = near_place.geometry.location.lat();
-      document.getElementById('loc_long').value = near_place.geometry.location.lng();
-  });
-
-  });
- 
-  $(document).on("click", "#telef", function() {
-    // Restore it
-    $("#ubicacion").replaceWith(replaced);
-    console.log('restoring')
-  });
-  
   /*Send new values to update DB*/      
   $("#update").click(function(){
     var especie = $("#especie").html()
@@ -128,10 +99,39 @@ $(document).ready(function(){
 </div>
 
 <script>
+$(document).ready(function(){
+var replaced;
+  $(document).on("click", "#ubicacion", function() {
+    // Save what's being replaced
+    replaced = $(this).replaceWith('<td><form><input type="text" id="ubicacion"></form></td>');
+    $("#ubicacion").focus()
+    console.log('replacing');
 
+      /*Google Places Autocomplete*/
+  var searchInput = 'ubicacion';
 
+var autocomplete;
+autocomplete = new google.maps.places.Autocomplete((document.getElementById(searchInput)), {
+  types: ['geocode'],
+});
   
+google.maps.event.addListener(autocomplete, 'place_changed', function () {
+    var near_place = autocomplete.getPlace();
+    document.getElementById('loc_lat').value = near_place.geometry.location.lat();
+    document.getElementById('loc_long').value = near_place.geometry.location.lng();
+});
 
+  });
+  
+  if ($('#ubicacion').val() == ''){  
+    $(document).on("click", "#telef", function() {
+      // Restore it
+      $("#ubicacion").replaceWith(replaced);
+      console.log('restoring')
+    });
+  };
+
+});  
 </script>
 
 {% endblock %}

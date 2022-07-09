@@ -67,21 +67,14 @@ def data_get(index_no):
 
         ---
 ----
-$(document).ready(function(){
-  $(".edit").click(function(){
+  if ($('#ubicacion').val() == ''){  
+    $(document).on("click", "#telef", function() {
+      // Restore it
+      $("#ubicacion").replaceWith(replaced);
+      console.log('restoring')
+    });
+  };
 
-    $(this).replaceWith("<input id='editForm' type='text'>")
-    $('#editForm').after("<button id='editButton' type='button'>Editar</button>");
-  });
-  $("#editButton").click(function(){
-    var newValue = $("#editButton").val()
-    $('#editForm').replaceWith(newValue);
-    $('#editButton').remove();
-  });
-  $('html').click((e) => {
-  if (e.target.id !== 'editForm' && $(e.target).parents('#editForm').length === 0) {
-    console.log('clicked outside')
-  }
-  
-});
-});  
+  ---
+  form tiene valor de ave por defecto
+  jquery ubicacion en ese 
