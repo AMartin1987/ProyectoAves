@@ -11,61 +11,9 @@ estilo
 
 hacer más rápido --> más lindo
 
-        len_especies = len(especies_ref)
+minificar para hacer mas veloz la carga
 
-        for i in range(len_especies):
-            if (especies_ref[i] == 'paloma'):
-                especies_ref[i] = 'palomas'
-            if (especies_ref[i] == 'peqsil'):
-                especies_ref[i] = 'pequeñas aves silvestres'
-            if (especies_ref[i] == 'medsil'):
-                especies_ref[i] = 'aves silvestres medianas'
-            if (especies_ref[i] == 'corral'):
-                especies_ref[i] = 'aves de granja'
-        #especies_ref[len_especies - 1] = 'y ' + especies_ref[len_especies - 1] + '.'
 
-        if len_especies > 2:
-            for i in range(len_especies):
-                if i > 2:
-                    especies_ref[i] = ', ' + especies_ref[i]
-function importVars(vars) {
-  return vars;
-}
-
-fetch('/search')
-.then(function (response) {
-    return response.json();
-}).then(function (text) {
-    console.log('GET response:');
-    console.log(text.greeting); 
-});
-
----------------
-Te esperamos en la sucursal BAHIA BLANCA (Coronel Brandsen 36), el 30/05/2022 a las 10:15 hs.
-
-Muchas gracias por utilizar el servicio web de turnos.
-
-----
-Uso de cajero automático en el exterior: usd 4.84
-
-14+iva hasta 1000 usd por ayuda familiar
----------------
-@app.route('/getdata/<index_no>', methods=['GET','POST'])
-def data_get(index_no):
-    
-    cur = get_db().cursor()
-    ubicaciones = cur.execute("SELECT Id, Latitud, Longitud, Direccion FROM UBICACIONES").fetchall()
-    get_db().commit()
-    ubic_dict = helpers.make_dict(ubicaciones)
-
-    if request.method == 'POST': # POST request
-        print(request.get_text())  # parse as text
-        return 'OK', 200
-
-    else: # GET request
-        return index_no, ubic_dict[int(index_no)]
-
-        ---
 ----
   if ($('#ubicacion').val() == ''){  
     $(document).on("click", "#telef", function() {
@@ -76,5 +24,32 @@ def data_get(index_no):
   };
 
   ---
-  form tiene valor de ave por defecto
-  jquery ubicacion en ese 
+form tiene valor de ave por defecto
+
+funcion ubicacion():
+    set old value
+    si click en form:
+        --> guardar old value
+        --> empty value
+        if enter:
+            if value not null:
+                --> set new value
+                --> send new value
+        else if click afuera:
+            --> ubicacion()
+
+
+var replaced;
+  $(document).on("click", "#ubicacion", function() {
+    // Save what's being replaced
+    replaced = $(this).replaceWith('<td><form><input type="text" id="ubicacion"></form></td>');
+    $("#ubicacion").focus()
+    console.log('replacing');
+
+  if ($('#ubicacion').val() == ''){  
+    $(document).on("click", "#telef", function() {
+      // Restore it
+      $("#ubicacion").replaceWith(replaced);
+      console.log('restoring')
+    });
+  };

@@ -6,24 +6,18 @@
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyAqoKvZMX0sWGNCDPWKYyBvLNkkPrV6KvE"></script>
 <script>
 $(document).ready(function(){
-
   /*Send new values to update DB*/      
   $("#update").click(function(){
-    var especie = $("#especie").html()
-    var edad = $("#edad").html()
-    var ubicacion = $("#ubicacion").html()
+    var especie = $("#especie").val()
+    var edad = $("#edad").val()
+    var ubicacion = $("#ubicacion").val()
     $.post("/editbird/updatebird",
     {
-    especie:especie,
-    edad:edad,
-    estsalud:estsalud,
-    requer:requer,
-    tiporef:tiporef,
-    ubicacion:ubicacion,
-    telef:telef
-    },
+    especie:especie
+
+    }
   )});
-});
+});  
 </script>
 {% endblock %}  
 
@@ -47,8 +41,10 @@ $(document).ready(function(){
             </thead>
             <tbody>
               <tr>
+                <form action="/profile">
                 <td>Especie:</td>
-                <td class="edit" id="especie" contenteditable="true">{{aves_dict[ave].Especie[0]|upper}}{{aves_dict[ave].Especie[1:]}}</td>
+                <td><input type="text" id="especie" placeholder="{{aves_dict[ave].Especie[0]|upper}}{{aves_dict[ave].Especie[1:]}}"></form></td>
+              
               </tr>
               <tr>
                 <td>Edad:</td>
@@ -71,7 +67,7 @@ $(document).ready(function(){
               <tr>
                 {% for ubicacion in ubic_dict %}
                 <td>Ubicación actual del ave: </td>
-                <td class="edit" id="ubicacion" contenteditable="true">{{ubic_dict[ubicacion].Direccion}}</td>
+                <td><form><input type="text" id="ubicacion" placeholder="{{ubic_dict[ubicacion].Direccion}}"></form></td>
                 {% endfor %}
               </tr>
               <tr>
@@ -91,8 +87,8 @@ $(document).ready(function(){
             <img src= {{ foto }} class="card-img-top" alt="..." style="max-width: 22rem; border-radius: 8px; ;object-fit:cover;">
             <p>Subir otra imagen</p>
         {% endfor%}
-        <form action="/profile">
-        <button type="submit" id="update"><span class="glyphicon glyphicon-plus-sign"></span>Confirmar cambios</button>
+        
+        <button  id="update" ><span class="glyphicon glyphicon-plus-sign"></span>Confirmar cambios</button>
         </form>
       </div>    
   </div>
@@ -100,38 +96,24 @@ $(document).ready(function(){
 
 <script>
 $(document).ready(function(){
-var replaced;
-  $(document).on("click", "#ubicacion", function() {
-    // Save what's being replaced
-    replaced = $(this).replaceWith('<td><form><input type="text" id="ubicacion"></form></td>');
-    $("#ubicacion").focus()
-    console.log('replacing');
 
-      /*Google Places Autocomplete*/
+  /*Google Places Autocomplete*/
   var searchInput = 'ubicacion';
 
-var autocomplete;
-autocomplete = new google.maps.places.Autocomplete((document.getElementById(searchInput)), {
-  types: ['geocode'],
-});
-  
-google.maps.event.addListener(autocomplete, 'place_changed', function () {
-    var near_place = autocomplete.getPlace();
-    document.getElementById('loc_lat').value = near_place.geometry.location.lat();
-    document.getElementById('loc_long').value = near_place.geometry.location.lng();
-});
-
+  var autocomplete;
+  autocomplete = new google.maps.places.Autocomplete((document.getElementById(searchInput)), {
+    types: ['geocode'],
   });
-  
-  if ($('#ubicacion').val() == ''){  
-    $(document).on("click", "#telef", function() {
-      // Restore it
-      $("#ubicacion").replaceWith(replaced);
-      console.log('restoring')
-    });
-  };
+    
+  google.maps.event.addListener(autocomplete, 'place_changed', function () {
+      var near_place = autocomplete.getPlace();
+      document.getElementById('loc_lat').value = near_place.geometry.location.lat();
+      document.getElementById('loc_long').value = near_place.geometry.location.lng();
+  });
 
-});  
+
+});
+  
 </script>
 
 {% endblock %}

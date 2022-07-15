@@ -518,7 +518,7 @@ def update_bird():
     tiporef = request.form.get('tiporef')
     ubicacion = request.form.get('ubicacion')
     telef = request.form.get('telef')
-
+    print(especie)
     connection = sqlite3.connect('proyecto.db')
     curs = connection.cursor()
     curs.execute("UPDATE AVES SET Especie = (?) WHERE Id = 4", (especie,))
