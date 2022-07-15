@@ -518,16 +518,26 @@ def update_bird():
     tiporef = request.form.get('tiporef')
     ubicacion = request.form.get('ubicacion')
     telef = request.form.get('telef')
-    print(especie)
+    
     connection = sqlite3.connect('proyecto.db')
-    curs = connection.cursor()
-    curs.execute("UPDATE AVES SET Especie = (?) WHERE Id = 4", (especie,))
-    curs.execute("UPDATE AVES SET Edad = (?) WHERE Id = 4", (edad,))
-    curs.execute("UPDATE AVES SET EstSalud = (?) WHERE Id = 4", (estsalud,))
-    curs.execute("UPDATE AVES SET Requer = (?) WHERE Id = 4", (requer,))
+    curs = connection.cursor()   
+    
+    if (especie is not ''):
+        curs.execute("UPDATE AVES SET Especie = (?) WHERE Id = 4", (especie,))
+        connection.commit()
+    if (edad != ''):
+        curs.execute("UPDATE AVES SET Edad = (?) WHERE Id = 4", (edad,))
+        connection.commit()
+    #if (estsalud  != ''):
+        #curs.execute("UPDATE AVES SET EstSalud = (?) WHERE Id = 4", (estsalud,))
+    #curs.execute("UPDATE AVES SET Requer = (?) WHERE Id = 4", (requer,))
     #curs.execute("UPDATE AVES SET TipoRef = (?) WHERE Id = 4", (tiporef,))
-    #curs.execute("UPDATE UBICACIONES SET Direccion = (?) WHERE Id IN (SELECT Id_UBICACIONES FROM AVES WHERE Id = (?))", (delete_id_ave,))", (edad,))    
-    connection.commit()
+    if (ubicacion != ''):
+        #curs.execute("UPDATE UBICACIONES SET Direccion = (?) WHERE Id IN (SELECT Id_UBICACIONES FROM AVES WHERE Id = 4)", (ubicacion,))
+        #curs.execute("UPDATE AVES SET Id_UBICACIONES IN (SELECT Id FROM UBICACIONES WHERE Direccion = (?)", (ubicacion,))    
+        #connection.commit()
+        print(ubicacion)
+    print(especie, edad, ubicacion)
     return redirect(url_for('profile'))
 
 if __name__ == "__main__":

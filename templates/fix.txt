@@ -13,7 +13,7 @@ hacer más rápido --> más lindo
 
 minificar para hacer mas veloz la carga
 
-
+que los campos sean obligatorios al crear new entries
 ----
   if ($('#ubicacion').val() == ''){  
     $(document).on("click", "#telef", function() {

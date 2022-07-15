@@ -13,8 +13,9 @@ $(document).ready(function(){
     var ubicacion = $("#ubicacion").val()
     $.post("/editbird/updatebird",
     {
-    especie:especie
-
+    especie:especie,
+    edad:edad,
+    ubicacion:ubicacion
     }
   )});
 });  
@@ -40,40 +41,40 @@ $(document).ready(function(){
               </tr>
             </thead>
             <tbody>
+              <form action="/profile">
               <tr>
-                <form action="/profile">
                 <td>Especie:</td>
-                <td><input type="text" id="especie" placeholder="{{aves_dict[ave].Especie[0]|upper}}{{aves_dict[ave].Especie[1:]}}"></form></td>
+                <td><input class="form" type="text" id="especie" placeholder="{{aves_dict[ave].Especie[0]|upper}}{{aves_dict[ave].Especie[1:]}}"></form></td>
               
               </tr>
               <tr>
                 <td>Edad:</td>
-                <td class="edit" id="edad" contenteditable="true">{{aves_dict[ave].Edad[0]|upper}}{{aves_dict[ave].Edad[1:]}}</td>
+                <td><input class="form" type="text" id="edad" placeholder="{{aves_dict[ave].Edad[0]|upper}}{{aves_dict[ave].Edad[1:]}}"></form></td>
               </tr>
               <tr>
                 <td>Estado de salud:</td>
-                <td class="edit" id="estsalud" contenteditable="true">{{aves_dict[ave].EstSalud[0]|upper}}{{aves_dict[ave].EstSalud[1:]}}</td>
+                <td><input class="form" type="text" id="estsalud" placeholder="{{aves_dict[ave].EstSalud[0]|upper}}{{aves_dict[ave].EstSalud[1:]}}"></form></td>
               </tr>
               <tr>
                 <td>Requerimientos de cuidado:</td>
-                <td class="edit" id="requer" contenteditable="true">{{aves_dict[ave].Requer[0]|upper}}{{aves_dict[ave].Requer[1:]}}</td>
+                <td><input class="form" type="text" id="requer" placeholder="{{aves_dict[ave].Requer[0]|upper}}{{aves_dict[ave].Requer[1:]}}"></form></td>
               </tr>
               <tr>
                 {% for tipo in refugios_ave %}
                 <td>Necesita un lugar para: </td>
-                <td class="edit" id="tiporef" contenteditable="true">{{refugios_ave[0]}}</td>
+                <td><input class="form" type="text" id="tiporef" placeholder="{{refugios_ave[0]}}"></form></td>
                 {% endfor %}
               </tr>
               <tr>
                 {% for ubicacion in ubic_dict %}
                 <td>Ubicación actual del ave: </td>
-                <td><form><input type="text" id="ubicacion" placeholder="{{ubic_dict[ubicacion].Direccion}}"></form></td>
+                <td><input class="form" type="text" id="ubicacion" placeholder="{{ubic_dict[ubicacion].Direccion}}"></form></td>
                 {% endfor %}
               </tr>
               <tr>
                 {% for telefono in telef_dict %}
                 <td>Teléfono de contacto (celular y/o Whatsapp): </td>
-                <td class="edit" id="telef" contenteditable="true">{{telef_dict[telefono].Telefono}}</td>
+                <td><input class="form" type="text" id="telef" placeholder="{{telef_dict[telefono].Telefono}}"></form></td>
                 {% endfor %}
               </tr>
             </tbody>
@@ -87,7 +88,8 @@ $(document).ready(function(){
             <img src= {{ foto }} class="card-img-top" alt="..." style="max-width: 22rem; border-radius: 8px; ;object-fit:cover;">
             <p>Subir otra imagen</p>
         {% endfor%}
-        
+      </form>    
+        <form action="/profile">
         <button  id="update" ><span class="glyphicon glyphicon-plus-sign"></span>Confirmar cambios</button>
         </form>
       </div>    
