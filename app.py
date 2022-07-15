@@ -522,7 +522,7 @@ def update_bird():
     connection = sqlite3.connect('proyecto.db')
     curs = connection.cursor()   
     
-    if (especie is not ''):
+    if (especie != ''):
         curs.execute("UPDATE AVES SET Especie = (?) WHERE Id = 4", (especie,))
         connection.commit()
     if (edad != ''):
@@ -533,9 +533,9 @@ def update_bird():
     #curs.execute("UPDATE AVES SET Requer = (?) WHERE Id = 4", (requer,))
     #curs.execute("UPDATE AVES SET TipoRef = (?) WHERE Id = 4", (tiporef,))
     if (ubicacion != ''):
-        #curs.execute("UPDATE UBICACIONES SET Direccion = (?) WHERE Id IN (SELECT Id_UBICACIONES FROM AVES WHERE Id = 4)", (ubicacion,))
-        #curs.execute("UPDATE AVES SET Id_UBICACIONES IN (SELECT Id FROM UBICACIONES WHERE Direccion = (?)", (ubicacion,))    
-        #connection.commit()
+        curs.execute("UPDATE UBICACIONES SET Direccion = (?) WHERE Id IN (SELECT Id_UBICACIONES FROM AVES WHERE Id = 4)", (ubicacion,))
+        #curs.execute("UPDATE AVES SET Id_UBICACIONES WHERE Id IN (SELECT Id FROM UBICACIONES WHERE Direccion = (?)", (ubicacion,))    
+        connection.commit()
         print(ubicacion)
     print(especie, edad, ubicacion)
     return redirect(url_for('profile'))
