@@ -5,20 +5,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyAqoKvZMX0sWGNCDPWKYyBvLNkkPrV6KvE"></script>
 <script>
-$(document).ready(function(){
-  /*Send new values to update DB*/      
-  $("#update").click(function(){
-    var especie = $("#especie").val()
-    var edad = $("#edad").val()
-    var ubicacion = $("#ubicacion").val()
-    $.post("/editbird/updatebird",
-    {
-    especie:especie,
-    edad:edad,
-    ubicacion:ubicacion
-    }
-  )});
-});  
+
 </script>
 {% endblock %}  
 
@@ -45,7 +32,6 @@ $(document).ready(function(){
               <tr>
                 <td>Especie:</td>
                 <td><input class="form" type="text" id="especie" placeholder="{{aves_dict[ave].Especie[0]|upper}}{{aves_dict[ave].Especie[1:]}}"></form></td>
-              
               </tr>
               <tr>
                 <td>Edad:</td>
@@ -59,49 +45,75 @@ $(document).ready(function(){
                 <td>Requerimientos de cuidado:</td>
                 <td><input class="form" type="text" id="requer" placeholder="{{aves_dict[ave].Requer[0]|upper}}{{aves_dict[ave].Requer[1:]}}"></form></td>
               </tr>
+              {% endfor %}
               <tr>
                 {% for tipo in refugios_ave %}
                 <td>Necesita un lugar para: </td>
-                <td><input class="form" type="text" id="tiporef" placeholder="{{refugios_ave[0]}}"></form></td>
+                <td><input class="form" type="text" id="tiporef" placeholder="{{refugios_ave[0]}}"></td>
                 {% endfor %}
               </tr>
               <tr>
                 {% for ubicacion in ubic_dict %}
                 <td>Ubicación actual del ave: </td>
-                <td><input class="form" type="text" id="ubicacion" placeholder="{{ubic_dict[ubicacion].Direccion}}"></form></td>
+                <td><input class="form" type="text" id="ubicacion" placeholder="{{ubic_dict[ubicacion].Direccion}}"></td>
                 {% endfor %}
               </tr>
               <tr>
                 {% for telefono in telef_dict %}
                 <td>Teléfono de contacto (celular y/o Whatsapp): </td>
-                <td><input class="form" type="text" id="telef" placeholder="{{telef_dict[telefono].Telefono}}"></form></td>
+                <td><input class="form" type="text" id="telef" placeholder="{{telef_dict[telefono].Telefono}}"></td>
                 {% endfor %}
               </tr>
             </tbody>
           </table>
         </div> 
-        {% endfor %}
+      </form>
     </div>
     <div class="col-4">
         {% for ave in aves_dict %}
         {% set foto = 'static/upload/' + aves_dict[ave].Foto  %}
             <img src= {{ foto }} class="card-img-top" alt="..." style="max-width: 22rem; border-radius: 8px; ;object-fit:cover;">
-            <p>Subir otra imagen</p>
         {% endfor%}
-      </form>    
+      <input action="/editbird/updatebird" enctype="multipart/form-data"  id="foto" type = "file" name = "file"/>
+      </form>     
         <form action="/profile">
         <button  id="update" ><span class="glyphicon glyphicon-plus-sign"></span>Confirmar cambios</button>
         </form>
       </div>    
   </div>
 </div>
-
 <script>
 $(document).ready(function(){
+ 
+ /*Send new values to update DB*/      
+ $("#update").click(function(){
+   var especie = $("#especie").val()
+   var edad = $("#edad").val()
+   var estsalud = $("#estsalud").val()
+   var requer = $("#requer").val()
+   var tiporef = $("#tiporef").val()
+   var ubicacion = $("#ubicacion").val()
+   var telef = $("#telef").val()
+   var foto = $("#foto").val()
+   $.post("/editbird/updatebird",
+   {
+   especie:especie,
+   edad:edad,
+   estsalud:estsalud,
+   requer:requer,
+   tiporef:tiporef,
+   ubicacion:ubicacion,
+   telef:telef,
+   foto:foto
+   }
+ )});
+});  
 
+ $(document).ready(function(){
+ 
   /*Google Places Autocomplete*/
   var searchInput = 'ubicacion';
-
+  
   var autocomplete;
   autocomplete = new google.maps.places.Autocomplete((document.getElementById(searchInput)), {
     types: ['geocode'],
@@ -112,10 +124,9 @@ $(document).ready(function(){
       document.getElementById('loc_lat').value = near_place.geometry.location.lat();
       document.getElementById('loc_long').value = near_place.geometry.location.lng();
   });
-
-
-});
-  
-</script>
-
+ });
+ 
+   
+ </script>
 {% endblock %}
+

@@ -23,8 +23,12 @@ app.config["UPLOADED_PHOTOS_DEST"] = 'static/upload'
 photos = UploadSet("photos", IMAGES)
 configure_uploads(app, photos)
 
+app.config['UPLOAD_FOLDER'] = 'static/upload'
+
 # max file size: 16 MB
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000 
+app.config['MAX_CONTENT_PATH'] =  16 * 1000 * 1000
+
 
 # connect SQLite3
 db = 'proyecto.db'
@@ -518,7 +522,7 @@ def update_bird():
     tiporef = request.form.get('tiporef')
     ubicacion = request.form.get('ubicacion')
     telef = request.form.get('telef')
-    
+
     connection = sqlite3.connect('proyecto.db')
     curs = connection.cursor()   
     
@@ -528,17 +532,43 @@ def update_bird():
     if (edad != ''):
         curs.execute("UPDATE AVES SET Edad = (?) WHERE Id = 4", (edad,))
         connection.commit()
-    #if (estsalud  != ''):
-        #curs.execute("UPDATE AVES SET EstSalud = (?) WHERE Id = 4", (estsalud,))
-    #curs.execute("UPDATE AVES SET Requer = (?) WHERE Id = 4", (requer,))
-    #curs.execute("UPDATE AVES SET TipoRef = (?) WHERE Id = 4", (tiporef,))
-    if (ubicacion != ''):
-        curs.execute("UPDATE UBICACIONES SET Direccion = (?) WHERE Id IN (SELECT Id_UBICACIONES FROM AVES WHERE Id = 4)", (ubicacion,))
-        #curs.execute("UPDATE AVES SET Id_UBICACIONES WHERE Id IN (SELECT Id FROM UBICACIONES WHERE Direccion = (?)", (ubicacion,))    
+    if (estsalud != ''):
+        curs.execute("UPDATE AVES SET EstSalud = (?) WHERE Id = 4", (estsalud,))
         connection.commit()
-        print(ubicacion)
-    print(especie, edad, ubicacion)
+    if (requer != ''):            
+        curs.execute("UPDATE AVES SET Requer = (?) WHERE Id = 4", (requer,))
+    if (tiporef != ''):
+        curs.execute("UPDATE AVES SET TipoRef = (?) WHERE Id = 4", (tiporef,))
+        connection.commit()
+    if (ubicacion != ''):
+        id_ubicaciones = curs.execute("SELECT Id_UBICACIONES FROM AVES WHERE Id = 4").fetchone()
+        id_ubicaciones = id_ubicaciones[0]
+        curs.execute("UPDATE UBICACIONES SET Direccion = (?) WHERE Id = (?)", (ubicacion, id_ubicaciones,))
+        connection.commit()
+    if (telef != ''):
+        id_telefonos = curs.execute("SELECT Id_TELEFONOS FROM AVES WHERE Id = 4").fetchone()
+        id_telefonos = id_telefonos[0]
+        print(id_telefonos)
+        curs.execute("UPDATE TELEFONOS SET Telefono = (?) WHERE Id = (?)", (telef, id_telefonos,))
+        connection.commit()
+
+        f = request.files['file']
+        f.save(secure_filename(f.filename))
+        image = secure_filename(f.filename)
+        print(image)    
+        connection = sqlite3.connect('proyecto.db')
+        curs = connection.cursor()   
+        curs.execute("UPDATE AVES SET Foto = (?) WHERE Id = 4", (image,))
+        connection.commit()
+
     return redirect(url_for('profile'))
+
+@app.route('/editbird/uploader', methods = ['GET', 'POST'])
+def upload_file():
+   if request.method == 'POST':
+
+
+        return redirect('/editbird')
 
 if __name__ == "__main__":
     app.run(ssl_context='adhoc')
