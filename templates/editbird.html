@@ -28,7 +28,7 @@
               </tr>
             </thead>
             <tbody>
-              <form action="/profile">
+              <form action="/editbird/updatebird">
               <tr>
                 <td>Especie:</td>
                 <td><input class="form" type="text" id="especie" placeholder="{{aves_dict[ave].Especie[0]|upper}}{{aves_dict[ave].Especie[1:]}}"></form></td>
@@ -67,16 +67,15 @@
             </tbody>
           </table>
         </div> 
-      </form>
+      
     </div>
     <div class="col-4">
         {% for ave in aves_dict %}
         {% set foto = 'static/upload/' + aves_dict[ave].Foto  %}
             <img src= {{ foto }} class="card-img-top" alt="..." style="max-width: 22rem; border-radius: 8px; ;object-fit:cover;">
         {% endfor%}
-      <input action="/editbird/updatebird" enctype="multipart/form-data"  id="foto" type = "file" name = "file"/>
-      </form>     
-        <form action="/profile">
+        <input enctype="multipart/form-data" id="foto" type = "file" name = "file" >
+        
         <button id="update" ><span class="glyphicon glyphicon-plus-sign"></span>Confirmar cambios</button>
         </form>
       </div>    
@@ -87,6 +86,7 @@ $(document).ready(function(){
  
  /*Send new values to update DB*/      
  $("#update").click(function(){
+   event.stopPropagation();
    var especie = $("#especie").val()
    var edad = $("#edad").val()
    var estsalud = $("#estsalud").val()
@@ -94,7 +94,7 @@ $(document).ready(function(){
    var tiporef = $("#tiporef").val()
    var ubicacion = $("#ubicacion").val()
    var telef = $("#telef").val()
-   var foto = $("#foto").val()
+   
    $.post("/editbird/updatebird",
    {
    especie:especie,
@@ -104,7 +104,7 @@ $(document).ready(function(){
    tiporef:tiporef,
    ubicacion:ubicacion,
    telef:telef,
-   foto:foto
+ 
    }
  )});
 });  

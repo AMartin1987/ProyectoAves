@@ -459,15 +459,17 @@ def delete_ave():
 def editbird():
     form = BirdForm()
     nombre = current_user.name
+
     #Get user Id
     user_id = current_user.get_id()
         
-    #Get bird Id
     if request.method == 'POST':
+        #Get bird Id
         bird_id = request.form.get('editbird')
         session["bird_id"] = bird_id
 
         #Display info about this bird
+
         # get DB data for this user's Id
         connection = sqlite3.connect("proyecto.db")
         cur = get_db().cursor()
@@ -502,8 +504,6 @@ def editbird():
                 else:
                     refugios_ave[i] = 'Tránsito'
 
-        #Registering in database
-
         return render_template('editbird.html', form=form, nombre=nombre, ubic_dict=ubic_dict,
         aves_dict=aves_dict, telef_dict=telef_dict, refugios_ave=refugios_ave)
 
@@ -522,6 +522,7 @@ def update_bird():
     tiporef = request.form.get('tiporef')
     ubicacion = request.form.get('ubicacion')
     telef = request.form.get('telef')
+    image = request.form.get('file')
 
     connection = sqlite3.connect('proyecto.db')
     curs = connection.cursor()   
@@ -551,11 +552,14 @@ def update_bird():
         print(id_telefonos)
         curs.execute("UPDATE TELEFONOS SET Telefono = (?) WHERE Id = (?)", (telef, id_telefonos,))
         connection.commit()
-
+        #New image upload
         f = request.files['file']
         f.save(secure_filename(f.filename))
         image = secure_filename(f.filename)
-        print(image)    
+        image = image[0]
+        session["image"] = image
+        print(image)
+    if (image != ''):    
         connection = sqlite3.connect('proyecto.db')
         curs = connection.cursor()   
         curs.execute("UPDATE AVES SET Foto = (?) WHERE Id = 4", (image,))
