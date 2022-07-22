@@ -53,3 +53,42 @@ var replaced;
       console.log('restoring')
     });
   };
+--------
+$(document).ready(function(){
+ 
+ /*Send new values to update DB*/      
+ $("#update").submit(function(){
+   
+   var especie = $("#especie").val()
+   var edad = $("#edad").val()
+   var estsalud = $("#estsalud").val()
+   var requer = $("#requer").val()
+   var tiporef = $("#tiporef").val()
+   var ubicacion = $("#ubicacion").val()
+   var telef = $("#telef").val()
+   var foto = $("#foto").val()
+   
+   $.post("/editbird/updatebird",
+   {
+   especie:especie,
+   edad:edad,
+   estsalud:estsalud,
+   requer:requer,
+   tiporef:tiporef,
+   ubicacion:ubicacion,
+   telef:telef,
+   foto:foto
+ 
+   }
+ )});
+}); 
+
+
+----
+    edad = request.form.get('edad')
+    estsalud = request.form.get('estsalud')
+    requer = request.form.get('requer')
+    tiporef = request.form.get('tiporef')
+    ubicacion = request.form.get('ubicacion')
+    telef = request.form.get('telef')
+    foto = request.form.get('foto')

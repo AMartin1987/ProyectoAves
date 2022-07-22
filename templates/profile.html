@@ -78,7 +78,9 @@
                             </ul>
                         </h5>
                     
-                    <a href="#" class="btn btn-primary">Editar</a>
+                    <form action="{{ url_for('editplace') }}" method="POST">    
+                        <button type="submit"  class="btn btn-primary editar_refugio" name="editplace" value="{{ refug_dict[refugio].Id }}">Editar</button>
+                    </form>
                     <a href="#" class="btn btn-primary buttonDelRefugio">Eliminar</a>  
 
                     <!-- Modal REFUGIOS-->

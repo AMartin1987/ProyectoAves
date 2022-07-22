@@ -28,22 +28,8 @@
               </tr>
             </thead>
             <tbody>
-              <form action="/editbird/updatebird" method="post" enctype="multipart/form-data">
               <tr>
-                {% for tipo in tipo_especie %}
-                  <p hidden id="tipoespecie"> {{tipo_especie[0]}} </p>
-                {% endfor %}              
-                  <td><label for="listaEspecies">¿Qué tipo de ave es?</label></td>
-                  <td>
-                    <select id="listaEspecies" name="tipoEspecies">
-                      <option id="paloma" value="paloma">Palomas (torcazas, urbanas, etc.)</option>
-                      <option id="peqsil" value="peqsil">Pequeñas aves silvestres(gorriones, horneros, etc.)</option>
-                      <option id="medsil" value="medsil">Aves silvestres medianas (loros, búhos, chimangos, etc.)</option>
-                      <option id="corral" value="corral">Aves de granja (gallinas, patos, etc.)</option>
-                    </select>
-                  </td>
-                </tr>
-              <tr>
+                <form action="/editbird/updatebird" method="post" enctype="multipart/form-data">
                 <td>Especie:</td>
                 <td><input class="form" type="text" name="especie" placeholder="{{aves_dict[ave].Especie[0]|upper}}{{aves_dict[ave].Especie[1:]}}"></td>
               </tr>
@@ -127,6 +113,7 @@
   /*Selección por defecto en radio form del tipo de refugio ya registrado en BD*/
   $(document).ready(function(){
     var default_tiporef = $("#tiporef").html();
+    console.log(default_tiporef);
     if (default_tiporef == ' Tránsito ') { 
       $("#transito").prop('defaultChecked',true);
     }
@@ -135,23 +122,6 @@
     }
   });
  
-  /*Selección por defecto en select form del tipo de ave ya registrado en BD*/
-  $(document).ready(function(){
-    var default_especie = $("#tipoespecie").html();
-    if (default_especie == ' paloma ') { 
-      $("#listaEspecies option[value=paloma]").attr('selected', 'selected');
-    }
-    else if (default_especie == ' peqsil '){
-      $("#listaEspecies option[value=peqsil]").attr('selected', 'selected');
-    }
-    else if (default_especie == ' medsil '){
-      $("#listaEspecies option[value=medsil]").attr('selected', 'selected');
-    }
-    else if (default_especie == ' corral '){
-      $("#listaEspecies option[value=corral]").attr('selected', 'selected');
-    }
-  });
-
  </script>
 {% endblock %}
 

@@ -481,40 +481,55 @@ def editbird():
                WHERE Id = (?)", (bird_id,)).fetchall()
         telefonos = cur.execute("SELECT Id, Telefono FROM TELEFONOS WHERE Id IN \
                 (SELECT Id_TELEFONOS FROM AVES WHERE Id = (?))", (bird_id,)).fetchall()
-        tiporef = cur.execute("SELECT Id, TipoRefug FROM TIPOREFUGIO WHERE Id IN \
-                (SELECT Id_TIPOREFUGIO FROM AVES WHERE Id = (?))", (bird_id,)).fetchall()
         get_db().commit()
     
         #Convert data from DB to dict type
         ubic_dict = helpers.make_dict(ubicaciones)
         aves_dict = helpers.make_dict(aves)
         telef_dict = helpers.make_dict(telefonos)
-        tiporef_dict = helpers.make_dict(tiporef)
 
-        # String de tipo de refugio que se necesita cada ave, lista para imprimir en profile.html
+        # Dict de tipo de refugio que necesita cada ave, listo para imprimir en profile.html
         refugios_ave = []
         if aves_dict:
             for i in range(len(aves_dict)):
                 dict = aves_dict[str(i)]
                 refugios_ave.append(dict['Id_TIPOREFUGIO'])
-
+                
             for i in range(len(refugios_ave)):
-                if (refugios_ave[i] == '1'):
+                if (refugios_ave[i] == 1):
                     refugios_ave[i] = 'Hogar'
                 else:
                     refugios_ave[i] = 'Tránsito'
 
-        return render_template('editbird.html', form=form, nombre=nombre, ubic_dict=ubic_dict,
-        aves_dict=aves_dict, telef_dict=telef_dict, refugios_ave=refugios_ave)
+        # Dict de categoría de ave, listo para imprimir en profile.html
+        tipo_especie = []
+        if aves_dict:
+            for i in range(len(aves_dict)):
+                dict = aves_dict[str(i)]
+                tipo_especie.append(dict['Id_ESPECIES'])
+        
+        for i in range(len(tipo_especie)):
+            if (tipo_especie[i] == 1):
+                tipo_especie[i] = 'paloma'
+            elif (tipo_especie[i] == 2):
+                tipo_especie[i] = 'peqsil'
+            elif (tipo_especie[i] == 3):
+                tipo_especie[i] = 'medsil'
+            elif (tipo_especie[i] == 4):
+                tipo_especie[i] = 'corral'
 
-@app.route('/editbird/updatebird', methods=['POST'])
+        return render_template('editbird.html', form=form, nombre=nombre, ubic_dict=ubic_dict,
+        aves_dict=aves_dict, telef_dict=telef_dict, refugios_ave=refugios_ave, tipo_especie=tipo_especie)
+
+@app.route('/editbird/updatebird', methods=['GET', 'POST'])
 @login_required
 def update_bird():
     nombre = current_user.name    
 
     #Get user Id
     user_id = current_user.get_id()
-        
+
+    tipoespecie = request.form.get('tipoEspecies')
     especie = request.form.get('especie')
     edad = request.form.get('edad')
     estsalud = request.form.get('estsalud')
@@ -522,11 +537,31 @@ def update_bird():
     tiporef = request.form.get('tiporef')
     ubicacion = request.form.get('ubicacion')
     telef = request.form.get('telef')
-    image = request.form.get('file')
 
     connection = sqlite3.connect('proyecto.db')
     curs = connection.cursor()   
     
+    if (tipoespecie != ''):
+        if tipoespecie == 'paloma':
+            id_especie = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = 'paloma'").fetchone()
+            id_especie = id_especie[0]
+            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = 4", (id_especie,))
+            connection.commit()
+        if tipoespecie == 'peqsil':
+            id_especie = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = 'peqsil'").fetchone()
+            id_especie = id_especie[0]
+            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = 4", (id_especie,))
+            connection.commit()
+        if tipoespecie == 'medsil':
+            id_especie = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = 'medsil'").fetchone()
+            id_especie = id_especie[0]
+            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = 4", (id_especie,))
+            connection.commit()
+        if tipoespecie == 'corral':
+            id_especie = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = 'corral'").fetchone()
+            id_especie = id_especie[0]
+            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = 4", (id_especie,))
+            connection.commit()    
     if (especie != ''):
         curs.execute("UPDATE AVES SET Especie = (?) WHERE Id = 4", (especie,))
         connection.commit()
@@ -538,9 +573,18 @@ def update_bird():
         connection.commit()
     if (requer != ''):            
         curs.execute("UPDATE AVES SET Requer = (?) WHERE Id = 4", (requer,))
-    if (tiporef != ''):
-        curs.execute("UPDATE AVES SET TipoRef = (?) WHERE Id = 4", (tiporef,))
         connection.commit()
+    if (tiporef != ''):
+        if tiporef == 'hogar':
+            id_tiporef = curs.execute("SELECT Id FROM TIPOREFUGIO WHERE TipoRefug = 'hogar'").fetchone()
+            id_tiporef = id_tiporef[0]
+            curs.execute("UPDATE AVES SET Id_TIPOREFUGIO = (?) WHERE Id = 4", (id_tiporef,))
+            connection.commit()
+        else:
+            id_tiporef = curs.execute("SELECT Id FROM TIPOREFUGIO WHERE TipoRefug = 'transito'").fetchone()
+            id_tiporef = id_tiporef[0]
+            curs.execute("UPDATE AVES SET Id_TIPOREFUGIO = (?) WHERE Id = 4", (id_tiporef,))
+            connection.commit()    
     if (ubicacion != ''):
         id_ubicaciones = curs.execute("SELECT Id_UBICACIONES FROM AVES WHERE Id = 4").fetchone()
         id_ubicaciones = id_ubicaciones[0]
@@ -549,17 +593,15 @@ def update_bird():
     if (telef != ''):
         id_telefonos = curs.execute("SELECT Id_TELEFONOS FROM AVES WHERE Id = 4").fetchone()
         id_telefonos = id_telefonos[0]
-        print(id_telefonos)
         curs.execute("UPDATE TELEFONOS SET Telefono = (?) WHERE Id = (?)", (telef, id_telefonos,))
         connection.commit()
-        #New image upload
-        f = request.files['file']
+
+    #New image upload
+    f = request.files['file']
+    print(f)
+    if not f.filename == '':
         f.save(secure_filename(f.filename))
         image = secure_filename(f.filename)
-        image = image[0]
-        session["image"] = image
-        print(image)
-    if (image != ''):    
         connection = sqlite3.connect('proyecto.db')
         curs = connection.cursor()   
         curs.execute("UPDATE AVES SET Foto = (?) WHERE Id = 4", (image,))
@@ -567,12 +609,156 @@ def update_bird():
 
     return redirect(url_for('profile'))
 
-@app.route('/editbird/uploader', methods = ['GET', 'POST'])
-def upload_file():
-   if request.method == 'POST':
+@app.route('/editplace', methods=['GET', 'POST'])
+@login_required
+def editplace():
+    nombre = current_user.name
 
+    #Get user Id
+    user_id = current_user.get_id()
+        
+    if request.method == 'POST':
+        #Get bird Id
+        refugio_id = request.form.get('editplace')
+        session["refugio_id"] = refugio_id
 
-        return redirect('/editbird')
+        #Display info about this bird
+
+        # get DB data for this user's Id
+        connection = sqlite3.connect("proyecto.db")
+        cur = get_db().cursor()
+        ubicaciones = cur.execute("SELECT Id, Latitud, Longitud, Direccion \
+                      FROM UBICACIONES WHERE Id IN (SELECT Id_UBICACIONES FROM \
+                      AVES WHERE Id = (?))", (refugio_id,)).fetchall()
+        aves = cur.execute("SELECT Id, Especie, Edad, Foto, EstSalud, Requer, \
+               Id_ESPECIES, Id_TELEFONOS, Id_TIPOREFUGIO, Id_UBICACIONES FROM AVES \
+               WHERE Id = (?)", (refugio_id,)).fetchall()
+        telefonos = cur.execute("SELECT Id, Telefono FROM TELEFONOS WHERE Id IN \
+                (SELECT Id_TELEFONOS FROM AVES WHERE Id = (?))", (refugio_id,)).fetchall()
+        get_db().commit()
+    
+        #Convert data from DB to dict type
+        ubic_dict = helpers.make_dict(ubicaciones)
+        aves_dict = helpers.make_dict(aves)
+        telef_dict = helpers.make_dict(telefonos)
+
+        # Dict de tipo de refugio que necesita cada ave, listo para imprimir en profile.html
+        refugios_ave = []
+        if aves_dict:
+            for i in range(len(aves_dict)):
+                dict = aves_dict[str(i)]
+                refugios_ave.append(dict['Id_TIPOREFUGIO'])
+                
+            for i in range(len(refugios_ave)):
+                if (refugios_ave[i] == 1):
+                    refugios_ave[i] = 'Hogar'
+                else:
+                    refugios_ave[i] = 'Tránsito'
+
+        # Dict de categoría de ave, listo para imprimir en profile.html
+        tipo_especie = []
+        if aves_dict:
+            for i in range(len(aves_dict)):
+                dict = aves_dict[str(i)]
+                tipo_especie.append(dict['Id_ESPECIES'])
+        
+        for i in range(len(tipo_especie)):
+            if (tipo_especie[i] == 1):
+                tipo_especie[i] = 'paloma'
+            elif (tipo_especie[i] == 2):
+                tipo_especie[i] = 'peqsil'
+            elif (tipo_especie[i] == 3):
+                tipo_especie[i] = 'medsil'
+            elif (tipo_especie[i] == 4):
+                tipo_especie[i] = 'corral'
+
+        return render_template('editplace.html', nombre=nombre, ubic_dict=ubic_dict,
+        aves_dict=aves_dict, telef_dict=telef_dict, refugios_ave=refugios_ave, tipo_especie=tipo_especie)
+
+@app.route('/editplace/updateplace', methods=['GET', 'POST'])
+@login_required
+def update_place():
+    #Get user Id
+    user_id = current_user.get_id()
+
+    tipoespecie = request.form.get('tipoEspecies')
+    especie = request.form.get('especie')
+    edad = request.form.get('edad')
+    estsalud = request.form.get('estsalud')
+    requer = request.form.get('requer')
+    tiporef = request.form.get('tiporef')
+    ubicacion = request.form.get('ubicacion')
+    telef = request.form.get('telef')
+    foto = request.form.get('foto')
+    print(tipoespecie)
+    connection = sqlite3.connect('proyecto.db')
+    curs = connection.cursor()   
+    
+    if (tipoespecie != ''):
+        if tipoespecie == 'paloma':
+            id_especie = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = 'paloma'").fetchone()
+            id_especie = id_especie[0]
+            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = 4", (id_especie,))
+            connection.commit()
+        if tipoespecie == 'peqsil':
+            id_especie = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = 'peqsil'").fetchone()
+            id_especie = id_especie[0]
+            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = 4", (id_especie,))
+            connection.commit()
+        if tipoespecie == 'medsil':
+            id_especie = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = 'medsil'").fetchone()
+            id_especie = id_especie[0]
+            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = 4", (id_especie,))
+            connection.commit()
+        if tipoespecie == 'corral':
+            id_especie = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = 'corral'").fetchone()
+            id_especie = id_especie[0]
+            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = 4", (id_especie,))
+            connection.commit()
+    if (especie != ''):
+        curs.execute("UPDATE AVES SET Especie = (?) WHERE Id = 4", (especie,))
+        connection.commit()
+    if (edad != ''):
+        curs.execute("UPDATE AVES SET Edad = (?) WHERE Id = 4", (edad,))
+        connection.commit()
+    if (estsalud != ''):
+        curs.execute("UPDATE AVES SET EstSalud = (?) WHERE Id = 4", (estsalud,))
+        connection.commit()
+    if (requer != ''):            
+        curs.execute("UPDATE AVES SET Requer = (?) WHERE Id = 4", (requer,))
+        connection.commit()
+    if (tiporef != ''):
+        if tiporef == 'hogar':
+            id_tiporef = curs.execute("SELECT Id FROM TIPOREFUGIO WHERE TipoRefug = 'hogar'").fetchone()
+            id_tiporef = id_tiporef[0]
+            curs.execute("UPDATE AVES SET Id_TIPOREFUGIO = (?) WHERE Id = 4", (id_tiporef,))
+            connection.commit()
+        else:
+            id_tiporef = curs.execute("SELECT Id FROM TIPOREFUGIO WHERE TipoRefug = 'transito'").fetchone()
+            id_tiporef = id_tiporef[0]
+            curs.execute("UPDATE AVES SET Id_TIPOREFUGIO = (?) WHERE Id = 4", (id_tiporef,))
+            connection.commit()    
+    if (ubicacion != ''):
+        id_ubicaciones = curs.execute("SELECT Id_UBICACIONES FROM AVES WHERE Id = 4").fetchone()
+        id_ubicaciones = id_ubicaciones[0]
+        curs.execute("UPDATE UBICACIONES SET Direccion = (?) WHERE Id = (?)", (ubicacion, id_ubicaciones,))
+        connection.commit()
+    if (telef != ''):
+        id_telefonos = curs.execute("SELECT Id_TELEFONOS FROM AVES WHERE Id = 4").fetchone()
+        id_telefonos = id_telefonos[0]
+        curs.execute("UPDATE TELEFONOS SET Telefono = (?) WHERE Id = (?)", (telef, id_telefonos,))
+        connection.commit()
+    #New image upload
+    f = request.files['file']
+    if not f.filename == '':
+        f.save(secure_filename(f.filename))
+        image = secure_filename(f.filename)
+        connection = sqlite3.connect('proyecto.db')
+        curs = connection.cursor()   
+        curs.execute("UPDATE AVES SET Foto = (?) WHERE Id = 4", (image,))
+        connection.commit()
+
+    return redirect(url_for('profile'))
 
 if __name__ == "__main__":
     app.run(ssl_context='adhoc')
