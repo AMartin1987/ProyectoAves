@@ -201,12 +201,12 @@ def addplace():
         user_id = current_user.get_id()
         
         #WTForms
-        especie = form.especie.data
+        tipoespecie = form.especie.data
         contacto = form.contacto.data
         localiz = form.localiz.data
         loc_lat = form.loc_lat.data
         loc_long = form.loc_long.data
-        lugar = form.lugar.data
+        tiporef = form.lugar.data
 
         #Registering in database
         connection = sqlite3.connect("proyecto.db")
@@ -224,19 +224,22 @@ def addplace():
             connection.commit()
             idUbicaciones = curs.execute("SELECT MAX(Id) FROM UBICACIONES").fetchone()
         
-        tipoRef1 = 0
+        tipoRef1 = 'NULL'
         tipoRef2 = 'NULL'
-        if lugar[0] == 'hogar':
-            tipoRef1 = 1 #Si tildó hogar, eso va a la col 1 de la DB
-        elif lugar[0] == 'transito':
-            tipoRef1 = 2 #Si sólo tildó tránsito, eso va a la col 1
-            if len(lugar) > 1:
-                tipoRef2 = 1 #Si tildó ambas, hogar además va en la col 2
+        for i in range (len(tiporef)):
+            if tiporef[i] == 'hogar':
+                tipoRef1 = 1 #Si tildó hogar, eso va a la col 1 de la DB
+                if len(tiporef) > 1:
+                    tipoRef2 = 2 #Si tildó ambas opciones
+                    break
+            elif tiporef[i] == 'transito':
+                tipoRef1 = 2 #Si sólo tildó tránsito, eso va a la col 1
+
         lista2 = curs.execute("SELECT Telefono FROM TELEFONOS").fetchall()
         idTelefonos = 'none'
         for i in lista2:
             if i[0] == "('{0}',)".format(contacto):
-                idEspecies = curs.execute("SELECT Id FROM TELEFONOS WHERE Telefono = (?)", (contacto,))
+                idTelefonos = curs.execute("SELECT Id FROM TELEFONOS WHERE Telefono = (?)", (contacto,))
                 break
         if idTelefonos == 'none':
             curs.execute("INSERT INTO TELEFONOS (Telefono) VALUES (?)", (contacto,))
@@ -248,31 +251,42 @@ def addplace():
         especie3 = 'NULL'
         especie4 = 'NULL'
 
-        if especie[0] == 'paloma':
-            especie1 = 'paloma' #Si tildó paloma, eso va a la col 1 de la DB
-            if len(especie) > 1:
-                if especie[1] == 'peqsil':
-                    especie2 = 'peqsil' #Si además de paloma tildó peqsil, eso además va a la col 2
-                    if len(especie) > 2:
-                        if especie[2] == 'medsil':
-                            especie3 = 'medsil'  #Si además de paloma y peqsil tildó medsil, eso además va a la col 3
-                            if len(especie) > 3:
-                                if especie[3] == 'corral':
-                                    especie4 = 'corral'  #Si además tildó corral, esto va en col 4                            
-                elif especie[1] == 'medsil':
-                    especie2 = 'medsil' #Si además de paloma tildó medsil, eso además va a la col 2
-                    if len(especie) > 2:
-                        if especie[2] == 'corral':
-                            especie3 = 'corral' #Si además de paloma y medsil tildó corral, este va a la col 3
-                elif especie[1] == 'corral':
-                    especie2 = 'corral' #Si además de paloma tildó corral, eso además va a la col 2
-        elif especie[0] == 'peqsil':
-            especie1 = 'peqsil' #Si sólo tildó peqsil, eso va a la col 1
-        elif especie[0] == 'medsil':
-            especie1 = 'medsil' #Si sólo tildó medsil, eso va a la col 1
-        elif especie[0] == 'corral':
-            especie1 = 'corral' #Si sólo tildó corral, eso va a la col 1                     
-        print(especie1)
+        if tipoespecie[0] == 'paloma':
+            especie1 = 1 #Si tildó paloma, eso va a la col 1 de la DB
+            if len(tipoespecie) > 1:
+                if tipoespecie[1] == 'peqsil':
+                    especie2 = 2 #Si además de paloma tildó peqsil, eso además va a la col 2
+                    if len(tipoespecie) > 2:
+                        if tipoespecie[2] == 'medsil':
+                            especie3 = 3  #Si además de paloma y peqsil tildó medsil, eso además va a la col 3
+                            if len(tipoespecie) > 3:
+                                if tipoespecie[3] == 'corral':
+                                    especie4 = 4  #Si además tildó corral, esto va en col 4                            
+                elif tipoespecie[1] == 'medsil':
+                    especie2 = 3 #Si además de paloma tildó medsil, eso además va a la col 2
+                    if len(tipoespecie) > 2:
+                        if tipoespecie[2] == 'corral':
+                            especie3 = 4 #Si además de paloma y medsil tildó corral, este va a la col 3
+                elif tipoespecie[1] == 'corral':
+                    especie2 = 4 #Si además de paloma tildó corral, eso además va a la col 2
+        elif tipoespecie[0] == 'peqsil':
+            especie1 = 2 #Si sólo tildó peqsil, eso va a la col 1
+            if len(tipoespecie) > 1:
+                if tipoespecie[1] == 'medsil':
+                    especie2 = 3  #Si además de paloma y peqsil tildó medsil, eso además va a la col 2
+                    if len(tipoespecie) > 2:
+                        if tipoespecie[2] == 'corral':
+                            especie3 = 4  #Si además tildó corral, esto va en col 3
+                if tipoespecie[1] == 'corral':
+                            especie2 = 4  #Si además tildó corral, esto va en col 2             
+        elif tipoespecie[0] == 'medsil':
+            especie1 = 3 #Si sólo tildó medsil, eso va a la col 1
+            if len(tipoespecie) > 1:
+                if tipoespecie[1] == 'corral':
+                    especie2 = 4  #Si además tildó corral, esto va en col 2
+        elif tipoespecie[0] == 'corral':
+            especie1 = 4 #Si sólo tildó corral, eso va a la col 1                   
+
         curs.execute(
             "INSERT INTO REFUGIOS (Id_USUARIOS, Id_UBICACIONES, Id_ESPECIES1, Id_ESPECIES2, Id_ESPECIES3, Id_ESPECIES4, Id_TELEFONOS, Id_TIPOREFUGIO1, Id_TIPOREFUGIO2) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (
             user_id, idUbicaciones[0], especie1, especie2, especie3, especie4, idTelefonos[0], tipoRef1, tipoRef2))
@@ -324,7 +338,7 @@ def login():
      if form.email.data == Us.email and check_password_hash(Us.password, form.password.data):
         login_user(Us, remember=form.remember.data)
         Umail = list({form.email.data})[0].split('@')[0]
-        flash('Has iniciado sesión.'+Umail)
+        flash('Iniciaste sesión.')
         next = request.args.get('next')
         return redirect(get_safe_redirect(next) or url_for('index'))
      else:
@@ -375,12 +389,12 @@ def profile():
     # String de tipos de especies que se aceptan en cada refugio, lista para imprimir en profile.html
     
     def translate(esp):
-        if esp == 'paloma':
+        if esp == 1:
             esp = 'palomas'
-        elif esp == 'peqsil':
+        elif esp == 2:
             esp = 'pequeñas aves silvestres'
-        elif esp == 'medsil':
-            esp = 'aves silvestres de tamaño medio'
+        elif esp == 3:
+            esp = 'aves silvestres medianas'
         else:
             esp = 'aves de corral'
         return esp    
@@ -467,7 +481,7 @@ def editbird():
         #Get bird Id
         bird_id = request.form.get('editbird')
         session["bird_id"] = bird_id
-
+ 
         #Display info about this bird
 
         # get DB data for this user's Id
@@ -525,6 +539,10 @@ def editbird():
 @login_required
 def update_bird():
     nombre = current_user.name    
+    
+    #Get bird Id
+    bird_id = request.form.get('updatebird')
+    session["bird_id"] = bird_id
 
     #Get user Id
     user_id = current_user.get_id()
@@ -545,53 +563,53 @@ def update_bird():
         if tipoespecie == 'paloma':
             id_especie = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = 'paloma'").fetchone()
             id_especie = id_especie[0]
-            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = 4", (id_especie,))
+            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = (?)", (id_especie, bird_id,))
             connection.commit()
         if tipoespecie == 'peqsil':
             id_especie = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = 'peqsil'").fetchone()
             id_especie = id_especie[0]
-            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = 4", (id_especie,))
+            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = (?)", (id_especie, bird_id,))
             connection.commit()
         if tipoespecie == 'medsil':
             id_especie = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = 'medsil'").fetchone()
             id_especie = id_especie[0]
-            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = 4", (id_especie,))
+            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = (?)", (id_especie, bird_id,))
             connection.commit()
         if tipoespecie == 'corral':
             id_especie = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = 'corral'").fetchone()
             id_especie = id_especie[0]
-            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = 4", (id_especie,))
+            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = (?)", (id_especie, bird_id,))
             connection.commit()    
     if (especie != ''):
-        curs.execute("UPDATE AVES SET Especie = (?) WHERE Id = 4", (especie,))
+        curs.execute("UPDATE AVES SET Especie = (?) WHERE Id = (?)", (especie, bird_id,))
         connection.commit()
     if (edad != ''):
-        curs.execute("UPDATE AVES SET Edad = (?) WHERE Id = 4", (edad,))
+        curs.execute("UPDATE AVES SET Edad = (?) WHERE Id = (?)", (edad, bird_id,))
         connection.commit()
     if (estsalud != ''):
-        curs.execute("UPDATE AVES SET EstSalud = (?) WHERE Id = 4", (estsalud,))
+        curs.execute("UPDATE AVES SET EstSalud = (?) WHERE Id = (?)", (estsalud, bird_id,))
         connection.commit()
     if (requer != ''):            
-        curs.execute("UPDATE AVES SET Requer = (?) WHERE Id = 4", (requer,))
+        curs.execute("UPDATE AVES SET Requer = (?) WHERE Id = (?)", (requer, bird_id,))
         connection.commit()
     if (tiporef != ''):
         if tiporef == 'hogar':
             id_tiporef = curs.execute("SELECT Id FROM TIPOREFUGIO WHERE TipoRefug = 'hogar'").fetchone()
             id_tiporef = id_tiporef[0]
-            curs.execute("UPDATE AVES SET Id_TIPOREFUGIO = (?) WHERE Id = 4", (id_tiporef,))
+            curs.execute("UPDATE AVES SET Id_TIPOREFUGIO = (?) WHERE Id = (?)", (id_tiporef, bird_id,))
             connection.commit()
         else:
             id_tiporef = curs.execute("SELECT Id FROM TIPOREFUGIO WHERE TipoRefug = 'transito'").fetchone()
             id_tiporef = id_tiporef[0]
-            curs.execute("UPDATE AVES SET Id_TIPOREFUGIO = (?) WHERE Id = 4", (id_tiporef,))
+            curs.execute("UPDATE AVES SET Id_TIPOREFUGIO = (?) WHERE Id = (?)", (id_tiporef, bird_id,))
             connection.commit()    
     if (ubicacion != ''):
-        id_ubicaciones = curs.execute("SELECT Id_UBICACIONES FROM AVES WHERE Id = 4").fetchone()
+        id_ubicaciones = curs.execute("SELECT Id_UBICACIONES FROM AVES WHERE Id = (?)", (bird_id,)).fetchone()
         id_ubicaciones = id_ubicaciones[0]
         curs.execute("UPDATE UBICACIONES SET Direccion = (?) WHERE Id = (?)", (ubicacion, id_ubicaciones,))
         connection.commit()
     if (telef != ''):
-        id_telefonos = curs.execute("SELECT Id_TELEFONOS FROM AVES WHERE Id = 4").fetchone()
+        id_telefonos = curs.execute("SELECT Id_TELEFONOS FROM AVES WHERE Id = (?)", (bird_id,)).fetchone()
         id_telefonos = id_telefonos[0]
         curs.execute("UPDATE TELEFONOS SET Telefono = (?) WHERE Id = (?)", (telef, id_telefonos,))
         connection.commit()
@@ -599,13 +617,14 @@ def update_bird():
     #New image upload
     f = request.files['file']
     print(f)
-    if not f.filename == '':
-        f.save(secure_filename(f.filename))
-        image = secure_filename(f.filename)
-        connection = sqlite3.connect('proyecto.db')
-        curs = connection.cursor()   
-        curs.execute("UPDATE AVES SET Foto = (?) WHERE Id = 4", (image,))
-        connection.commit()
+
+    f.save(secure_filename(f.filename))
+    image = secure_filename(f.filename)
+    print(image, bird_id)
+    connection = sqlite3.connect('proyecto.db')
+    curs = connection.cursor()   
+    curs.execute("UPDATE AVES SET Foto = (?) WHERE Id = (?)", (image, bird_id,))
+    connection.commit()
 
     return redirect(url_for('profile'))
 
@@ -618,146 +637,139 @@ def editplace():
     user_id = current_user.get_id()
         
     if request.method == 'POST':
-        #Get bird Id
+        #Get refugio Id
         refugio_id = request.form.get('editplace')
         session["refugio_id"] = refugio_id
 
-        #Display info about this bird
-
-        # get DB data for this user's Id
+        # get DB data for this user's refugio Id
         connection = sqlite3.connect("proyecto.db")
         cur = get_db().cursor()
         ubicaciones = cur.execute("SELECT Id, Latitud, Longitud, Direccion \
                       FROM UBICACIONES WHERE Id IN (SELECT Id_UBICACIONES FROM \
-                      AVES WHERE Id = (?))", (refugio_id,)).fetchall()
-        aves = cur.execute("SELECT Id, Especie, Edad, Foto, EstSalud, Requer, \
-               Id_ESPECIES, Id_TELEFONOS, Id_TIPOREFUGIO, Id_UBICACIONES FROM AVES \
-               WHERE Id = (?)", (refugio_id,)).fetchall()
+                      REFUGIOS WHERE Id = (?))", (refugio_id,)).fetchall()
+        refugios = cur.execute("SELECT Id, Id_USUARIOS, Id_UBICACIONES, Id_ESPECIES1, Id_ESPECIES2, Id_ESPECIES3, Id_ESPECIES4, Id_TELEFONOS, Id_TIPOREFUGIO1, Id_TIPOREFUGIO2 \
+               FROM REFUGIOS WHERE Id = (?)", (refugio_id,)).fetchall()
         telefonos = cur.execute("SELECT Id, Telefono FROM TELEFONOS WHERE Id IN \
-                (SELECT Id_TELEFONOS FROM AVES WHERE Id = (?))", (refugio_id,)).fetchall()
+                (SELECT Id_TELEFONOS FROM REFUGIOS WHERE Id = (?))", (refugio_id,)).fetchall()
         get_db().commit()
     
         #Convert data from DB to dict type
         ubic_dict = helpers.make_dict(ubicaciones)
-        aves_dict = helpers.make_dict(aves)
+        refug_dict = helpers.make_dict(refugios)
         telef_dict = helpers.make_dict(telefonos)
 
-        # Dict de tipo de refugio que necesita cada ave, listo para imprimir en profile.html
-        refugios_ave = []
-        if aves_dict:
-            for i in range(len(aves_dict)):
-                dict = aves_dict[str(i)]
-                refugios_ave.append(dict['Id_TIPOREFUGIO'])
-                
-            for i in range(len(refugios_ave)):
-                if (refugios_ave[i] == 1):
-                    refugios_ave[i] = 'Hogar'
-                else:
-                    refugios_ave[i] = 'Tránsito'
-
-        # Dict de categoría de ave, listo para imprimir en profile.html
-        tipo_especie = []
-        if aves_dict:
-            for i in range(len(aves_dict)):
-                dict = aves_dict[str(i)]
-                tipo_especie.append(dict['Id_ESPECIES'])
+        # Dict de tipo de refugio ofrecidos, listo para imprimir
+        tipo_refugio = []
+        if refug_dict:
+            for i in range(len(refug_dict)):
+                dict = refug_dict[str(i)]
+                tipo_refugio.append(dict['Id_TIPOREFUGIO1'])
+                tipo_refugio.append(dict['Id_TIPOREFUGIO2'])
         
-        for i in range(len(tipo_especie)):
-            if (tipo_especie[i] == 1):
-                tipo_especie[i] = 'paloma'
-            elif (tipo_especie[i] == 2):
-                tipo_especie[i] = 'peqsil'
-            elif (tipo_especie[i] == 3):
-                tipo_especie[i] = 'medsil'
-            elif (tipo_especie[i] == 4):
-                tipo_especie[i] = 'corral'
+        # Dict de especies que puede cuidar, listo para imprimir
+        especies_ref = []
+        if refug_dict:
+            for i in range(len(refug_dict)):
+                dict = refug_dict[str(i)]
+                especies_ref.append(dict['Id_ESPECIES1'])
+                especies_ref.append(dict['Id_ESPECIES2'])
+                especies_ref.append(dict['Id_ESPECIES3'])
+                especies_ref.append(dict['Id_ESPECIES4'])
 
         return render_template('editplace.html', nombre=nombre, ubic_dict=ubic_dict,
-        aves_dict=aves_dict, telef_dict=telef_dict, refugios_ave=refugios_ave, tipo_especie=tipo_especie)
+       telef_dict=telef_dict, refug_dict=refug_dict, tipo_refugio=tipo_refugio,
+       especies_ref=especies_ref)
 
 @app.route('/editplace/updateplace', methods=['GET', 'POST'])
 @login_required
 def update_place():
     #Get user Id
     user_id = current_user.get_id()
+    place_id = request.form.get('updateplace')
 
-    tipoespecie = request.form.get('tipoEspecies')
-    especie = request.form.get('especie')
-    edad = request.form.get('edad')
-    estsalud = request.form.get('estsalud')
-    requer = request.form.get('requer')
-    tiporef = request.form.get('tiporef')
+    tipoespecie = request.form.getlist('tipoespecie')
+    tiporef = request.form.getlist('tiporef')
     ubicacion = request.form.get('ubicacion')
     telef = request.form.get('telef')
-    foto = request.form.get('foto')
-    print(tipoespecie)
+
     connection = sqlite3.connect('proyecto.db')
     curs = connection.cursor()   
-    
-    if (tipoespecie != ''):
-        if tipoespecie == 'paloma':
-            id_especie = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = 'paloma'").fetchone()
-            id_especie = id_especie[0]
-            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = 4", (id_especie,))
-            connection.commit()
-        if tipoespecie == 'peqsil':
-            id_especie = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = 'peqsil'").fetchone()
-            id_especie = id_especie[0]
-            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = 4", (id_especie,))
-            connection.commit()
-        if tipoespecie == 'medsil':
-            id_especie = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = 'medsil'").fetchone()
-            id_especie = id_especie[0]
-            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = 4", (id_especie,))
-            connection.commit()
-        if tipoespecie == 'corral':
-            id_especie = curs.execute("SELECT Id FROM ESPECIES WHERE Categoria = 'corral'").fetchone()
-            id_especie = id_especie[0]
-            curs.execute("UPDATE AVES SET Id_ESPECIES = (?) WHERE Id = 4", (id_especie,))
-            connection.commit()
-    if (especie != ''):
-        curs.execute("UPDATE AVES SET Especie = (?) WHERE Id = 4", (especie,))
-        connection.commit()
-    if (edad != ''):
-        curs.execute("UPDATE AVES SET Edad = (?) WHERE Id = 4", (edad,))
-        connection.commit()
-    if (estsalud != ''):
-        curs.execute("UPDATE AVES SET EstSalud = (?) WHERE Id = 4", (estsalud,))
-        connection.commit()
-    if (requer != ''):            
-        curs.execute("UPDATE AVES SET Requer = (?) WHERE Id = 4", (requer,))
-        connection.commit()
-    if (tiporef != ''):
-        if tiporef == 'hogar':
-            id_tiporef = curs.execute("SELECT Id FROM TIPOREFUGIO WHERE TipoRefug = 'hogar'").fetchone()
-            id_tiporef = id_tiporef[0]
-            curs.execute("UPDATE AVES SET Id_TIPOREFUGIO = (?) WHERE Id = 4", (id_tiporef,))
-            connection.commit()
-        else:
-            id_tiporef = curs.execute("SELECT Id FROM TIPOREFUGIO WHERE TipoRefug = 'transito'").fetchone()
-            id_tiporef = id_tiporef[0]
-            curs.execute("UPDATE AVES SET Id_TIPOREFUGIO = (?) WHERE Id = 4", (id_tiporef,))
-            connection.commit()    
+
+    #update tipos de refugios aceptados
+    tipoRef1 = 'NULL'
+    tipoRef2 = 'NULL'
+    for i in range (len(tiporef)):
+        if tiporef[i] == 'hogar':
+            tipoRef1 = 1 #Si tildó hogar, eso va a la col 1 de la DB
+            if len(tiporef) > 1:
+                tipoRef2 = 2 #Si tildó ambas opciones
+                break
+        elif tiporef[i] == 'transito':
+            tipoRef1 = 2 #Si sólo tildó tránsito, eso va a la col 1
+  
+    curs.execute("UPDATE REFUGIOS SET Id_TIPOREFUGIO1 = (?), Id_TIPOREFUGIO2 = (?) WHERE Id = (?)", (tipoRef1, tipoRef2, place_id,))
+    connection.commit()
+
+    #update tipos de especies aceptadas en el refugio
+    especie1 = 'NULL'
+    especie2 = 'NULL'
+    especie3 = 'NULL'
+    especie4 = 'NULL'
+
+    if tipoespecie[0] == 'paloma':
+        especie1 = 1 #Si tildó paloma, eso va a la col 1 de la DB
+        if len(tipoespecie) > 1:
+            if tipoespecie[1] == 'peqsil':
+                especie2 = 2 #Si además de paloma tildó peqsil, eso además va a la col 2
+                if len(tipoespecie) > 2:
+                    if tipoespecie[2] == 'medsil':
+                        especie3 = 3  #Si además de paloma y peqsil tildó medsil, eso además va a la col 3
+                        if len(tipoespecie) > 3:
+                            if tipoespecie[3] == 'corral':
+                                especie4 = 4  #Si además tildó corral, esto va en col 4                            
+            elif tipoespecie[1] == 'medsil':
+                especie2 = 3 #Si además de paloma tildó medsil, eso además va a la col 2
+                if len(tipoespecie) > 2:
+                    if tipoespecie[2] == 'corral':
+                        especie3 = 4 #Si además de paloma y medsil tildó corral, este va a la col 3
+            elif tipoespecie[1] == 'corral':
+                especie2 = 4 #Si además de paloma tildó corral, eso además va a la col 2
+    elif tipoespecie[0] == 'peqsil':
+        especie1 = 2 #Si sólo tildó peqsil, eso va a la col 1
+        if len(tipoespecie) > 1:
+            if tipoespecie[1] == 'medsil':
+                especie2 = 3  #Si además de paloma y peqsil tildó medsil, eso además va a la col 2
+                if len(tipoespecie) > 2:
+                    if tipoespecie[2] == 'corral':
+                        especie3 = 4  #Si además tildó corral, esto va en col 3
+            if tipoespecie[1] == 'corral':
+                        especie2 = 4  #Si además tildó corral, esto va en col 2             
+    elif tipoespecie[0] == 'medsil':
+        especie1 = 3 #Si sólo tildó medsil, eso va a la col 1
+        if len(tipoespecie) > 1:
+            if tipoespecie[1] == 'corral':
+                especie2 = 4  #Si además tildó corral, esto va en col 2
+    elif tipoespecie[0] == 'corral':
+        especie1 = 4 #Si sólo tildó corral, eso va a la col 1
+
+    curs.execute("UPDATE REFUGIOS SET Id_ESPECIES1 = (?), Id_ESPECIES2 = (?), Id_ESPECIES3 = (?), Id_ESPECIES4 = (?) WHERE Id = (?)", (especie1, especie2, especie3, especie4, place_id,))
+    connection.commit()
+
+    #update ubicacion
     if (ubicacion != ''):
-        id_ubicaciones = curs.execute("SELECT Id_UBICACIONES FROM AVES WHERE Id = 4").fetchone()
+        id_ubicaciones = curs.execute("SELECT Id_UBICACIONES FROM REFUGIOS WHERE Id = (?)", (place_id,)).fetchone()
         id_ubicaciones = id_ubicaciones[0]
         curs.execute("UPDATE UBICACIONES SET Direccion = (?) WHERE Id = (?)", (ubicacion, id_ubicaciones,))
         connection.commit()
+    
+    #update teléfono
     if (telef != ''):
-        id_telefonos = curs.execute("SELECT Id_TELEFONOS FROM AVES WHERE Id = 4").fetchone()
+        id_telefonos = curs.execute("SELECT Id_TELEFONOS FROM REFUGIOS WHERE Id = (?)", (place_id,)).fetchone()
         id_telefonos = id_telefonos[0]
         curs.execute("UPDATE TELEFONOS SET Telefono = (?) WHERE Id = (?)", (telef, id_telefonos,))
         connection.commit()
-    #New image upload
-    f = request.files['file']
-    if not f.filename == '':
-        f.save(secure_filename(f.filename))
-        image = secure_filename(f.filename)
-        connection = sqlite3.connect('proyecto.db')
-        curs = connection.cursor()   
-        curs.execute("UPDATE AVES SET Foto = (?) WHERE Id = 4", (image,))
-        connection.commit()
 
+    
     return redirect(url_for('profile'))
 
 if __name__ == "__main__":

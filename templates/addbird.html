@@ -14,20 +14,22 @@
 
 {% endblock %}
 
+{% block bg_image %}
+<div class="bg-image" 
+style="background-image: url('static/images/torcacitabg.jpg');
+    height: 100vh; background-size: cover; width: 100%; position:absolute">
+</div>
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid d-flex" style="margin:none;">
-  <div class="bg-image" 
-  style="background-image: url('static/aves-1.jpg');
-      height: 100vh; background-size: cover; width: 100%; position:absolute">
-  </div>
   <div class="row align-items-center">
-    <div class="col-5">
+    <div class="col-6">
       <div class="card">
         <div class="card-body">
           <form method='POST' action="" enctype="multipart/form-data">
           {{ form.hidden_tag() }}
             <fieldset class="form-group"> 
-            <h1>Registra un ave caída</h1>
             <div class="form-group">
               <div class="mb-3">
                 {{ form.especie.label }}
@@ -92,17 +94,18 @@
               <div class="mb-3">
               <h1>File Upload</h1>
                 {{ form.imagen }}
+              </div>
+              <div>
+                {{ form.submit }}
               </div>  
           </form>
         </div>
-              <div>
-                {{ form.submit }}
-              </div>
       </div>
     </div>
-      <div class="col-7 d-flex align-items-center" style="z-index:10; color:rgb(231, 231, 231); text-align: end;">
-        <h1>Reportá un ave caída para que otras personas le den un lugar de tránsito o un hogar permanente.</h1>
-      </div>
+
   </div>
+  <div class="col-6 d-flex align-items-center" style="z-index:10; color:rgb(231, 231, 231); text-align: end;">
+    <h1>Reportá un ave caída para que otras personas le den refugio.</h1>
+</div>
 </div>
   {% endblock %}

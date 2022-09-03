@@ -96,8 +96,9 @@
         {% endfor%}
        
         <input id="foto" type="file" name="file"> <br>
-        
-        <input type="submit" value="Confirmar cambios">
+        {% for ave in aves_dict %}
+        <button type="submit" name="updatebird" value="{{ aves_dict[ave].Id }}">Confirmar cambios</button>
+        {% endfor%}
         </form>
     </div>   
      

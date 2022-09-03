@@ -1,24 +1,51 @@
 {% extends "layout.html" %}
 
+{% block head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $("#titulo1").hide().fadeIn();
+        $("#titulo2").hide().fadeIn(3000);
+        $("#titulo3").hide().fadeIn(6000);
+    });
+</script>
+{% endblock %}
+
 {% block content %}
-<div class="container-fluid d-flex" style="padding: 0; min-height: 100%; height: 100%;">
-    <div class="bg-image" 
-    style="background-image: url('static/images/torcacita.jpg');
-        height: 100vh; background-size: cover; width: 100%; position:absolute">
+
+<div>
+    {% for message in get_flashed_messages() %}
+      <div class="alert alert-success" >{{ message }}</div>
+    {% endfor %}            
+  </div>    
+<div class="container-fluid" id="big-container">
+    <div class="container" id="title">
+        <h1 class="titulo-index display-1 text-white text-end" id="titulo1">Ayudemos a </h1>
+        <h1 class="titulo-index display-1 text-white text-end" id="titulo2">nuestras aves </h1>
+        <h1 class="titulo-index display-1 text-white text-end" id="titulo3">caídas. </h1>
     </div>
-    <div class="row h-100">
-        <h1 class="col-9 display-4 text-end" style="color:white; z-index: 10; padding-top: 15%; padding-bottom:5%">Ayudemos a nuestras aves caídas.</h1>
-        <div class="col-3 card" style="padding-top: 5%; color: rgb(175, 175, 175); background : rgba(0,0,0,0.5)">
-            <div class="card-body h-100">
-                <h5 class="card-title">Reportar un ave caída</h5>
+    <div class="container card " id="index-card">
+        <div class="card-body text-right ">
+            <div class="box">
+                <h5 class="card-title ">Informar un ave caída.</h5>
                 <a href="{{ url_for('addbird') }}" class="btn btn-primary">Ingresar</a>
-                <h5 class="card-title">Ofrecer un hogar o lugar de tránsito para un ave</h5>
+            </div>
+            <div class="box">
+                <h5 class="card-title">Ofrecer un hogar o tránsito para un ave.</h5>
                 <a href="{{ url_for('addplace') }}" class="btn btn-primary">Ingresar</a>
-                <h5 class="card-title">Mostrar aves y refugios cercanos</h5>
+            </div>
+            <div class="box">
+                <h5 class="card-title">Mostrar aves y refugios cercanos.</h5>
                 <a href="{{ url_for('search') }}" class="btn btn-primary">Mostrar en el mapa</a>
             </div>
         </div>
     </div>
+
 </div>
+<footer class="container-fluid">
+    <p id="text-footer">2022 | Sitio creado por  <a href="mailto:alejandramartin@outlook.com" id="textmail"> Alejandra Martín.</a></p>
+</footer>
+
 {% endblock %}  
+
 

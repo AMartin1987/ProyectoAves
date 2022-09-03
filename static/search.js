@@ -58,6 +58,7 @@ function initMap() {
             foto.push(img);
             direccion = ubic_dict[i].Direccion.split(',');
             direccion = direccion[0];
+
             const info = new google.maps.InfoWindow({
             content: '<div style=line-height:2;text-align: left><span style="font-size:1.2em;font-weight: bold;">' +
             especie[j] +
@@ -141,14 +142,29 @@ function initMap() {
             if (refug_dict[k].Id_ESPECIES4 !== 'NULL'){
                 especies.push(refug_dict[k].Id_ESPECIES4);
             }
-            for (var n = 0; n < especies.length; n++) {
-                especies[n] = especies[n].replace("paloma","palomas");
-                especies[n] = especies[n].replace("peqsil"," pequeñas aves silvestres");
-                especies[n] = especies[n].replace("medsil"," aves silvestres de tamaño mediano");
-                especies[n] = especies[n].replace("corral"," aves de corral");
-            }  
-           const info2 = new google.maps.InfoWindow({
-            content: '<div style=line-height:2;text-align: left><span style="font-size:1.2em;font-weight: bold;">Refugio para: </span><br>' +
+
+            function replace_strings (esp) {
+              for (var n = 0; n < esp.length; n++) {              
+                 if (esp[n] == 1) {
+                    esp[n] = "palomas";
+                 }
+                 else if (esp[n] == 2) {
+                    esp[n] = "pequeñas aves silvestres";
+                 }
+                 else if (esp[n] == 3) {
+                    esp[n] = "aves silvestres de tamaño medio";
+                 }
+                 else if (esp[n] == 4) {
+                  esp[n] = "aves de corral";
+                 }
+              }
+              return esp;
+            }
+
+            replace_strings(especies);
+
+            const info2 = new google.maps.InfoWindow({
+              content: '<div style=line-height:2;text-align: left><span style="font-size:1.2em;font-weight: bold;">Refugio para: </span><br>' +
                 tiporef1 + tiporef2 + '<br><span style="text-decoration:underline;">Se reciben:</span> ' + especies + '<span>.</span><br><span style="text-decoration:underline;">Dirección:</span> ' +
                 direccion + '<br><div id="datos_refugios"><a href="">Contacto y más información</a></div></div>'
             });
@@ -174,12 +190,9 @@ function initMap() {
                 if (refug_dict[k].Id_ESPECIES4 =! 'NULL'){
                     especies.push(refug_dict[k].Id_ESPECIES4);
                 }
-                for (var n = 0; n < especies.length; n++) {
-                    especies[n] = especies[n].replace("paloma","palomas");
-                    especies[n] = especies[n].replace("peqsil"," pequeñas aves silvestres");
-                    especies[n] = especies[n].replace("medsil"," aves silvestres de mayor tamaño");
-                    especies[n] = especies[n].replace("corral"," aves de corral");
-                }
+                
+                replace_strings(especies);
+                
                 document.getElementById('especies').innerHTML = especies;
                 especies = [];  
                 if (refug_dict[k].Id_TIPOREFUGIO1 == '1') {

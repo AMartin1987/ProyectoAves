@@ -17,7 +17,7 @@ class SignupForm(FlaskForm):
 
 class LoginForm(FlaskForm):
   email = StringField('Email',validators=[InputRequired(),Email()])
-  password = PasswordField('Password',validators=[InputRequired()])
+  password = PasswordField('Contraseña',validators=[InputRequired()])
   remember = BooleanField('Recordarme')
   submit = SubmitField('Iniciar sesión')
 
@@ -71,7 +71,7 @@ class PlaceForm(FlaskForm):
     "Ejemplo: 'Estomba 900, Bahía Blanca.'"})
   loc_lat = HiddenField()
   loc_long = HiddenField()
-  especie = SelectMultipleField('¿Qué tipos de aves podés alojar? (marcar una o varias):', [InputRequired()],\
+  especie = SelectMultipleField('¿Qué aves se pueden alojar aquí? (marcar una o varias):', [InputRequired()],\
     choices=[('paloma', 'Palomas (torcazas, urbanas, etc.)'), \
     ('peqsil', 'Pequeñas aves silvestres(gorriones, horneros, etc.)'),\
     ('medsil', 'Aves silvestres medianas (loros, búhos, chimangos, etc.)'), ('corral', 'Aves de granja \

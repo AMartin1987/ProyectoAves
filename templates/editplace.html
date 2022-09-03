@@ -19,8 +19,7 @@
 {% block content %}
 <div class="container">
   <div class="row">
-    <div class="col-8">
-        {% for ave in aves_dict %}
+    <div class="col-12">
         <div class="table-content">
           <table class="table table-borded table-striped" style="table-layout:fixed; overflow:auto;" id="table-list">
             <thead>
@@ -28,34 +27,14 @@
               </tr>
             </thead>
             <tbody>
+              <form action="/editplace/updateplace" method="post">
               <tr>
-                <form action="/editbird/updatebird" method="post" enctype="multipart/form-data">
-                <td>Especie:</td>
-                <td><input class="form" type="text" name="especie" placeholder="{{aves_dict[ave].Especie[0]|upper}}{{aves_dict[ave].Especie[1:]}}"></td>
-              </tr>
-              <tr>
-                <td>Edad:</td>
-                <td><input class="form" type="text" name="edad" placeholder="{{aves_dict[ave].Edad[0]|upper}}{{aves_dict[ave].Edad[1:]}}"></td>
-              </tr>
-              <tr>
-                <td>Estado de salud:</td>
-                <td><input class="form" type="text" name="estsalud" placeholder="{{aves_dict[ave].EstSalud[0]|upper}}{{aves_dict[ave].EstSalud[1:]}}"></td>
-              </tr>
-              <tr>
-                <td>Requerimientos de cuidado:</td>
-                <td><input class="form" type="text" name="requer" placeholder="{{aves_dict[ave].Requer[0]|upper}}{{aves_dict[ave].Requer[1:]}}"></td>
-              </tr>
-        {% endfor %}
-              <tr>
-              {% for tipo in refugios_ave %}
-                <p hidden id="tiporef"> {{refugios_ave[0]}} </p>
-              {% endfor %}              
-                <td>Necesita un lugar para: </td>
+                <td>Lugar ofrecido como... (marcar uno o ambos): </td>
                 <td>
-                <input type="radio" id="hogar" name="tiporef" value="hogar">
-                <label for="tiporef">Hogar (permanente)</label><br>
-                <input type="radio" id="transito" name="tiporef" value="transito">
-                <label for="tiporef">Tránsito</label><br>
+                  <input type="checkbox" id="hogar" name="tiporef" value="hogar">
+                  <label for="transito"> Un hogar permanente.</label><br>
+                  <input type="checkbox" id="transito" name="tiporef" value="transito">
+                  <label for="hogar"> Un lugar de tránsito hasta su liberación.</label><br>
                 </td>
               </tr>
               <tr>
@@ -65,6 +44,18 @@
                 {% endfor %}
               </tr>
               <tr>
+                <td>¿Qué aves se pueden alojar aquí? (marcar una o varias): <br>
+                  <input type="checkbox" id="paloma" name="tipoespecie" value="paloma">
+                  <label for="paloma"> Palomas (torcazas, urbanas, etc.)</label><br>
+                  <input type="checkbox" id="peqsil" name="tipoespecie" value="peqsil">
+                  <label for="peqsil"> Pequeñas aves silvestres(gorriones, horneros, etc.)</label><br>
+                  <input type="checkbox" id="medsil" name="tipoespecie" value="medsil">
+                  <label for="medsil"> Aves silvestres medianas (loros, búhos, chimangos, etc.)</label><br>
+                  <input type="checkbox" id="corral" name="tipoespecie" value="corral">
+                  <label for="corral"> Aves de granja (gallinas, patos, etc.)</label><br>
+                </td>
+              </tr>      
+              <tr>
                 {% for telefono in telef_dict %}
                 <td>Teléfono de contacto (celular y/o Whatsapp): </td>
                 <td><input class="form" type="text" name="telef" placeholder="{{telef_dict[telefono].Telefono}}"></td>
@@ -72,21 +63,12 @@
               </tr>
             </tbody>
           </table>
+          {% for refugio in refug_dict %}
+            <button type="submit" name="updateplace" value="{{ refug_dict[refugio].Id }}">Confirmar cambios</button>
+          {% endfor%}
+          </form>
         </div>
     </div>
-    
-    <div class="col-4">
-        {% for ave in aves_dict %}
-        {% set foto = 'static/upload/' + aves_dict[ave].Foto  %}
-            <img src= {{ foto }} class="card-img-top" alt="..." style="max-width: 22rem; border-radius: 8px; ;object-fit:cover;">
-        {% endfor%}
-       
-        <input id="foto" type="file" name="file"> <br>
-        
-        <input type="submit" value="Confirmar cambios">
-        </form>
-    </div>   
-     
     
   </div>
 </div>
@@ -110,16 +92,38 @@
   });
  });
  
-  /*Selección por defecto en radio form del tipo de refugio ya registrado en BD*/
+  /*Selección por defecto en chechbox del tipo de refugio ya registrado en BD*/
   $(document).ready(function(){
-    var default_tiporef = $("#tiporef").html();
-    console.log(default_tiporef);
-    if (default_tiporef == ' Tránsito ') { 
-      $("#transito").prop('defaultChecked',true);
+    let default_tiporef = "{{tipo_refugio|safe}}";
+    default_tiporef = JSON.parse(default_tiporef.replace(/'/gi,"\""));
+    var length = default_tiporef.length;
+    for (x = 0; x <= length; x ++) {
+      if (default_tiporef[x] == '1') { 
+        $("#hogar").prop('checked',true);
+      }
+      else if (default_tiporef[x] == '2') {
+        $("#transito").prop('checked',true);
+        break;
+      }
     }
-    else {
-      $("#hogar").prop('defaultChecked',true);
-    }
+
+    /*Selección por defecto en chechbox de las especies de aves que se cuidan en este refugio*/
+    let default_especiesref = "{{especies_ref|safe}}";
+    default_especiesref = JSON.parse(default_especiesref.replace(/'/gi,"\""));
+    for (x = 0; x < 4; x ++) {
+      if (default_especiesref[x] == '1') { 
+        $("#paloma").prop('checked',true);
+      }
+      else if (default_especiesref[x] == '2') {
+        $("#peqsil").prop('checked',true);
+      }
+      else if (default_especiesref[x] == '3') {
+        $("#medsil").prop('checked',true);
+      }
+      else if (default_especiesref[x] == '4') {
+        $("#corral").prop('checked',true);
+      }
+    }  
   });
  
  </script>

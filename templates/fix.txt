@@ -14,45 +14,56 @@ hacer más rápido --> más lindo
 minificar para hacer mas veloz la carga
 
 que los campos sean obligatorios al crear new entries
+
+eliminar fotos cuando se elimina registro de ave o refugio
+
+categoria de resuelto si encontro hogar o transito
 ----
-  if ($('#ubicacion').val() == ''){  
-    $(document).on("click", "#telef", function() {
-      // Restore it
-      $("#ubicacion").replaceWith(replaced);
-      console.log('restoring')
-    });
-  };
+
 
   ---
-form tiene valor de ave por defecto
 
-funcion ubicacion():
-    set old value
-    si click en form:
-        --> guardar old value
-        --> empty value
-        if enter:
-            if value not null:
-                --> set new value
-                --> send new value
-        else if click afuera:
-            --> ubicacion()
-
-
-var replaced;
-  $(document).on("click", "#ubicacion", function() {
-    // Save what's being replaced
-    replaced = $(this).replaceWith('<td><form><input type="text" id="ubicacion"></form></td>');
-    $("#ubicacion").focus()
-    console.log('replacing');
-
-  if ($('#ubicacion').val() == ''){  
-    $(document).on("click", "#telef", function() {
-      // Restore it
-      $("#ubicacion").replaceWith(replaced);
-      console.log('restoring')
-    });
-  };
+      <div class="p-1 d-flex text-white" id="navbar"> 
+        <ul class="nav">
+          {% block navbar %}
+          {% endblock %}
+            <li><a href="#" class="nav-link text-white">Sobre este sitio</a></li>
+        </ul>     
+        <lu class="navbar-nav ms-auto">
+          <li class="dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button"  id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                {% if current_user.is_authenticated: %}
+                  {{ nombre }}
+                {% else %}
+                  Ingresar
+                {% endif %}</a>
+              <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton">
+                {% if current_user.is_authenticated: %}
+                <a class="dropdown-item" href="{{ url_for('profile') }}">Mis publicaciones</a>            
+                <a class="dropdown-item" href="{{ url_for('logout') }}">Cerrar sesión</a>
+                {% else %}
+                <a class="dropdown-item" href="{{ url_for('login') }}">Iniciar sesión</a>
+                <a class="dropdown-item" href="{{ url_for('register') }}">Registrarse</a>
+                {% endif %}
+            </div>
+          </li>    
+        </lu>   
+      </div>
+------
+va           <div class="card-body text-right ">
+                <div class="box">
+                    <h5 class="card-title ">Informar un ave caída.</h5>
+                    <a href="{{ url_for('addbird') }}" class="btn btn-primary">Ingresar</a>
+                </div>
+                <div class="box">
+                    <h5 class="card-title">Ofrecer un hogar o tránsito para un ave.</h5>
+                    <a href="{{ url_for('addplace') }}" class="btn btn-primary">Ingresar</a>
+                </div>
+                <div class="box">
+                    <h5 class="card-title">Mostrar aves y refugios cercanos.</h5>
+                    <a href="{{ url_for('search') }}" class="btn btn-primary">Mostrar en el mapa</a>
+                </div>
+            </div>
 --------
 $(document).ready(function(){
  
@@ -84,6 +95,23 @@ $(document).ready(function(){
 }); 
 
 
+        # Dict de categoría de ave, listo para imprimir en profile.html
+        tipo_especie = []
+        if refug_dict:
+            for i in range(len(refug_dict)):
+                dict = refug_dict[str(i)]
+                tipo_especie.append(dict['Id_ESPECIES'])
+        
+        for i in range(len(tipo_especie)):
+            if (tipo_especie[i] == 1):
+                tipo_especie[i] = 'paloma'
+            elif (tipo_especie[i] == 2):
+                tipo_especie[i] = 'peqsil'
+            elif (tipo_especie[i] == 3):
+                tipo_especie[i] = 'medsil'
+            elif (tipo_especie[i] == 4):
+                tipo_especie[i] = 'corral'
+
 ----
     edad = request.form.get('edad')
     estsalud = request.form.get('estsalud')
@@ -92,3 +120,8 @@ $(document).ready(function(){
     ubicacion = request.form.get('ubicacion')
     telef = request.form.get('telef')
     foto = request.form.get('foto')
+
+
+
+
+  style="padding: 0; min-height: 100%; height: 100%;"

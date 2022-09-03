@@ -9,17 +9,20 @@
 
 {% block head %}
   <title>Ofrecer un refugio</title>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyAqoKvZMX0sWGNCDPWKYyBvLNkkPrV6KvE"></script>
   
 {% endblock %}
 
+{% block bg_image %}
+<div class="bg-image" 
+style="background-image: url('static/images/torcacitabg.jpg');
+    height: 100vh; background-size: cover; width: 100%; position:absolute">
+</div>
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid d-flex" style="margin:none;">
-  <div class="bg-image" 
-  style="background-image: url('static/images/aves-1.jpg');
-  height: 100vh; background-size: cover; width: 100%; position:absolute">
-  </div>
   <div class="row">
     <div class="col-6">
         <div class="card">
