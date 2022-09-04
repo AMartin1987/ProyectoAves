@@ -23,105 +23,205 @@ categoria de resuelto si encontro hogar o transito
 
   ---
 
-      <div class="p-1 d-flex text-white" id="navbar"> 
-        <ul class="nav">
-          {% block navbar %}
-          {% endblock %}
-            <li><a href="#" class="nav-link text-white">Sobre este sitio</a></li>
-        </ul>     
-        <lu class="navbar-nav ms-auto">
-          <li class="dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button"  id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                {% if current_user.is_authenticated: %}
-                  {{ nombre }}
-                {% else %}
-                  Ingresar
-                {% endif %}</a>
-              <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton">
-                {% if current_user.is_authenticated: %}
-                <a class="dropdown-item" href="{{ url_for('profile') }}">Mis publicaciones</a>            
-                <a class="dropdown-item" href="{{ url_for('logout') }}">Cerrar sesión</a>
-                {% else %}
-                <a class="dropdown-item" href="{{ url_for('login') }}">Iniciar sesión</a>
-                <a class="dropdown-item" href="{{ url_for('register') }}">Registrarse</a>
-                {% endif %}
-            </div>
-          </li>    
-        </lu>   
+  #password, #email {
+    font-size: 20px;
+    --bs-body-font-size: 1rem;
+    --bs-body-font-weight: 400;
+    --bs-body-line-height: 1.5;
+    --bs-body-color: #212529;
+    --bs-body-bg: #fff;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    word-wrap: break-word;
+    box-sizing: border-box;
+    margin: 0;
+    font-family: inherit;
+    display: block;
+    width: 100%;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    appearance: none;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    cursor: auto;
+  }
+
+              <div class="form-group">
+                <div class="mb-3">
+                {{ form.lugar.label }} <br>
+                {{ form.lugar }}
+                </div>
+                <div class="mb-3">
+                  {{ form.localiz.label }}
+                  {{ form.localiz }}
+                </div>    
+                <div>
+                  {{ form.loc_lat }}
+                  {{ form.loc_long }}
+                </div>
+                <div class="mb-3">
+                  {{ form.especie.label }}
+                  {{ form.especie }}
+                </div>
+                <div class="mb-3">
+                  {{ form.contacto.label }}
+                  {{ form.contacto }}
+                </div>
+                <div class="mb-3">
+                  {{ form.submit }}
+                </div>
+              </div> 
+            </form>
+         </div>
+       </div>
+    </div>
+    <div class="col-6 d-flex align-items-center" style="z-index:10; color:rgb(231, 231, 231); text-align: end;">
+      <h1>Ofrecé un refugio temporal o permanente para un ave caída.</h1>
+    </div>
+  </div>
+</div>
+
+-------
+  <div class="align-items-center ">
+    <form class="d-flex" method='POST' action="" enctype="multipart/form-data" style="max-height: 100vh;">
+      {{ form.hidden_tag() }}
+      <div class="form-group d-flex">
+        <h2>Reportá un ave caída para que otras personas le den refugio.</h2>
+        <div class="container d-flex" style="font-size: smaller;">
+            <div>{{ form.especie.label }}  {{ form.especie }}</div>
+            
+ 
+            <div>{{ form.espEsp.label }}</div>
+            <div>{{ form.espEsp }}</div>
+
+            <div>{{ form.edad.label }}</div>
+            <div>{{ form.edad }}</div>
+ 
+            <div>{{ form.salud.label }}</div>
+            <div>{{ form.salud }}</div>
+          </div>
+          <div class="container d-flex" style="font-size: smaller;">
+            <div>{{ form.localiz.label }}</div>
+            <div>{{ form.localiz }}</div>
+
+            <div>{{ form.loc_lat }}</div>
+            <div>{{ form.loc_long }}</div>
+
+            <div>{{ form.lugar.label }}</div>
+            {% for subfield in form.lugar %}
+            <div>{{ subfield }}</div>
+            <div>{{ subfield.label }}</div>
+            {% endfor %}
+
+            <div>{{ form.contacto.label }}</div>
+            <div>{{ form.contacto }}</div>
+
+            <div>{{ form.requer.label }}</div>
+            <div>{{ form.requer }}</div>
+
+            <div>File Upload</div>
+            <div>{{ form.imagen }}</div>
+
+            <div>{{ form.submit }}</div>
+          </div>    
       </div>
-------
-va           <div class="card-body text-right ">
-                <div class="box">
-                    <h5 class="card-title ">Informar un ave caída.</h5>
-                    <a href="{{ url_for('addbird') }}" class="btn btn-primary">Ingresar</a>
-                </div>
-                <div class="box">
-                    <h5 class="card-title">Ofrecer un hogar o tránsito para un ave.</h5>
-                    <a href="{{ url_for('addplace') }}" class="btn btn-primary">Ingresar</a>
-                </div>
-                <div class="box">
-                    <h5 class="card-title">Mostrar aves y refugios cercanos.</h5>
-                    <a href="{{ url_for('search') }}" class="btn btn-primary">Mostrar en el mapa</a>
-                </div>
-            </div>
---------
-$(document).ready(function(){
- 
- /*Send new values to update DB*/      
- $("#update").submit(function(){
-   
-   var especie = $("#especie").val()
-   var edad = $("#edad").val()
-   var estsalud = $("#estsalud").val()
-   var requer = $("#requer").val()
-   var tiporef = $("#tiporef").val()
-   var ubicacion = $("#ubicacion").val()
-   var telef = $("#telef").val()
-   var foto = $("#foto").val()
-   
-   $.post("/editbird/updatebird",
-   {
-   especie:especie,
-   edad:edad,
-   estsalud:estsalud,
-   requer:requer,
-   tiporef:tiporef,
-   ubicacion:ubicacion,
-   telef:telef,
-   foto:foto
- 
-   }
- )});
-}); 
+    </form>  
+  </div>
 
-
-        # Dict de categoría de ave, listo para imprimir en profile.html
-        tipo_especie = []
-        if refug_dict:
-            for i in range(len(refug_dict)):
-                dict = refug_dict[str(i)]
-                tipo_especie.append(dict['Id_ESPECIES'])
-        
-        for i in range(len(tipo_especie)):
-            if (tipo_especie[i] == 1):
-                tipo_especie[i] = 'paloma'
-            elif (tipo_especie[i] == 2):
-                tipo_especie[i] = 'peqsil'
-            elif (tipo_especie[i] == 3):
-                tipo_especie[i] = 'medsil'
-            elif (tipo_especie[i] == 4):
-                tipo_especie[i] = 'corral'
-
-----
-    edad = request.form.get('edad')
-    estsalud = request.form.get('estsalud')
-    requer = request.form.get('requer')
-    tiporef = request.form.get('tiporef')
-    ubicacion = request.form.get('ubicacion')
-    telef = request.form.get('telef')
-    foto = request.form.get('foto')
-
-
-
-
-  style="padding: 0; min-height: 100%; height: 100%;"
+  ----
+           <label class="control-label col-sm-3">{{ form.especie.label }} </label>
+          <div class="col-sm-3">
+            {{ form.especie (class="form-control")}}
+          </div>
+        </div>
+    
+    
+        <div class="form-group">
+          <label class="control-label col-sm-3">{{ form.espEsp.label }}</label>
+          <div class="col-sm-3">
+            {{ form.espEsp (class="form-control")}}
+          </div>
+        </div>
+      </div>
+    
+      <div class="col-sm-6">
+        <div class="form-group">
+          <label class="control-label col-sm-4">{{ form.edad.label }}</label>
+          <div class="col-sm-8">
+            {{ form.edad (class="form-control")}}
+          </div>
+        </div>
+    
+        <div class="form-group">
+          <label class="control-label col-sm-4">{{ form.salud.label }}</label>
+          <div class="col-sm-8">
+            {{ form.salud (class="form-control") }}
+          </div>
+        </div>
+      </div>
+    
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label class="control-label col-sm-2">{{ form.localiz.label }}</label>
+          <div class="col-sm-10">
+            {{ form.localiz (class="form-control")}}
+          </div>
+        </div>
+      </div>
+    
+    
+      <div class="col-sm-6">
+        <div class="form-group">
+          <label class="col-sm-4 control-label">{{ form.loc_lat }}</label>
+          <div class="col-sm-8">
+            {{ form.loc_long (class="form-control") }}
+          </div>
+        </div>
+      </div>
+    
+      <div class="col-sm-6">
+        <div class="form-group">
+          <label class="col-sm-4 control-label">{{ form.lugar.label }}</label>
+          {% for subfield in form.lugar %}
+          <div class="col-sm-8">
+            {{ subfield.label (class="form-control") }}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    
+      <div class="col-sm-6">
+        <div class="form-group">
+          <label class="col-sm-4 control-label">{{ form.contacto.label }}</label>
+          <div class="col-sm-8">
+            {{ form.contacto (class="form-control") }}
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-sm-6">
+        <div class="form-group">
+          <label class="col-sm-4 control-label">{{ form.requer.label }}</label>
+          <div class="col-sm-8">
+            {{ form.requer (class="form-control")}}
+          </div>
+        </div>
+      </div>
+    
+      <div class="col-sm-6">
+        <div class="form-group">
+          <label class="col-sm-4 control-label">File Upload</label>
+        <div class="col-sm-8">
+            {{ form.imagen (class="form-control")}}
+          </div>
+        </div>
+      </div>
+    
+      <div class="text-center">
+        {{ form.submit }}
+      </div>
+    

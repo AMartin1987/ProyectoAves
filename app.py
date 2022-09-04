@@ -1,11 +1,11 @@
 from asyncio.windows_events import NULL
 import sqlite3, os, helpers
 
-from flask import Flask, render_template, url_for, redirect, request, flash, g, abort, current_app, session, jsonify
+from flask import Flask, render_template, url_for, redirect, request, flash, g, current_app, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import BadRequest
-from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
+from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from models import User
 from forms import LoginForm, SignupForm, BirdForm, PlaceForm
 from urllib.parse import urlparse, urljoin
@@ -305,16 +305,20 @@ def register():
         password = form.password.data
         hash = generate_password_hash(password)
         
-        #if confirmation != password:
-        #    return apology("passwords don't match", 403)
-        #if not request.form.get("username") or not request.form.get("password"):
-        #    return apology("must provide username and password", 403)
-
-        #registrar datos en tabla USUARIOS
+        #Check si el email no se encuentra ya utilizado
         connection = sqlite3.connect("proyecto.db")
         curs = connection.cursor()
-        curs.execute("INSERT INTO USUARIOS (Nombre, Email, Hashed_password) VALUES(?, ?, ?)", (name, email, hash)
-                    )
+        email_exists = curs.execute("SELECT COUNT(*) FROM USUARIOS WHERE Email = (?)", [email,]).fetchone()
+        email_exists = email_exists[0]
+        print(email_exists)
+        if email_exists == '1':
+            flash('El email {email} ya está siendo utilizado por otro usuario.')
+            return redirect(url_for('register'))
+
+        #Registrar datos en tabla USUARIOS
+        connection = sqlite3.connect("proyecto.db")
+        curs = connection.cursor()
+        curs.execute("INSERT INTO USUARIOS (Nombre, Email, Hashed_password) VALUES(?, ?, ?)", (name, email, hash))
         connection.commit()
                     
         flash('Registraste tu cuenta!')
@@ -335,14 +339,17 @@ def login():
      user = list(curs.fetchone())
      Us = load_user(user[0])
      
+     #Check si email y contraseña pertenecen a un usuario registrado
      if form.email.data == Us.email and check_password_hash(Us.password, form.password.data):
-        login_user(Us, remember=form.remember.data)
-        Umail = list({form.email.data})[0].split('@')[0]
+        login_user(Us, remember=form.remember.data) #Recordar sesión
         flash('Iniciaste sesión.')
         next = request.args.get('next')
         return redirect(get_safe_redirect(next) or url_for('index'))
      else:
         flash('Usuario o contraseña inválidos.')
+        return redirect(url_for('login'))
+        
+        
   return render_template('login.html', form=form)
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -359,7 +366,7 @@ def profile():
     #Get user Id
     user_id = current_user.get_id()
 
-    # get DB data for this user's Id
+    #Get DB data for this user's Id
     cur = get_db().cursor()
     ubicaciones = cur.execute("SELECT Id, Latitud, Longitud, Direccion \
                 FROM UBICACIONES WHERE Id IN (SELECT Id_UBICACIONES FROM \
@@ -386,7 +393,7 @@ def profile():
     espe_dict = helpers.make_dict(especies)
     tiporef_dict = helpers.make_dict(tiporef)
 
-    # String de tipos de especies que se aceptan en cada refugio, lista para imprimir en profile.html
+    #String de tipos de especies que se aceptan en cada refugio, lista para imprimir en profile.html
     
     def translate(esp):
         if esp == 1:
@@ -484,7 +491,7 @@ def editbird():
  
         #Display info about this bird
 
-        # get DB data for this user's Id
+        #Get DB data for this user's Id
         connection = sqlite3.connect("proyecto.db")
         cur = get_db().cursor()
         ubicaciones = cur.execute("SELECT Id, Latitud, Longitud, Direccion \
@@ -641,7 +648,7 @@ def editplace():
         refugio_id = request.form.get('editplace')
         session["refugio_id"] = refugio_id
 
-        # get DB data for this user's refugio Id
+        #Get DB data for this user's refugio Id
         connection = sqlite3.connect("proyecto.db")
         cur = get_db().cursor()
         ubicaciones = cur.execute("SELECT Id, Latitud, Longitud, Direccion \

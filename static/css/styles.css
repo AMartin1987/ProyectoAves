@@ -1,11 +1,35 @@
 
-/*Layout.html*/
-html, body {
-  height: 100vh;/*initial body height will take 100% of the viewport height*/
-  overflow-y: hidden;
-
+.form-group-custom {
+  display:flex;
+  flex-flow: column wrap;
+  padding: 0 2rem 0 2rem;
+  align-items: center;
+  align-items: stretch;
+  align-self: center
 }
 
+.form-group-custom2 {
+  display:flex;
+  flex-flow: column wrap;
+  padding: 1rem 3rem 1rem 3rem;
+  align-items: center;
+  align-items: stretch;
+  align-self: center
+}
+
+.label {
+  display: none;
+}
+
+
+/*Layout.html*/
+
+html, body {
+  height: 100vh;/*initial body height will take 100% of the viewport height*/
+  }
+body {
+  background-color: rgb(201, 219, 150);
+}
 
 #main-container {
   width: 100vw!important;
@@ -65,9 +89,10 @@ footer {
 }
 
 .bg-image {
+  background-image:url(/static/images/torcacitacut.png);
+  height: 100vh;
   box-shadow: inset 2000px 0 0 0 rgba(233,245,199, 0.7);
   transform: scaleX(-1);
-  height: 100%;
   width: 100%;
   background-size: cover;
   background-attachment: fixed;
@@ -78,15 +103,11 @@ footer {
 }
 
 #textmail {
-  color: rgb(33,37,41)!important;
+  color: rgb(33,37,41);
 }
 
 #textmail:hover {
   color:rgb(99, 148, 0)!important;
-}
-
-a:hover {
-  color:rgb(201, 219, 150)!important;
 }
 
 #navbar {
@@ -107,7 +128,7 @@ ul {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #333;
+
 }
 
 li {
@@ -151,14 +172,13 @@ li a {
   width: 500px;
 }
 .card-body {
-  margin-bottom: 2rem;
   font-family: Arial, Helvetica, sans-serif;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
   justify-content: space-evenly;
   padding-top: 50px;
-  padding-bottom: 30px;
+  padding-bottom: 50px;
 }
 
 .box {
@@ -188,6 +208,11 @@ li a {
   border-color: rgba(0,0,0,0.4)!important;
   box-shadow:none;
 }
+.btn-check:active+.btn-primary:focus, .btn-check:checked+.btn-primary:focus, .btn-primary.active:focus, .btn-primary:active:focus, .show>.btn-primary.dropdown-toggle:focus {
+box-shadow: 0 0 0 .25rem rgba(201, 219, 150,0.4)!important;
+}
+
+
 #userDropdown {
   background-color: #333;
   color:rgb(201, 219, 150)!important;
@@ -237,17 +262,92 @@ td {
 }
 
 /* Login.html */
-#login-bg {
-  background-color: rgba(233,245,199, 0.7);
-  display:flex;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  flex-direction: column;
-  justify-content: space-evenly;
-  width: 20rem;
-  margin-left: 3rem;
-  margin-top: 2rem;
+
+  .card-bg {
+    background-color : rgba(0,0,0,0.4);
+    color: #dee2e6;
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-content: center;
+    width: 22rem;
+    margin-left: 3rem;
+    margin-top: 2rem;
   }
+
+  #container-login {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .form-group {
+    display:flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  #recordarme {
+    display: flex;
+    flex-direction: row;
+  }
+
+  #remember {
+    margin-top: 0.2rem;
+  }
+  
+  .form-control, .form-control:focus {
+    border-color: grey;
+    font-size: 16px;
+  }
+  .form-check-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(207, 207, 207, 0.25);
+  }
+  
+  .form-check-input:checked {
+    background-color:rgb(201, 219, 150);
+    border-color: rgb(201, 219, 150);
+  }
+
+  :focus-visible {
+    outline: 1px solid rgb(201, 219, 150);
+    color:rgb(66, 66, 66);
+
+  }
+  #submit {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+  }
+
+  .link {
+    color: #dee2e6;
+  }
+
+  .link:hover {
+    color: rgb(201, 219, 150);
+  }
+
+  .custom_input {
+    font-size: normal;
+    word-wrap: break-word;
+    box-sizing: border-box;
+    margin: 0;
+    display: block;
+    width: 250px;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    appearance: none;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  }
+  
 
 /*Modals in search.html*/
 .edad {

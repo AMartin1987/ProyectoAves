@@ -1,8 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, \
   TextAreaField, HiddenField, RadioField, FileField, SelectMultipleField, widgets
-from wtforms.validators import Length, Email, ValidationError, InputRequired
-from werkzeug.security import check_password_hash, generate_password_hash
+from wtforms.validators import Length, Email, ValidationError, InputRequired, EqualTo
 from wtforms.widgets import html_params
 
 import sqlite3, os
@@ -10,14 +9,16 @@ import sqlite3, os
 UPLOAD_PATH = '/upload'
 
 class SignupForm(FlaskForm):
-  name = StringField('Nombre', validators=[InputRequired(), Length(max=64)])
-  password = PasswordField('Contraseña', validators=[InputRequired()])
-  email = StringField('Email', validators=[InputRequired(), Email()])
+  name = StringField('Nombre', validators=[InputRequired('Ingresa un nombre.'), Length(max=64)])
+  password = PasswordField('Contraseña', validators=[InputRequired('Ingresa una contraseña.')])
+  email = StringField('Email', validators=[InputRequired('Ingresa un correo electrónico.'), Email()])
+  confirm_password = PasswordField(label=('Confirmar contraseña'),validators=[InputRequired(message='Vuelve a ingresar la contraseña.'),
+        EqualTo('password', message='La contraseña ingresada no es igual en ambos campos.')])
   submit = SubmitField('Registrarse')
 
 class LoginForm(FlaskForm):
-  email = StringField('Email',validators=[InputRequired(),Email()])
-  password = PasswordField('Contraseña',validators=[InputRequired()])
+  email = StringField('Email',validators=[InputRequired('Debe ingresar un correo electrónico.'),Email('Debe ingresar un correo electrónico.')])
+  password = PasswordField('Contraseña',validators=[InputRequired('Debe ingresar una contraseña.')])
   remember = BooleanField('Recordarme')
   submit = SubmitField('Iniciar sesión')
 
@@ -50,7 +51,7 @@ class BirdForm(FlaskForm):
       'Aves de granja (gallinas, patos, etc.)')])
   espEsp = StringField('Especificá la especie:', [InputRequired()], render_kw={"placeholder": "Ejemplo: 'Colibrí'"})
   edad = StringField('Edad aproximada:', [InputRequired()], render_kw={"placeholder": \
-    "Ejemplos: 'Pichón' o 'un mes y medio'"})
+    "Ejemplos: 'Pichón' o 'un mes'"})
   salud = TextAreaField('Estado de salud:', render_kw={"placeholder": "Ejemplos: 'Buena' o 'fractura en un ala'"})
   localiz = StringField('¿Dónde está el ave actualmente?:', [InputRequired()], render_kw={"placeholder":\
      "Ejemplo: 'Estomba 900, Bahía Blanca.'"})
@@ -58,7 +59,7 @@ class BirdForm(FlaskForm):
   loc_long = HiddenField()
   lugar = RadioField('El ave necesita:', choices=[('transito', 'Un lugar de tránsito hasta su liberación.'), \
     ('hogar', 'Un hogar permanente.')], validators=[InputRequired()])
-  requer = TextAreaField('Requerimientos que debería cumplir este nuevo lugar para el cuidado del ave:')
+  requer = TextAreaField('Requerimientos que se deben cumplir para el cuidado del ave: ')
   contacto = StringField('Teléfono/Whatsapp:', render_kw={"placeholder": "Teléfono/Whatsapp"}, validators=[InputRequired()])
   imagen = FileField('Subir imagen')
   submit = SubmitField('Registrar ave')

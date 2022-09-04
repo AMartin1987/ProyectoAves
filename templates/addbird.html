@@ -14,98 +14,83 @@
 
 {% endblock %}
 
-{% block bg_image %}
-<div class="bg-image" 
-style="background-image: url('static/images/torcacitabg.jpg');
-    height: 100vh; background-size: cover; width: 100%; position:absolute">
-</div>
-{% endblock %}
-
 {% block content %}
-<div class="container-fluid d-flex" style="margin:none;">
-  <div class="row align-items-center">
-    <div class="col-6">
-      <div class="card">
-        <div class="card-body">
-          <form method='POST' action="" enctype="multipart/form-data">
-          {{ form.hidden_tag() }}
-            <fieldset class="form-group"> 
-            <div class="form-group">
-              <div class="mb-3">
-                {{ form.especie.label }}
-                {{ form.especie }}
-              </div>
-              <div class="mb-3">
-                {{ form.espEsp.label }}
-                {{ form.espEsp }}
-              </div>
-              <div class="mb-3">
-                {{ form.edad.label }}
-                {{ form.edad }}
-              </div>
-              <div class="mb-3">
-                {{ form.salud.label }}
-                {{ form.salud }}
-              </div>
-              <div class="mb-3">
-                {{ form.localiz.label }}
-                {{ form.localiz }}
-              <div class="form-group">
-                {{ form.loc_lat }}
-                {{ form.loc_long }}
-              </div>
 
-              </div>
-
-              <script>
-              var searchInput = 'localiz';
-
-              $(document).ready(function () {
-                  var autocomplete;
-                  autocomplete = new google.maps.places.Autocomplete((document.getElementById(searchInput)), {
-                      types: ['geocode'],
-                  });
-                      
-                  google.maps.event.addListener(autocomplete, 'place_changed', function () {
-                      var near_place = autocomplete.getPlace();
-                      document.getElementById('loc_lat').value = near_place.geometry.location.lat();
-                      document.getElementById('loc_long').value = near_place.geometry.location.lng();
-                              
-                      document.getElementById('latitude_view').innerHTML = near_place.geometry.location.lat();
-                      document.getElementById('longitude_view').innerHTML = near_place.geometry.location.lng();
-                  });
-              });
-              </script>
-              <div class="mb-3">
-                {{ form.lugar.label }} <br>
-                {% for subfield in form.lugar %}
-                  {{ subfield }}
-                  {{ subfield.label }}
-                {% endfor %}
-              </div>  
-              <div class="mb-3">
-                {{ form.requer.label }}
-                {{ form.requer }}
-              </div>
-              <div class="mb-3">
-                {{ form.contacto.label }}
-                {{ form.contacto }}
-              </div>
-              <div class="mb-3">
-              <h1>File Upload</h1>
-                {{ form.imagen }}
-              </div>
-              <div>
-                {{ form.submit }}
-              </div>  
-          </form>
+<div>
+  {% for message in get_flashed_messages() %}
+    <div class="alert alert-success" id="alert">{{ message }}</div>
+  {% endfor %}            
+</div>
+ 
+    <div class="container">
+    <form class="row row-cols-2" method='POST' action="" enctype="multipart/form-data" style="padding:0.5rem 0 3rem 0;margin:0.5rem 0 0.5rem 0;background-color: rgba(0,0,0,0.3)!important;border-radius: .25rem;">
+        <h4 class="col-12 d-flex text-white" style="justify-content: center;padding: 1rem 0 0.5rem 0">Reportá un ave caída para que otras personas le den refugio.</h4>
+        {{ form.hidden_tag() }}
+        <div class="form-group-custom col-6">
+          <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.especie.label }}</div>
+          <div class="col">{{ form.especie (class="form-control")}}</div>
         </div>
-      </div>
-    </div>
-
+        <div class="form-group-custom col-6">
+          <div class="col-auto text-white " style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.espEsp.label }}</div>
+          <div class="col">{{ form.espEsp (class="form-control")}}</div>
+        </div>
+        <div class="form-group-custom col-6">
+          <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.edad.label }}</div>
+          <div class="col">{{ form.edad (class="form-control")}}</div>
+        </div>
+        <div class="form-group-custom col-6">
+          <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.salud.label }}</div>
+          <div class="col">{{ form.salud (class="form-control")}}</div>
+        </div>
+        <div class="form-group-custom col-6">
+          <div class="col-auto text-white d-flex" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.lugar.label (style="flex-grow: 1;")}}</div>
+          <div class="col">{{ form.lugar (class="form-control")}}</div>
+        </div>
+        <div class="form-group-custom col-6">
+          <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.localiz.label }}</div>
+          <div class="col">{{ form.localiz (class="form-control")}}</div>
+        </div>
+        {{form.loc_lat }}{{ form.loc_long }}
+        <div class="form-group-custom col-6">
+          <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.contacto.label }}</div>
+          <div class="col">{{ form.contacto (class="form-control")}}</div>
+        </div>
+        <div class="form-group-custom col-6">
+          <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.requer.label }}</div>
+          <div class="col d-flex flex-grow">{{ form.requer (class="form-control")}}</div>
+        </div>
+        <div class="form-group-custom col-6">
+          <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">Foto del ave: </div>
+          <div class="col">{{ form.imagen (class="form-control")}}</div>
+        </div>                        
+        <div class="form-group-custom col-6 d-flex ">
+          <div class="col-auto text-white align-self-center">{{ form.submit (class="btn btn-primary")}}</div>
+        </div>                                                        
+    </form>  
   </div>
-  <div class="col-6 d-flex align-items-center" style="z-index:10; color:rgb(231, 231, 231); text-align: end;">
-    <h1>Reportá un ave caída para que otras personas le den refugio.</h1>
-</div>
-</div>
+
+
+<script>
+  var searchInput = 'localiz';
+
+  $(document).ready(function () {
+      var autocomplete;
+      autocomplete = new google.maps.places.Autocomplete((document.getElementById(searchInput)), {
+          types: ['geocode'],
+      });
+          
+      google.maps.event.addListener(autocomplete, 'place_changed', function () {
+          var near_place = autocomplete.getPlace();
+          document.getElementById('loc_lat').value = near_place.geometry.location.lat();
+          document.getElementById('loc_long').value = near_place.geometry.location.lng();
+
+          document.getElementById('latitude_view').innerHTML = near_place.geometry.location.lat();
+          document.getElementById('longitude_view').innerHTML = near_place.geometry.location.lng();
+      });
+  });
+
+  $(document).ready(function(){
+        $("#alert").fadeOut(10000);
+    }); 
+  </script>
   {% endblock %}

@@ -8,6 +8,9 @@
         $("#titulo2").hide().fadeIn(3000);
         $("#titulo3").hide().fadeIn(6000);
     });
+    $(document).ready(function(){
+        $("#alert").fadeOut(10000);
+    });    
 </script>
 {% endblock %}
 
@@ -15,7 +18,7 @@
 
 <div>
     {% for message in get_flashed_messages() %}
-      <div class="alert alert-success" >{{ message }}</div>
+      <div class="alert alert-success" id="alert">{{ message }}</div>
     {% endfor %}            
   </div>    
 <div class="container-fluid" id="big-container">

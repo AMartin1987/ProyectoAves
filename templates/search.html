@@ -31,49 +31,60 @@
     let tiporef_dict = "{{tiporef_dict|safe}}";
     tiporef_dict = JSON.parse(tiporef_dict.replace(/'/gi,"\""));
     const tiporef_len = Object.keys(tiporef_dict).length;
+
+    $(document).ready(function(){
+        $("#alert").fadeOut(10000);
+    }); 
+
   </script>
   <script src="{{ url_for('static', filename='search.js')}}"></script>
-  <title>Aves y refugios</title>
+  <title>Mapa de aves y refugios</title>
 
 {% endblock %}  
    
 {% block content %}
-
+<div>
+  {% for message in get_flashed_messages() %}
+    <div class="alert alert-success" id="alert">{{ message }}</div>
+  {% endfor %}            
+</div>   
 <div class="container-fluid d-flex main">
   <div class="row inside-main  align-items-center">
     <div class="col-3 main-left">
-      <div class="card h-100">
-        <h5 class="card-header">Visualizar en el mapa...</h5>
-        <div class="card-body">
-          <div class="form-check">
+      <div class="card h-100" style="color: #dee2e6;background-color:rgba(0,0,0,0.4);">
+        <h4 class="card-header">Visualizar en el mapa...</h4>
+        <div class="card-body" style="padding: 1rem">
+          <p class="card-text"style="font-weight:bold;font-size:large; margin-top:0.5rem;">Aves que esperan un refugio:</p>
+          <div style="padding-left:1rem">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="idPalomas" checked>
+              <label class="form-check-label" for="flexCheckChecked">
+                Palomas (torcazas, urbanas, etc.)
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="idPeqsil" checked>
+              <label class="form-check-label" for="flexCheckChecked">
+                Pequeñas aves silvestres (gorriones, horneros, etc.)
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="idMedsil" checked>
+              <label class="form-check-label" for="flexCheckChecked">
+                Aves silvestres de mayor tamaño (loros, búhos, chimangos, etc.) 
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="idCorral" checked>
+              <label class="form-check-label" for="flexCheckChecked">
+                Aves de corral (gallinas, patos, gansos, etc.) 
+              </label>
+            </div>
+          </div>  
+          <div class="form-check" style="margin:1rem 0 1rem 0;">
             <input class="form-check-input" type="checkbox" value="" id="idRefugios" checked> 
-            <label class="form-check-label" for="flexCheckChecked">
+            <label class="form-check-label " style="font-weight:bold;font-size:large" for="flexCheckChecked">
               Refugios
-            </label>
-          </div>
-          <p class="card-text">Aves que esperan un refugio:</p>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="idPalomas" checked>
-            <label class="form-check-label" for="flexCheckChecked">
-              Palomas (torcazas, urbanas, etc.)
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="idPeqsil" checked>
-            <label class="form-check-label" for="flexCheckChecked">
-              Pequeñas aves silvestres (gorriones, horneros, etc.)
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="idMedsil" checked>
-            <label class="form-check-label" for="flexCheckChecked">
-              Aves silvestres de mayor tamaño (loros, búhos, chimangos, etc.) 
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="idCorral" checked>
-            <label class="form-check-label" for="flexCheckChecked">
-              Aves de corral (gallinas, patos, gansos, etc.) 
             </label>
           </div>
         </div>
@@ -124,11 +135,11 @@
             </div>
           </div>
         </div>      
-      </div>>
+      </div>
     </div>
 
     <div class="col-9 main-right">
-      <div id="map" class="w-auto"></div>
+      <div id="map" class="w-auto" style="margin: 1.5rem 0 0 1rem"></div>
 
     </div>
   </div>

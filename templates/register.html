@@ -12,39 +12,55 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid d-flex" style="margin:none;">
-  <div class="bg-image" 
-    style="background-image: url('static/aves-1.jpg');
-    height: 100vh; background-size: cover; width: 100%; position:absolute">
-  </div>
-  <div class="card">
-    <div class="card-body">
+<div>
+  {% for message in get_flashed_messages() %}
+    <div class="alert alert-success" id="alert">{{ message }}</div>
+  {% endfor %}            
+</div>   
+<div class="container-fluid d-flex" id="container-login">
+  <div class="card card-bg">
+    <div class="card-body" style="padding-top: 1rem; padding-bottom: 1rem;">
       <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
-      <h2>Registra una cuenta nueva</h2>
-        <div class="mb-3">
-          {{ form.name }}<br>
+      <h2 class="d-flex justify-content-center" style="margin-bottom: 1rem;" >Registra tu cuenta</h2>
+        <div style="padding-top: 0.6rem;">
+          {{ form.name.label }}
+          {{ form.name (class="custom_input") }}
           {% for error in form.name.errors %}
-          <span style="color: red;">{{ error }}</span>
+          <span style="color: rgb(255, 134, 134);">{{ error }}</span>
           {% endfor %}
         </div>
-        <div class="mb-3">
-          {{ form.email }}<br>
+        <div style="padding-top: 0.6rem;">
+          {{ form.email.label }}
+          {{ form.email (class="custom_input") }}
           {% for error in form.email.errors %}
-          <span style="color: red;">{{ error }}</span>
+          <span style="color: rgb(255, 134, 134);">{{ error }}</span>
           {% endfor %}
         </div>
-        <div class="mb-3">
-          {{ form.password }}<br>
+        <div style="padding-top: 0.6rem;">
+          {{ form.password.label }}
+          {{ form.password (class="custom_input")}}
           {% for error in form.password.errors %}
-          <span style="color: red;">{{ error }}</span>
+          <span style="color: rgb(255, 134, 134);">{{ error }}</span>
           {% endfor %}
         </div>
-      </div>
-      {{ form.submit() }}
-    </form>
+        <div style="padding-top: 0.6rem;">
+          {{ form.confirm_password.label }}
+          {{ form.confirm_password (class="custom_input")}}
+          {% for error in form.confirm_password.errors %}
+          <span style="color: rgb(255, 134, 134);">{{ error }}</span>
+          {% endfor %}
+        </div>        
+        <div class="d-flex justify-content-center">
+          {{ form.submit(class=" btn btn-primary", style="margin-top: 1rem;") }}
+        </div>
+      </form>
     </div>                        
-    </div>    
-  </div>          
-</div>     
+  </div>    
+</div>          
+<script>
+  $(document).ready(function(){
+      $("#alert").fadeOut(10000);
+  });
+  </script>   
 {% endblock %}  
