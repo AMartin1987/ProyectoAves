@@ -14,40 +14,49 @@
 </script>
 {% endblock %}
 
-{% block content %}
+{% block navbar %}
+<li class="nav-item">
+    <a class="nav-link nav-link text-white" aria-current="page" href="#">Sobre este sitio</a>
+</li>
+{% endblock %}
 
-<div>
-    {% for message in get_flashed_messages() %}
-      <div class="alert alert-success" id="alert">{{ message }}</div>
-    {% endfor %}            
-  </div>    
-<div class="container-fluid" id="big-container">
-    <div class="container" id="title">
-        <h1 class="titulo-index display-1 text-white text-end" id="titulo1">Ayudemos a </h1>
-        <h1 class="titulo-index display-1 text-white text-end" id="titulo2">nuestras aves </h1>
-        <h1 class="titulo-index display-1 text-white text-end" id="titulo3">caídas. </h1>
-    </div>
-    <div class="container card " id="index-card">
-        <div class="card-body text-right ">
-            <div class="box">
-                <h5 class="card-title ">Informar un ave caída.</h5>
-                <a href="{{ url_for('addbird') }}" class="btn btn-primary">Ingresar</a>
-            </div>
-            <div class="box">
-                <h5 class="card-title">Ofrecer un hogar o tránsito para un ave.</h5>
-                <a href="{{ url_for('addplace') }}" class="btn btn-primary">Ingresar</a>
-            </div>
-            <div class="box">
-                <h5 class="card-title">Mostrar aves y refugios cercanos.</h5>
-                <a href="{{ url_for('search') }}" class="btn btn-primary">Mostrar en el mapa</a>
+{% block content %}
+      
+    <div class="container d-flex" id="index-container" style="height:calc(100% - 4.7rem);padding:0;">
+        <div>
+            {% for message in get_flashed_messages() %}
+              <div class="alert alert-success" id="alert">{{ message }}</div>
+            {% endfor %}            
+          </div>    
+        <div class="col-lg-8 col-xs-12 " id="title">
+            <h1 class="titulo-index display-2 text-white text-end" id="titulo1">Ayudemos a </h1>
+            <h1 class="titulo-index display-2 text-white text-end" id="titulo2">nuestras aves </h1>
+            <h1 class="titulo-index display-2 text-white text-end" id="titulo3">caídas. </h1>
+        </div>
+
+        <div class="col-lg-4 col-xs-12 d-flex card index-card" id="index-card">
+            <div class="card-body text-right d-flex" style="align-content: center;">
+                <div class="box">
+                    <h5 class="card-title ">Informar un ave caída.</h5>
+                    <a href="{{ url_for('addbird') }}" class="btn btn-primary">Ingresar</a>
+                </div>
+                <div class="box">
+                    <h5 class="card-title">Ofrecer un hogar o tránsito para un ave.</h5>
+                    <a href="{{ url_for('addplace') }}" class="btn btn-primary">Ingresar</a>
+                </div>
+                <div class="box">
+                    <h5 class="card-title">Mostrar aves y refugios cercanos.</h5>
+                    <a href="{{ url_for('search') }}" class="btn btn-primary">Mostrar en el mapa</a>
+                </div>
             </div>
         </div>
     </div>
+        <footer class="col-12">
+            <p id="text-footer">2022 | Sitio creado por  <a href="mailto:alejandramartin@outlook.com" id="textmail"> Alejandra Martín.</a></p>
+        </footer>
 
-</div>
-<footer class="container-fluid">
-    <p id="text-footer">2022 | Sitio creado por  <a href="mailto:alejandramartin@outlook.com" id="textmail"> Alejandra Martín.</a></p>
-</footer>
+    </div>
+
 
 {% endblock %}  
 

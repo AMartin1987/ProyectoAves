@@ -1,23 +1,26 @@
 {% extends "layout.html" %}
 
 {% block head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <title>Iniciar sesión</title>
 {% endblock %}  
 
 {% block navbar %}
-<li><a href="{{ url_for('index') }}" class="nav-link px-2 text-secondary">Inicio</a></li>
-<li><a href="{{ url_for('addbird') }}" class="nav-link px-2 text-white">Reportar un ave</a></li>
-<li><a href="{{ url_for('addplace') }}" class="nav-link px-2 text-white">Ofrecer un refugio</a></li>            
-<li><a href="{{ url_for('search') }}" class="nav-link px-2 text-white">Buscar aves o refugios</a></li>
+<li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link px-2 text-secondary">Inicio</a></li>
+<li class="nav-item"><a href="{{ url_for('addbird') }}" class="nav-link px-2 text-white">Reportar un ave</a></li>
+<li class="nav-item"><a href="{{ url_for('addplace') }}" class="nav-link px-2 text-white">Ofrecer un refugio</a></li>            
+<li class="nav-item"><a href="{{ url_for('search') }}" class="nav-link px-2 text-white">Visualizar aves y refugios</a></li>
+<li class="nav-item"><a class="nav-link nav-link text-white" aria-current="page" href="#">Sobre este sitio</a></li>
 {% endblock %}
 
 {% block content %}
 <div>
     {% for message in get_flashed_messages() %}
-      <div class="alert alert-success" id="alert">{{ message }}</div>
+      <div class="g-0 alert alert-success" id="alert">{{ message }}</div>
     {% endfor %}            
-  </div>    
-<div class="container-fluid d-flex" id="container-login">
+  </div>  
+<div class="container d-flex" id="container-login">
+
     <div class="card card-bg">
       <div class="card-body ">
         <form action="" method="post" novalidate>
@@ -49,9 +52,10 @@
             <h6> ¿Usuario nuevo? <a class="link" href="{{ url_for('register') }}">Registrá una cuenta.</a></h6>
         </div>
     </div>
+
     <script>
     $(document).ready(function(){
-        $("#alert").fadeOut(10000);
+      $("#alert").fadeOut(10000);
     });
     </script>
         {% endblock content %}

@@ -1,4 +1,20 @@
-
+@media screen and (max-width: 990px){
+  #index-container {
+  display:flex;  
+  flex-direction: column!important;
+  }
+  .card-group {
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+  .card-body {
+    padding-block-start: 1rem!important;
+    padding-block-end: 1rem!important;
+  }
+  #index-card {
+    margin-top: 3rem;
+  }
+}
 .form-group-custom {
   display:flex;
   flex-flow: column wrap;
@@ -34,20 +50,19 @@ body {
 #main-container {
   width: 100vw!important;
   display: flex;
-  flex-direction: column;
   margin:0;
   padding:0;
-  flex-wrap: nowrap;
   height: 100vh!important;
-
+  justify-content: space-evenly;
 }
 
-#container-nav {
+.container-nav {
   padding: 0;
   margin: 0;
   display:flex;
-  flex-direction: column;
+  flex-direction: row;
   width: 100vw;
+  height: 3.2rem;
 }
 
 
@@ -71,12 +86,12 @@ footer {
   font-size:smaller;
 }
 
-
 .alert {
   border:none;
   border-radius: 0;
   margin-bottom: 0;
-  width:100%;
+  margin-left:0;
+
 }
 
 .alert-success {
@@ -86,10 +101,12 @@ footer {
   border-radius:none!important;
   margin-bottom:none!important;
   position: absolute;
+  width:100vw;
+  margin-left:0;
 }
 
 .bg-image {
-  background-image:url(/static/images/torcacitacut.png);
+  background-image: url('torcacitacut.png');
   height: 100vh;
   box-shadow: inset 2000px 0 0 0 rgba(233,245,199, 0.7);
   transform: scaleX(-1);
@@ -100,6 +117,16 @@ footer {
   background-position: center 10%;
   position: absolute;
   z-index: -1!important;
+}
+@media only screen and (max-width: 600px) {
+  .bg-image{
+    background-image: url('torcacitacut_640x480.png');
+    background-size:auto;
+    background-repeat: no-repeat;
+    background-position: 100% 30%;
+    background-color: rgb(123,132,103);
+  }
+
 }
 
 #textmail {
@@ -133,6 +160,7 @@ ul {
 
 li {
   float: left;
+  list-style-type: none;
 }
 
 li a {
@@ -149,7 +177,7 @@ li a {
 
 /*index.html*/ 
 #title {
-  padding-right: 8vw;
+  padding-right: 3vw;
   padding-top: 12vh;
   display: flex;
   flex-direction: column;
@@ -164,21 +192,20 @@ li a {
 }
 
 
-#index-card {
-  background-color : rgba(0,0,0,0.4)!important;
+.index-card {
+  background-color : rgba(0,0,0,0.4);
   border-radius: 0;
   display:flex;
-  min-width: 200px;
-  width: 500px;
 }
+
 .card-body {
   font-family: Arial, Helvetica, sans-serif;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
   justify-content: space-evenly;
-  padding-top: 50px;
-  padding-bottom: 50px;
+  padding-block-start: 4rem;
+  padding-block-end: 4rem;
 }
 
 .box {
@@ -192,13 +219,13 @@ li a {
 .card-title {
   color: #dee2e6;
   font-size: 1.3rem;
-  margin-bottom: 1vh;
+
 }
 
 .btn-primary {
   background-color: rgba(0, 0, 0, 0.3);
   border: none;
-  color:#dee2e6;
+  color:white;
   margin: 0.3rem 0 0.3rem;
 }
 
@@ -371,24 +398,52 @@ td {
 }
       
 .custom-map-control-button {
-    background-color: #fff;
-    border: 0;
-    border-radius: 2px;
-    box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
-    margin: 10px;
-    padding: 0 0.5em;
-    font: 400 18px Roboto, Arial, sans-serif;
-    overflow: hidden;
-    height: 40px;
-    cursor: pointer;
+  background-color: #fff;
+  border: 0;
+  border-radius: 2px;
+  box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
+  margin: 10px;
+  padding: 0 0.5em;
+  font: 400 18px Roboto, Arial, sans-serif;
+  overflow: hidden;
+  height: 40px;
+  cursor: pointer;
   }
-  .custom-map-control-button:hover {
-    background: #ebebeb;
-  }
+.custom-map-control-button:hover {
+  background: #ebebeb;
+}
 
-  .inside-main {
-    border: 10 100 10 100!important;
-    width: 100%;
-    height: 100%;
-  /*  no anda*/
-  }
+.inside-main {
+  border: 10 100 10 100!important;
+  width: 100%;
+  height: 100%;
+/*  no anda*/
+}
+
+/* Profile.html */
+.card-profile {
+  display: flex;
+  flex-direction: column;
+  max-width: 15rem;
+  margin: 0 1rem 1rem 1rem;
+  justify-content: space-between;
+  align-content: space-between;
+  align-items: center;
+}
+
+.card-group {
+  display:flex;
+  align-content: center;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+
+li::marker {
+  margin-left: 0.5rem;
+}
+
+#lugar {
+  display:flex;
+  flex-direction: column;
+}

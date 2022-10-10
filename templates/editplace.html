@@ -10,27 +10,26 @@
 {% endblock %}  
 
 {% block navbar %}
-<li><a href="{{ url_for('index') }}" class="nav-link px-2 text-secondary">Inicio</a></li>
-<li><a href="{{ url_for('addbird') }}" class="nav-link px-2 text-white">Reportar un ave</a></li>
-<li><a href="{{ url_for('addplace') }}" class="nav-link px-2 text-white">Ofrecer un refugio</a></li>            
-<li><a href="{{ url_for('search') }}" class="nav-link px-2 text-white">Buscar aves o refugios</a></li>
+<li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link px-2 text-secondary">Inicio</a></li>
+<li class="nav-item"><a href="{{ url_for('addbird') }}" class="nav-link px-2 text-white">Reportar un ave</a></li>
+<li class="nav-item"><a href="{{ url_for('addplace') }}" class="nav-link px-2 text-white">Ofrecer un refugio</a></li>            
+<li class="nav-item"><a href="{{ url_for('search') }}" class="nav-link px-2 text-white">Visualizar aves y refugios</a></li>
+<li class="nav-item"><a class="nav-link nav-link text-white" aria-current="page" href="#">Sobre este sitio</a></li>
 {% endblock %}
 
 {% block content %}
 <div class="container">
-  <div class="row">
-    <div class="col-12">
+  <div class="row align-items-center" style="margin: 2rem;">
+    <h4 class="col-12 d-flex" style="padding: 1rem 0 0.5rem 2rem">Editar información sobre el refugio</h4><hr>
+    <div class="col-lg-8 col-xs-12">
         <div class="table-content">
           <table class="table table-borded table-striped" style="table-layout:fixed; overflow:auto;" id="table-list">
-            <thead>
-              <tr>
-              </tr>
-            </thead>
+
             <tbody>
               <form action="/editplace/updateplace" method="post">
               <tr>
                 <td>Lugar ofrecido como... (marcar uno o ambos): </td>
-                <td>
+                <td >
                   <input type="checkbox" id="hogar" name="tiporef" value="hogar">
                   <label for="transito"> Un hogar permanente.</label><br>
                   <input type="checkbox" id="transito" name="tiporef" value="transito">
@@ -40,12 +39,12 @@
               <tr>
                 {% for ubicacion in ubic_dict %}
                 <td>Ubicación actual del ave: </td>
-                <td><input class="form" type="text" id="ubicacion" name="ubicacion" placeholder="{{ubic_dict[ubicacion].Direccion}}"></td>
+                <td><input class="form" style="max-width: 90%;" type="text" id="ubicacion" name="ubicacion" placeholder="{{ubic_dict[ubicacion].Direccion}}"></td>
                 {% endfor %}
               </tr>
               <tr>
-                <td>¿Qué aves se pueden alojar aquí? (marcar una o varias): <br>
-                  <input type="checkbox" id="paloma" name="tipoespecie" value="paloma">
+                <td>¿Qué aves se pueden alojar aquí? (marcar una o varias):</td> <br>
+                <td><input style="max-width: 90%;" type="checkbox" id="paloma" name="tipoespecie" value="paloma">
                   <label for="paloma"> Palomas (torcazas, urbanas, etc.)</label><br>
                   <input type="checkbox" id="peqsil" name="tipoespecie" value="peqsil">
                   <label for="peqsil"> Pequeñas aves silvestres(gorriones, horneros, etc.)</label><br>
@@ -58,13 +57,15 @@
               <tr>
                 {% for telefono in telef_dict %}
                 <td>Teléfono de contacto (celular y/o Whatsapp): </td>
-                <td><input class="form" type="text" name="telef" placeholder="{{telef_dict[telefono].Telefono}}"></td>
+                <td><input class="form" style="max-width: 100%;" type="text" name="telef" placeholder="{{telef_dict[telefono].Telefono}}"></td>
                 {% endfor %}
               </tr>
             </tbody>
           </table>
           {% for refugio in refug_dict %}
-            <button type="submit" name="updateplace" value="{{ refug_dict[refugio].Id }}">Confirmar cambios</button>
+          <div class="form-group-custom col-12 d-flex">
+            <button type="submit" class="col-auto btn btn-primary text-white align-self-center" name="updateplace" value="{{ refug_dict[refugio].Id }}">Confirmar cambios</button>
+          </div>
           {% endfor%}
           </form>
         </div>

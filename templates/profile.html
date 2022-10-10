@@ -5,32 +5,35 @@
 {% endblock %}  
 
 {% block navbar %}
-<li><a href="{{ url_for('index') }}" class="nav-link px-2 text-secondary">Inicio</a></li>
-<li><a href="{{ url_for('addbird') }}" class="nav-link px-2 text-white">Reportar un ave</a></li>
-<li><a href="{{ url_for('addplace') }}" class="nav-link px-2 text-white">Ofrecer un refugio</a></li>            
-<li><a href="{{ url_for('search') }}" class="nav-link px-2 text-white">Buscar aves o refugios</a></li>
+<li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link px-2 text-secondary">Inicio</a></li>
+<li class="nav-item"><a href="{{ url_for('addbird') }}" class="nav-link px-2 text-white">Reportar un ave</a></li>
+<li class="nav-item"><a href="{{ url_for('addplace') }}" class="nav-link px-2 text-white">Ofrecer un refugio</a></li>            
+<li class="nav-item"><a href="{{ url_for('search') }}" class="nav-link px-2 text-white">Visualizar aves y refugios</a></li>
+<li class="nav-item"><a class="nav-link nav-link text-white" aria-current="page" href="#">Sobre este sitio</a></li>
 {% endblock %}
 
 {% block content %}
 <div class="container-fluid d-flex"></div>
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-sm-12" style="margin:2rem 1rem 1rem 1rem">
             <div class="card-group">
                 {% for ave in aves_dict %}
-                <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+                <div class="card text-white mb-3 index-card card-profile">
                     {% set i = 0 %}
                     <div class="card-header">En busca de {{ refugios_ave[i] }}</div>
                     {% set i = i + 1 %} 
-                    <div class="card-body">
+
                     <h5 class="card-title">{{ aves_dict[ave].Especie[0]|upper}}{{aves_dict[ave].Especie[1:] }}</h5>
                     {% set foto = 'static/upload/' + aves_dict[ave].Foto  %}
                     <img src= {{ foto }} class="card-img-top" alt="..." style="max-width: 12rem; border-radius: 8px; height: 8rem;object-fit:cover;">
-                    <form action="{{ url_for('editbird') }}" method="POST">    
-                    <button type="submit"  class="btn btn-primary editar_ave" name="editbird" value="{{ aves_dict[ave].Id }}">Editar</button>
-                    </form>
-                    <a href="#" class="btn btn-primary buttonDelAve">Eliminar</a>  
+                    <div class="d-flex align-items-center">
+                        <form action="{{ url_for('editbird') }}" method="POST">    
+                        <button type="submit" style="margin:.5rem .5rem 1rem .5rem;" class="btn btn-primary editar_ave" name="editbird" value="{{ aves_dict[ave].Id }}">Editar</button>
+                        </form>
+                        <button type="submit" href="#" class="btn btn-primary buttonDelAve" style="margin:.5rem .5rem 1rem .5rem">Eliminar </button> 
                     </div>
                 </div>
+                
                 <!-- Modal AVES-->
                 <div class="modal fade" id="modalDeleteAve" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -45,17 +48,17 @@
                         <div class="modal-footer">
                         <form action="/profile/deleteAve" method="post">
                             {% set delete_id_ave = aves_dict[ave].Id %}
-                            <input type="submit" class="btn btn-primary" value="Eliminar">
+                            <input type="submit" class="btn btn-primary" value="Eliminar" style="color:rgb(46, 46, 46);">
                             <input name="delete_id_ave" type="hidden" value="{{ delete_id_ave }}">
                         </form>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" style="margin-left:.5rem;color:rgb(46, 46, 46);">Cancelar</button>
                         </div>
                     </div>
                     </div>      
                 </div>
                 {% endfor %}
                 {% for refugio in refug_dict %}
-                <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+                <div class="card text-white mb-3 index-card card-profile" >
                     {% for ubic in ubic_dict %}
                         {% if ubic_dict[ubic].Id == refug_dict[refugio].Id_UBICACIONES %}
                             {% set direccion = ubic_dict[ubic].Direccion %} 
@@ -65,24 +68,24 @@
                         {% endif %}
                     {% endfor %}
  
-                    <div class="card-body">
-                        <h5 class="card-title">Refugio para:
+                    
+                        <h5 class="card-title" style="padding-left:1.3rem;">Refugio para:
                             {% set especies = [refug_dict[refugio].Id_ESPECIES1, refug_dict[refugio].Id_ESPECIES2,
                                 refug_dict[refugio].Id_ESPECIES3, refug_dict[refugio].Id_ESPECIES4] %}
-                            <ul>
+                            <ul style="padding: 1.4rem;list-style-type:disc;">
                             {% for especie in especies [:-2] %}
                                 {% if especie != 'NULL' %}
-                                    <li>- {{especie[0]|upper}}{{especie[1:]}}</li> 
+                                    <li> {{especie[0]|upper}}{{especie[1:]}}</li> 
                                 {% endif %}
                             {% endfor %}
                             </ul>
                         </h5>
-                    
-                    <form action="{{ url_for('editplace') }}" method="POST">    
-                        <button type="submit"  class="btn btn-primary editar_refugio" name="editplace" value="{{ refug_dict[refugio].Id }}">Editar</button>
-                    </form>
-                    <a href="#" class="btn btn-primary buttonDelRefugio">Eliminar</a>  
-
+                    <div class="d-flex align-items-center">
+                        <form action="{{ url_for('editplace') }}" method="POST">    
+                            <button type="submit" style="margin:.5rem .5rem 1rem .5rem;" class="btn btn-primary editar_refugio" name="editplace" value="{{ refug_dict[refugio].Id }}">Editar</button>
+                        </form>
+                        <button class="btn btn-primary buttonDelRefugio" style="margin:.5rem .5rem 1rem .5rem;">Eliminar</button>  
+                    </div>
                     <!-- Modal REFUGIOS-->
                     <div class="modal fade" id="modalDeleteRef" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
@@ -97,19 +100,20 @@
                             <div class="modal-footer">
                             <form action="/profile/deleteRef" method="post">
                                 {% set delete_id_refugio = refug_dict[refugio].Id %}
-                                <input type="submit" class="btn btn-primary" value="Eliminar">
+                                <input type="submit" class="btn btn-primary" value="Eliminar" style="color:rgb(46, 46, 46);">
                                 <input name="delete_id_refugio" type="hidden" value="{{ delete_id_refugio }}">
                             </form>
 
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"style="margin-left:.5rem;color:rgb(46, 46, 46);">Cancelar</button>
                             </div>
                         </div>
                         </div>      
                     </div>
-                    </div>
+                    
                 </div>
-                </div>
-                {% endfor %}
+                {% endfor %}    
+            </div>
+            
             </div>
         </div>
     </div>

@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 import sqlite3, os, helpers
 
 from flask import Flask, render_template, url_for, redirect, request, flash, g, current_app, session
@@ -624,14 +623,17 @@ def update_bird():
     #New image upload
     f = request.files['file']
     print(f)
-
-    f.save(secure_filename(f.filename))
-    image = secure_filename(f.filename)
-    print(image, bird_id)
-    connection = sqlite3.connect('proyecto.db')
-    curs = connection.cursor()   
-    curs.execute("UPDATE AVES SET Foto = (?) WHERE Id = (?)", (image, bird_id,))
-    connection.commit()
+    if request.files['file'].filename != '':
+        #f.save(secure_filename(f.filename))
+        base_path = os.path.abspath(os.path.dirname(__file__))
+        upload_path = os.path.join(base_path, app.config['UPLOAD_FOLDER'])
+        f.save(os.path.join(upload_path, secure_filename(f.filename)))
+        image = secure_filename(f.filename)
+        print(image, bird_id)
+        connection = sqlite3.connect('proyecto.db')
+        curs = connection.cursor()   
+        curs.execute("UPDATE AVES SET Foto = (?) WHERE Id = (?)", (image, bird_id,))
+        connection.commit()
 
     return redirect(url_for('profile'))
 

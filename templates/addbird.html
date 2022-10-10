@@ -1,10 +1,11 @@
 {% extends "layout.html" %}
 
 {% block navbar %}
-<li><a href="{{ url_for('index') }}" class="nav-link px-2 text-secondary">Inicio</a></li>
-<li><a href="{{ url_for('addbird') }}" class="nav-link px-2 text-white">Reportar un ave</a></li>
-<li><a href="{{ url_for('addplace') }}" class="nav-link px-2 text-white">Ofrecer un refugio</a></li>            
-<li><a href="{{ url_for('search') }}" class="nav-link px-2 text-white">Buscar aves o refugios</a></li>
+<li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link px-2 text-secondary">Inicio</a></li>
+<li class="nav-item"><a href="{{ url_for('addbird') }}" class="nav-link px-2 text-white">Reportar un ave</a></li>
+<li class="nav-item"><a href="{{ url_for('addplace') }}" class="nav-link px-2 text-white">Ofrecer un refugio</a></li>            
+<li class="nav-item"><a href="{{ url_for('search') }}" class="nav-link px-2 text-white">Visualizar aves y refugios</a></li>
+<li class="nav-item"><a class="nav-link nav-link text-white" aria-current="page" href="#">Sobre este sitio</a></li>
 {% endblock %}
 
 {% block head %}
@@ -15,55 +16,49 @@
 {% endblock %}
 
 {% block content %}
-
-<div>
-  {% for message in get_flashed_messages() %}
-    <div class="alert alert-success" id="alert">{{ message }}</div>
-  {% endfor %}            
-</div>
- 
-    <div class="container">
-    <form class="row row-cols-2" method='POST' action="" enctype="multipart/form-data" style="padding:0.5rem 0 3rem 0;margin:0.5rem 0 0.5rem 0;background-color: rgba(0,0,0,0.3)!important;border-radius: .25rem;">
-        <h4 class="col-12 d-flex text-white" style="justify-content: center;padding: 1rem 0 0.5rem 0">Reportá un ave caída para que otras personas le den refugio.</h4>
+  
+  <div class="container d-flex justify-content-center">
+    <form class="row" method='POST' action="" enctype="multipart/form-data" style="padding:0.5rem 0 3rem 0;margin:2rem 1rem 1rem 1rem;background-color: rgba(0,0,0,0.3)!important;border-radius: .25rem;width: -webkit-fill-available;max-width: 90%;">
+      <h4 class="col-12 d-flex text-white" style="justify-content: center;padding: 1rem 0 0.5rem 0">Reportá un ave caída para que otras personas le den refugio.</h4><br>
         {{ form.hidden_tag() }}
-        <div class="form-group-custom col-6">
+        <div class="form-group-custom col-lg-4 col-xs-12">
           <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.especie.label }}</div>
           <div class="col">{{ form.especie (class="form-control")}}</div>
         </div>
-        <div class="form-group-custom col-6">
+        <div class="form-group-custom col-lg-4 col-xs-12">
           <div class="col-auto text-white " style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.espEsp.label }}</div>
           <div class="col">{{ form.espEsp (class="form-control")}}</div>
         </div>
-        <div class="form-group-custom col-6">
+        <div class="form-group-custom col-lg-4 col-xs-12">
           <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.edad.label }}</div>
           <div class="col">{{ form.edad (class="form-control")}}</div>
         </div>
-        <div class="form-group-custom col-6">
+        <div class="form-group-custom col-lg-4 col-xs-12">
           <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.salud.label }}</div>
           <div class="col">{{ form.salud (class="form-control")}}</div>
         </div>
-        <div class="form-group-custom col-6">
+        <div class="form-group-custom col-lg-4 col-xs-12">
           <div class="col-auto text-white d-flex" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.lugar.label (style="flex-grow: 1;")}}</div>
           <div class="col">{{ form.lugar (class="form-control")}}</div>
         </div>
-        <div class="form-group-custom col-6">
+        <div class="form-group-custom col-lg-4 col-xs-12">
           <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.localiz.label }}</div>
           <div class="col">{{ form.localiz (class="form-control")}}</div>
         </div>
         {{form.loc_lat }}{{ form.loc_long }}
-        <div class="form-group-custom col-6">
+        <div class="form-group-custom col-lg-4 col-xs-12">
           <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.contacto.label }}</div>
           <div class="col">{{ form.contacto (class="form-control")}}</div>
         </div>
-        <div class="form-group-custom col-6">
+        <div class="form-group-custom col-lg-4 col-xs-12">
           <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.requer.label }}</div>
           <div class="col d-flex flex-grow">{{ form.requer (class="form-control")}}</div>
         </div>
-        <div class="form-group-custom col-6">
+        <div class="form-group-custom col-lg-4 col-xs-12">
           <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">Foto del ave: </div>
           <div class="col">{{ form.imagen (class="form-control")}}</div>
         </div>                        
-        <div class="form-group-custom col-6 d-flex ">
+        <div class="form-group-custom col-12 d-flex">
           <div class="col-auto text-white align-self-center">{{ form.submit (class="btn btn-primary")}}</div>
         </div>                                                        
     </form>  
@@ -90,7 +85,7 @@
   });
 
   $(document).ready(function(){
-        $("#alert").fadeOut(10000);
-    }); 
+    $("#alert").fadeOut(10000);
+  }); 
   </script>
   {% endblock %}

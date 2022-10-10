@@ -11,7 +11,7 @@ UPLOAD_PATH = '/upload'
 class SignupForm(FlaskForm):
   name = StringField('Nombre', validators=[InputRequired('Ingresa un nombre.'), Length(max=64)])
   password = PasswordField('Contraseña', validators=[InputRequired('Ingresa una contraseña.')])
-  email = StringField('Email', validators=[InputRequired('Ingresa un correo electrónico.'), Email()])
+  email = StringField('Email', validators=[InputRequired('Ingresa un correo electrónico.'), Email('Ingresa un correo electrónico.')])
   confirm_password = PasswordField(label=('Confirmar contraseña'),validators=[InputRequired(message='Vuelve a ingresar la contraseña.'),
         EqualTo('password', message='La contraseña ingresada no es igual en ambos campos.')])
   submit = SubmitField('Registrarse')

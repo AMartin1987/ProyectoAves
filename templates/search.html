@@ -1,17 +1,22 @@
 {% extends "layout.html" %}
 
 {% block navbar %}
-<li><a href="{{ url_for('index') }}" class="nav-link px-2 text-secondary">Inicio</a></li>
-<li><a href="{{ url_for('addbird') }}" class="nav-link px-2 text-white">Reportar un ave</a></li>
-<li><a href="{{ url_for('addplace') }}" class="nav-link px-2 text-white">Ofrecer un refugio</a></li>            
-<li><a href="{{ url_for('search') }}" class="nav-link px-2 text-white">Buscar aves o refugios</a></li>
+<li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link px-2 text-secondary">Inicio</a></li>
+<li class="nav-item"><a href="{{ url_for('addbird') }}" class="nav-link px-2 text-white">Reportar un ave</a></li>
+<li class="nav-item"><a href="{{ url_for('addplace') }}" class="nav-link px-2 text-white">Ofrecer un refugio</a></li>            
+<li class="nav-item"><a href="{{ url_for('search') }}" class="nav-link px-2 text-white">Visualizar aves y refugios</a></li>
+<li class="nav-item"><a class="nav-link nav-link text-white" aria-current="page" href="#">Sobre este sitio</a></li>
 {% endblock %}
 
 {% block head %}
+  <script src="{{ url_for('static', filename='search.js')}}"></script>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
   <script
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqoKvZMX0sWGNCDPWKYyBvLNkkPrV6KvE&region=AR&language=es&callback=initMap&v=weekly"
   async></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
   <script>
     let ubic_dict = "{{ubic_dict|safe}}";
     ubic_dict = JSON.parse(ubic_dict.replace(/'/gi,"\""));
@@ -37,7 +42,7 @@
     }); 
 
   </script>
-  <script src="{{ url_for('static', filename='search.js')}}"></script>
+  
   <title>Mapa de aves y refugios</title>
 
 {% endblock %}  
@@ -50,7 +55,7 @@
 </div>   
 <div class="container-fluid d-flex main">
   <div class="row inside-main  align-items-center">
-    <div class="col-3 main-left">
+    <div class="col-lg-3 col-xs-12 main-left">
       <div class="card h-100" style="color: #dee2e6;background-color:rgba(0,0,0,0.4);">
         <h4 class="card-header">Visualizar en el mapa...</h4>
         <div class="card-body" style="padding: 1rem">
@@ -138,7 +143,7 @@
       </div>
     </div>
 
-    <div class="col-9 main-right">
+    <div class="col-lg-9 col-xs-12 main-right">
       <div id="map" class="w-auto" style="margin: 1.5rem 0 0 1rem"></div>
 
     </div>
