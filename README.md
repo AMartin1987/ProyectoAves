@@ -3,7 +3,7 @@
 #### Description:
 Found a lost or injured bird? Want to provide a shelter for lost birds? This web app allows users to display information about lost birds who need a new home or a place to recover, as well as locations offered as shelters for birds. It displays this information in an interactive Google Map. Registered users can also add new entries of lost birds and locations proposed as shelters for birds. The user's dashboard allows them to update their own records or delete them. It has a responsive design that displays the site adequately in desktop as well as mobile devices.
 
-It was designed with Flask, SQlite3, Bootstrap 5, Javascript, a tiny bit of JQuery and integration with the Google Maps and Google Places APIs.
+It was designed with Flask, SQLite3, Bootstrap 5, Javascript, a tiny bit of JQuery and integration with the Google Maps and Google Places APIs.
 
 The app makes use of several Python libraries such as:
 * [__Flask_login__](https://flask-login.readthedocs.io/en/latest/), for user session management (logging in, logging out, and 'remember me' functionality).
@@ -14,7 +14,7 @@ The app makes use of several Python libraries such as:
 
 It also implements a method of url sanitization as explained in [https://www.pythonkitchen.com/how-prevent-open-redirect-vulnerab-flask/]
 
-#### Some things that should be fixed in the future:
+#### Some issues that should be fixed in the future:
 * Rewrite some parts to reduce redundancy (e.g.,if-then expressions).
 * Implement email verification for new members. 
 * Implement a password recovery feature.

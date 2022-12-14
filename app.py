@@ -782,4 +782,4 @@ def update_place():
     return redirect(url_for('profile'))
 
 if __name__ == "__main__":
-    app.run(ssl_context='adhoc')
+    app.run(debug=True)

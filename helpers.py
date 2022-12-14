@@ -1,7 +1,7 @@
 def main():
     make_dict()
 
-    # Return dictionary of values from a db column
+# Return dictionary of values from a db column
 def make_dict(db_column):
     key = 0
     dict = { }
