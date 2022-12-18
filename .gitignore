@@ -1,2 +1,4 @@
 config.js
 get-pip.py
+.env
+.flaskenv
