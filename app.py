@@ -300,7 +300,7 @@ def register():
         password = form.password.data
         hash = generate_password_hash(password)
         
-        #Check si el email no se encuentra ya utilizado
+        #Check if email is already registered
         connection = sqlite3.connect("proyecto.db")
         curs = connection.cursor()
         email_exists = curs.execute("SELECT COUNT(*) FROM USUARIOS WHERE Email = (?)", [email,]).fetchone()
@@ -310,7 +310,7 @@ def register():
             flash('El email {email} ya está siendo utilizado por otro usuario.')
             return redirect(url_for('register'))
 
-        #Registrar datos en tabla USUARIOS
+        #Register data in USUARIOS ('users') table 
         connection = sqlite3.connect("proyecto.db")
         curs = connection.cursor()
         curs.execute("INSERT INTO USUARIOS (Nombre, Email, Hashed_password) VALUES(?, ?, ?)", (name, email, hash))
@@ -334,12 +334,12 @@ def login():
      user = list(curs.fetchone())
      Us = load_user(user[0])
      
-     #Check si email y contraseña pertenecen a un usuario registrado
+     #Check if email and password correspond to a registered user
      if form.email.data == Us.email and check_password_hash(Us.password, form.password.data):
-        login_user(Us, remember=form.remember.data) #Recordar sesión
+        login_user(Us, remember=form.remember.data) #Remember session
         flash('Iniciaste sesión.')
         next = request.args.get('next')
-        return redirect(get_safe_redirect(next) or url_for('index'))
+        return redirect(get_safe_redirect(next) or url_for('index')) #safely redirect user to last accessed page  
      else:
         flash('Usuario o contraseña inválidos.')
         return redirect(url_for('login'))
@@ -352,7 +352,7 @@ def login():
 def logout():
     logout_user()
     next = request.args.get('next')
-    return redirect(get_safe_redirect(next) or url_for('index'))  
+    return redirect(get_safe_redirect(next) or url_for('index'))  #safely redirect user to last accessed page  
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -388,8 +388,7 @@ def profile():
     espe_dict = helpers.make_dict(especies)
     tiporef_dict = helpers.make_dict(tiporef)
 
-    #String de tipos de especies que se aceptan en cada refugio, lista para imprimir en profile.html
-    
+    #String of types of species accepted in each refugee, to be displayed in profile.html
     def translate(esp):
         if esp == 1:
             esp = 'palomas'
@@ -413,7 +412,7 @@ def profile():
             if refug_dict[str(i)]["Id_ESPECIES4"] != 'NULL':
                 refug_dict[str(i)]["Id_ESPECIES4"] =  translate(refug_dict[str(i)]["Id_ESPECIES4"])
 
-    # String de tipo de refugio que se necesita cada ave, lista para imprimir en profile.html
+    # String of types of refugee needed for each bird, to be displayed in profile.html
     refugios_ave = []
     if aves_dict:
         for i in range(len(aves_dict)):
@@ -504,7 +503,7 @@ def editbird():
         aves_dict = helpers.make_dict(aves)
         telef_dict = helpers.make_dict(telefonos)
 
-        # Dict de tipo de refugio que necesita cada ave, listo para imprimir en profile.html
+        # Dict of type of refugio needed by each bird, ready to be displayed in profile.html
         refugios_ave = []
         if aves_dict:
             for i in range(len(aves_dict)):
@@ -517,7 +516,7 @@ def editbird():
                 else:
                     refugios_ave[i] = 'Tránsito'
 
-        # Dict de categoría de ave, listo para imprimir en profile.html
+        # Dict if bird categories, ready to be displayed in profile.html
         tipo_especie = []
         if aves_dict:
             for i in range(len(aves_dict)):
@@ -663,7 +662,7 @@ def editplace():
         refug_dict = helpers.make_dict(refugios)
         telef_dict = helpers.make_dict(telefonos)
 
-        # Dict de tipo de refugio ofrecidos, listo para imprimir
+        # Dict of types of refugees offered, ready to be displayed
         tipo_refugio = []
         if refug_dict:
             for i in range(len(refug_dict)):
@@ -671,7 +670,7 @@ def editplace():
                 tipo_refugio.append(dict['Id_TIPOREFUGIO1'])
                 tipo_refugio.append(dict['Id_TIPOREFUGIO2'])
         
-        # Dict de especies que puede cuidar, listo para imprimir
+        # Dict of species that the user can take care of, ready to be displayed
         especies_ref = []
         if refug_dict:
             for i in range(len(refug_dict)):
@@ -700,7 +699,7 @@ def update_place():
     connection = sqlite3.connect('proyecto.db')
     curs = connection.cursor()   
 
-    #update tipos de refugios aceptados
+    #update accepted types of refuges
     tipoRef1 = 'NULL'
     tipoRef2 = 'NULL'
     for i in range (len(tiporef)):
@@ -715,7 +714,7 @@ def update_place():
     curs.execute("UPDATE REFUGIOS SET Id_TIPOREFUGIO1 = (?), Id_TIPOREFUGIO2 = (?) WHERE Id = (?)", (tipoRef1, tipoRef2, place_id,))
     connection.commit()
 
-    #update tipos de especies aceptadas en el refugio
+    #update types of species accepted in refugees
     especie1 = 'NULL'
     especie2 = 'NULL'
     especie3 = 'NULL'
