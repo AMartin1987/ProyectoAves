@@ -17,8 +17,6 @@
 
   <script>
 
-    let KEY =  "{{API_KEY|safe}}";
-    console.log(KEY);
     let ubic_dict = "{{ubic_dict|safe}}";
     ubic_dict = JSON.parse(ubic_dict.replace(/'/gi,"\""));
     const ubic_len = Object.keys(ubic_dict).length; 

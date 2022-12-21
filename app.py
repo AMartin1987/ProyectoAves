@@ -10,13 +10,7 @@ from forms import LoginForm, SignupForm, BirdForm, PlaceForm
 from urllib.parse import urlparse, urljoin
 from flask_uploads import configure_uploads, IMAGES, UploadSet
 
-
 app = Flask(__name__)
-app.debug=True
-
-# Google Maps JS API Key
-app.config.from_pyfile('settings.py')
-API_KEY = app.config.get("API_KEY")
 
 #uploading images configuration
 app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.jpeg', '.png', '.gif']
@@ -120,7 +114,7 @@ def search():
 
     return render_template('search.html', ubic_dict=ubic_dict,
      aves_dict=aves_dict, refug_dict=refug_dict, telef_dict=telef_dict,
-     espe_dict=espe_dict, tiporef_dict=tiporef_dict, nombre=nombre, API_KEY=API_KEY)
+     espe_dict=espe_dict, tiporef_dict=tiporef_dict, nombre=nombre)
     
 @app.route('/addbird', methods=['GET', 'POST'])
 @login_required
@@ -784,4 +778,4 @@ def update_place():
     return redirect(url_for('profile'))
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
