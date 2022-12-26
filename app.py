@@ -131,7 +131,7 @@ def addbird():
         if file_ext not in current_app.config['UPLOAD_EXTENSIONS']:
             raise BadRequest('Por favor suba un archivo de imagen válido (JPG, GIF o PNG). Tamaño máximo: 4 MB.')
         file = photos.save(form.imagen.data)
-        
+        print(file_ext)
         #WTForms
         especie = form.especie.data
         espEsp = form.espEsp.data
@@ -458,6 +458,7 @@ def delete_refugio():
 def delete_ave():
     # Delete ave entry from DB
     delete_id_ave = request.form.get("delete_id_ave")
+    print(delete_id_ave)
     
     if delete_id_ave:
         connection = sqlite3.connect("proyecto.db")
