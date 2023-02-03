@@ -1,5 +1,8 @@
 # Fallen Birds and Shelters for Birds
 #### Video Demo:  https://youtu.be/TxXu8eZZEtg
+
+[This is my final project submitted as a requirement for completing CS50: Introduction to Computer Sciences]
+
 #### Description:
 Found a lost or injured bird? Want to provide a shelter for lost birds? This web app allows users to display information about lost birds who need a new home or a place to recover, as well as locations offered as shelters for birds. It displays this information in an interactive Google Map. Registered users can also add new entries of lost birds and locations proposed as shelters for birds. The user's control panel allows them to update their own records or delete them. It has a responsive design that displays the site adequately in desktop as well as mobile devices.
 
