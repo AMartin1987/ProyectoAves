@@ -1,80 +1,134 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %} {% block navbar %}
+<li class="nav-item">
+  <a href="{{ url_for('index') }}" class="nav-link px-2 text-secondary"
+    >Inicio</a
+  >
+</li>
+<li class="nav-item">
+  <a href="{{ url_for('addbird') }}" class="nav-link px-2 text-white"
+    >Reportar un ave</a
+  >
+</li>
+<li class="nav-item">
+  <a href="{{ url_for('addplace') }}" class="nav-link px-2 text-white"
+    >Ofrecer un refugio</a
+  >
+</li>
+<li class="nav-item">
+  <a href="{{ url_for('search') }}" class="nav-link px-2 text-white"
+    >Visualizar aves y refugios</a
+  >
+</li>
+<li class="nav-item">
+  <a
+    class="nav-link nav-link text-white"
+    aria-current="page"
+    href="https://github.com/AMartin1987/ProyectoAves#readme"
+    >Sobre este sitio</a
+  >
+</li>
+{% endblock %} {% block head %}
+<title>Ofrecer un refugio</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyAqoKvZMX0sWGNCDPWKYyBvLNkkPrV6KvE"></script>
 
-{% block navbar %}
-<li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link px-2 text-secondary">Inicio</a></li>
-<li class="nav-item"><a href="{{ url_for('addbird') }}" class="nav-link px-2 text-white">Reportar un ave</a></li>
-<li class="nav-item"><a href="{{ url_for('addplace') }}" class="nav-link px-2 text-white">Ofrecer un refugio</a></li>            
-<li class="nav-item"><a href="{{ url_for('search') }}" class="nav-link px-2 text-white">Visualizar aves y refugios</a></li>
-<li class="nav-item"><a class="nav-link nav-link text-white" aria-current="page" href="https://github.com/AMartin1987/ProyectoAves#readme">Sobre este sitio</a></li>
-{% endblock %}
-
-{% block head %}
-  <title>Ofrecer un refugio</title>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyAqoKvZMX0sWGNCDPWKYyBvLNkkPrV6KvE"></script>
-  
-{% endblock %}
-
-{% block bg_image %}
-<div class="bg-image" 
-style="background-image: url('static/images/torcacitabg.jpg');
-    height: 100vh; background-size: cover; width: 100%; position:absolute">
-</div>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block bg_image %}
+<div
+  class="bg-image"
+  style="
+    background-image: url('static/images/torcacitabg.jpg');
+    height: 100vh;
+    background-size: cover;
+    width: 100%;
+    position: absolute;
+  "
+></div>
+{% endblock %} {% block content %}
 <div>
   {% for message in get_flashed_messages() %}
-    <div class="alert alert-success" id="alert">{{ message }}</div>
-  {% endfor %}            
+  <div class="alert alert-success" id="alert">{{ message }}</div>
+  {% endfor %}
 </div>
-  <div class="container d-flex justify-content-center">
-    <form class="row d-flex" method='POST' action="" enctype="multipart/form-data" style="padding:0.5rem 0 3rem 0;
-    margin:2rem 1rem 1rem 1rem;background-color: rgba(0,0,0,0.3)!important;border-radius: .25rem;max-width: 90%;">
-        <h4 class="col-12 d-flex text-white" style="justify-content: center;padding: 1rem 0 0.5rem 0">Ofrecé un refugio para aves caídas.</h4>
-        {{ form.hidden_tag() }}
-      <div class="form-group-custom2 col-lg-6 col-xs-12 ">
-        <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.lugar.label }}</div>
-        <div class="col text-white">{{ form.lugar  }}</div>
+<div class="container d-flex justify-content-center">
+  <form
+    class="row d-flex"
+    method="POST"
+    action=""
+    enctype="multipart/form-data"
+    style="
+      padding: 0.5rem 0 3rem 0;
+      margin: 2rem 1rem 1rem 1rem;
+      background-color: rgba(0, 0, 0, 0.3) !important;
+      border-radius: 0.25rem;
+      max-width: 90%;
+    "
+  >
+    <h4
+      class="col-12 d-flex text-white"
+      style="justify-content: center; padding: 1rem 0 0.5rem 0"
+    >
+      Ofrecé un refugio para aves caídas.
+    </h4>
+    {{ form.hidden_tag() }}
+    <div class="form-group-custom2 col-lg-6 col-xs-12">
+      <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem">
+        {{ form.lugar.label }}
       </div>
-      <div class="form-group-custom2 col-lg-6 col-xs-12">
-        <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.localiz.label }}</div>
-        <div class="col text-white">{{ form.localiz (class="form-control") }}</div>
+      <div class="col text-white">{{ form.lugar }}</div>
+    </div>
+    <div class="form-group-custom2 col-lg-6 col-xs-12">
+      <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem">
+        {{ form.localiz.label }}
       </div>
-      {{ form.loc_lat }}
-      {{ form.loc_long }}      
-      <div class="form-group-custom2 col-lg-6 col-xs-12">
-        <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.especie.label }}</div>
-        <div class="col text-white">{{ form.especie }}</div>
+      <div class="col text-white">
+        {{ form.localiz (class="form-control") }}
       </div>
-      <div class="form-group-custom2 col-lg-6 col-xs-12">
-        <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem;">{{ form.contacto.label }}</div>
-        <div class="col text-white">{{ form.contacto(class="form-control") }}</div>
+    </div>
+    {{ form.loc_lat }} {{ form.loc_long }}
+    <div class="form-group-custom2 col-lg-6 col-xs-12">
+      <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem">
+        {{ form.especie.label }}
       </div>
-      <div class="form-group-custom2 col-12 d-flex">
-        <div class="col-auto text-white align-self-center">{{ form.submit (class="btn btn-primary")}}</div>
-      </div>              
-    </form>
-  </div>
-
+      <div class="col text-white">{{ form.especie }}</div>
+    </div>
+    <div class="form-group-custom2 col-lg-6 col-xs-12">
+      <div class="col-auto text-white" style="padding: 0.5rem 1rem 0.5rem 1rem">
+        {{ form.contacto.label }}
+      </div>
+      <div class="col text-white">
+        {{ form.contacto(class="form-control") }}
+      </div>
+    </div>
+    <div class="form-group-custom2 col-12 d-flex">
+      <div class="col-auto text-white align-self-center">
+        {{ form.submit (class="btn btn-primary")}}
+      </div>
+    </div>
+  </form>
+</div>
 
 <script>
-  var searchInput = 'localiz';
+  var searchInput = "localiz";
 
   $(document).ready(function () {
-      var autocomplete;
-      autocomplete = new google.maps.places.Autocomplete((document.getElementById(searchInput)), {
-          types: ['geocode'],
-      });
-          
-      google.maps.event.addListener(autocomplete, 'place_changed', function () {
-          var near_place = autocomplete.getPlace();
-          document.getElementById('loc_lat').value = near_place.geometry.location.lat();
-          document.getElementById('loc_long').value = near_place.geometry.location.lng();
-      });
-  });
-  $(document).ready(function(){
-        $("#alert").fadeOut(10000);
+    var autocomplete;
+    autocomplete = new google.maps.places.Autocomplete(
+      document.getElementById(searchInput),
+      {
+        types: ["geocode"],
+      }
+    );
+
+    google.maps.event.addListener(autocomplete, "place_changed", function () {
+      var near_place = autocomplete.getPlace();
+      document.getElementById("loc_lat").value =
+        near_place.geometry.location.lat();
+      document.getElementById("loc_long").value =
+        near_place.geometry.location.lng();
     });
+  });
+  $(document).ready(function () {
+    $("#alert").fadeOut(10000);
+  });
 </script>
-{% endblock %}    
+{% endblock %}
