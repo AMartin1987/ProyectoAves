@@ -1,4 +1,9 @@
-config.js
-get-pip.py
+__pycache__
 .env
 .flaskenv
+config.js
+get-pip.py
+include
+Lib
+pyvenv.cfg
+Scripts
