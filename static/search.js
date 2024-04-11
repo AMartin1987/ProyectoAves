@@ -378,4 +378,4 @@ function initMap() {
     });
   }
 } //Cierra initMap
-console.log("consola: ", ID, ubic_dict)
+console.log("consola: ", ID, ubic_dict);
