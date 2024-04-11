@@ -38,6 +38,7 @@ function initMap() {
         n = "refugio";
       }
     }
+    console.log(n)
     ID.push(n);
 
     // Agregar ID y localización a cada marcador
