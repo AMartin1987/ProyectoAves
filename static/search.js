@@ -38,7 +38,7 @@ function initMap() {
         n = "refugio";
       }
     }
-    console.log(ID, ubic_dict)
+    console.log("consola: ", ID, ubic_dict)
     ID.push(n);
 
     // Agregar ID y localización a cada marcador
