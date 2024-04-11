@@ -38,7 +38,7 @@ function initMap() {
         n = "refugio";
       }
     }
-    console.log("consola: ", ID, ubic_dict)
+
     ID.push(n);
 
     // Agregar ID y localización a cada marcador
@@ -378,3 +378,4 @@ function initMap() {
     });
   }
 } //Cierra initMap
+console.log("consola: ", ID, ubic_dict)
